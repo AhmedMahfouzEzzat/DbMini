@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-Microsoft (R) Macro Assembler Version 14.00.24210.0	    12/13/17 23:04:20
-=======
-Microsoft (R) Macro Assembler Version 14.00.24210.0	    12/13/17 20:24:29
->>>>>>> refs/remotes/github/master
+Microsoft (R) Macro Assembler Version 14.00.24210.0	    12/13/17 23:56:19
 AddTwo.asm						     Page 1 - 1
 
 
@@ -41,14 +37,10 @@ AddTwo.asm						     Page 1 - 1
  0000040C  000009DB [		BigBuffer byte 2523 dup(0)
 	    00
 	   ]
-
+ 00000DE7 0D 0A			carriageReturn BYTE 13, 10
  00000000			.code
 
-<<<<<<< HEAD
 				;make file function 
-=======
-
->>>>>>> refs/remotes/github/master
  00000000			makeFile proc
  00000000  BA 00000000 R		mov edx, offset str1
 					INVOKE CreateFile,
@@ -74,20 +66,12 @@ AddTwo.asm						     Page 1 - 1
  00000041  C3				ret
  00000042			makefile endp
 
-<<<<<<< HEAD
 				;append TXT File 
  00000042			appendTxtFile proc
  00000042  BA 00000000 R		mov edx, offset str1
 					INVOKE CreateFile,
 					edx, GENERIC_READ, DO_NOT_SHARE, NULL,
 					OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0
-=======
- 00000042			AppendTxtFile proc
- 00000042  BA 00000000 R	mov edx, offset str1
-				INVOKE CreateFile,
-				edx, GENERIC_READ, DO_NOT_SHARE, NULL,
-				OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0
->>>>>>> refs/remotes/github/master
  00000047  6A 00	   *	    push   +000000000h
  00000049  68 00000080	   *	    push   +000000080h
  0000004E  6A 03	   *	    push   +000000003h
@@ -135,109 +119,84 @@ AddTwo.asm						     Page 1 - 1
  000000B3  C2 0004	   *	    ret    00004h
  000000B6			readFile2 endP
 
-<<<<<<< HEAD
  000000B6			enroll2 proc ID : ptr Byte, Namee : ptr Byte, IDSize : Dword, NameSize : Dword
-=======
- 000000B6			enroll2 proc ID : ptr Byte, Namee : ptr Byte, IDSize : Dword, NameSize : Dword, buf: ptr Byte
->>>>>>> refs/remotes/github/master
  000000B6  55		   *	    push   ebp
  000000B7  8B EC	   *	    mov    ebp, esp
- 000000B9  FC			cld 
-				INVOKE readfile2 , offset buffer
- 000000BA  68 00000020 R   *	    push   dword  ptr OFFSET FLAT: buffer
- 000000BF  E8 FFFFFFA1	   *	    call   readFile2
- 000000C4  8B D8		mov ebx,eax
- 000000C6  8B CB		mov ecx,ebx
- 000000C8  BE 00000020 R	mov esi,offset buffer
- 000000CD  BF 0000040C R	mov edi, offset bigBuffer
- 000000D2  F3/ A4		rep movsb
-
-
- 000000D4  8B 75 08		mov esi,ID
- 000000D7  BF 00000020 R	mov edi, offset buffer
- 000000DC  8B 4D 10		mov ecx, IDSize
- 000000DF  F3/ A4		rep movsb
-
- 000000E1  B0 2C		mov al, ','
- 000000E3  88 07		mov [edi], al
- 000000E5  47			inc edi
-
- 000000E6  8B 75 0C		mov esi, Namee
- 000000E9  8B 4D 14		mov ecx, NameSize
- 000000EC  F3/ A4		rep movsb
-
- 000000EE  B0 25		mov al, '%'
- 000000F0  88 07		mov [edi],al
- 000000F2  47			inc edi
-
- 000000F3  8B 45 10		mov eax,IDSize
- 000000F6  03 45 14		add eax,NameSize
- 000000F9  40			inc eax
- 000000FA  8B C8		mov ecx,eax
-
-
- 000000FC  BE 00000020 R	mov esi ,offset buffer
- 00000101  F3/ A4		rep movsb
- 00000103  BA 00000000 R	mov edx, offset str1
+ 000000B9  BA 00000000 R	mov edx,offset str1
 				INVOKE CreateFile,
 				edx, GENERIC_WRITE, DO_NOT_SHARE, NULL,
 				OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0
- 00000108  6A 00	   *	    push   +000000000h
- 0000010A  68 00000080	   *	    push   +000000080h
- 0000010F  6A 03	   *	    push   +000000003h
- 00000111  6A 00	   *	    push   +000000000h
- 00000113  6A 00	   *	    push   +000000000h
- 00000115  68 40000000	   *	    push   +040000000h
- 0000011A  52		   *	    push   edx
- 0000011B  E8 00000000 E   *	    call   CreateFileA
- 00000120  A3 0000001C R	mov filehandle, EAX
- 00000125  BA 0000040C R	mov edx,OFFSET bigbuffer
- 0000012A  8B CB		MOV ecx,ebx
- 0000012C  03 4D 10		add ecx,IDSize
- 0000012F  03 4D 14		add ecx,NameSize
- 00000132  83 C1 01		add ecx,1
- 00000135  E8 00000000 E	call WriteToFile
- 0000013A  A3 00000408 R	mov  WriteToFile_1,eaX
+ 000000BE  6A 00	   *	    push   +000000000h
+ 000000C0  68 00000080	   *	    push   +000000080h
+ 000000C5  6A 03	   *	    push   +000000003h
+ 000000C7  6A 00	   *	    push   +000000000h
+ 000000C9  6A 00	   *	    push   +000000000h
+ 000000CB  68 40000000	   *	    push   +040000000h
+ 000000D0  52		   *	    push   edx
+ 000000D1  E8 00000000 E   *	    call   CreateFileA
+ 000000D6  A3 0000001C R	mov filehandle, EAX
+ 000000DB  8B 75 08		mov esi,ID
+ 000000DE  BF 00000020 R	mov edi, offset buffer
+ 000000E3  8B 4D 10		mov ecx, IDSize
+ 000000E6  F3/ A4		rep movsb
+ 000000E8  B0 2C		mov al,','
+ 000000EA  88 07		mov [edi], al
+ 000000EC  47			inc edi
+ 000000ED  8B 75 0C		mov esi, Namee
+ 000000F0  8B 4D 14		mov ecx, NameSize
+ 000000F3  F3/ A4		rep movsb
+ 000000F5  A0 00000DE7 R	mov al, carriageReturn
+ 000000FA  88 07		mov [edi],al
+ 000000FC  47			inc edi
+ 000000FD  A0 00000DE8 R	mov al, carriageReturn+1
+ 00000102  88 07		mov [edi],al
+ 00000104  47			inc edi
+
+
+				INVOKE SetFilePointer,
+				fileHandle, ; file handle
+				0, ; distance low
+				0, ; distance high
+				FILE_END
+ 00000105  6A 02	   *	    push   +000000002h
+ 00000107  6A 00	   *	    push   +000000000h
+ 00000109  6A 00	   *	    push   +000000000h
+ 0000010B  FF 35 0000001C R *	    push   fileHandle
+ 00000111  E8 00000000 E   *	    call   SetFilePointer
+ 00000116  A1 0000001C R	MOV EAX,fileHandle
+ 0000011B  BA 00000020 R	mov edx,OFFSET buffer
+ 00000120  B9 00000000		MOV ecx,0
+ 00000125  03 4D 10		add ecx,IDSize
+ 00000128  03 4D 14		add ecx,NameSize
+ 0000012B  83 C1 03		add ecx,3
+ 0000012E  E8 00000000 E	call WriteToFile
 
 				INVOKE CloseHandle, filehandle
- 0000013F  FF 35 0000001C R *	    push   fileHandle
- 00000145  E8 00000000 E   *	    call   CloseHandle
+ 00000133  FF 35 0000001C R *	    push   fileHandle
+ 00000139  E8 00000000 E   *	    call   CloseHandle
 
 				ret
- 0000014A  C9		   *	    leave  
- 0000014B  C2 0010	   *	    ret    00010h
- 0000014E			enroll2 endP
+ 0000013E  C9		   *	    leave  
+ 0000013F  C2 0010	   *	    ret    00010h
+ 00000142			enroll2 endP
 
 
 
- 0000014E			DllMain PROC hInstance:DWORD, fdwReason:DWORD, lpReserved:DWORD 
- 0000014E  55		   *	    push   ebp
- 0000014F  8B EC	   *	    mov    ebp, esp
- 00000151  B8 00000001		mov eax, 1; Return true to caller. 
+ 00000142			DllMain PROC hInstance:DWORD, fdwReason:DWORD, lpReserved:DWORD 
+ 00000142  55		   *	    push   ebp
+ 00000143  8B EC	   *	    mov    ebp, esp
+ 00000145  B8 00000001		mov eax, 1; Return true to caller. 
 				ret 
-<<<<<<< HEAD
- 00000156  C9		   *	    leave  
- 00000157  C2 000C	   *	    ret    0000Ch
- 0000015A			DllMain ENDP
-AddTwo.asm(118) : warning A6004:procedure argument or local not referenced : hInstance
-AddTwo.asm(118) : warning A6004:procedure argument or local not referenced : fdwReason
-AddTwo.asm(118) : warning A6004:procedure argument or local not referenced : lpReserved
+ 0000014A  C9		   *	    leave  
+ 0000014B  C2 000C	   *	    ret    0000Ch
+ 0000014E			DllMain ENDP
+AddTwo.asm(107) : warning A6004:procedure argument or local not referenced : hInstance
+AddTwo.asm(107) : warning A6004:procedure argument or local not referenced : fdwReason
+AddTwo.asm(107) : warning A6004:procedure argument or local not referenced : lpReserved
 				END DllMain
 
 				END main
-Microsoft (R) Macro Assembler Version 14.00.24210.0	    12/13/17 23:04:20
-=======
- 000000F5  C9		   *	    leave  
- 000000F6  C2 000C	   *	    ret    0000Ch
- 000000F9			DllMain ENDP
-AddTwo.asm(89) : warning A6004:procedure argument or local not referenced : hInstance
-AddTwo.asm(89) : warning A6004:procedure argument or local not referenced : fdwReason
-AddTwo.asm(89) : warning A6004:procedure argument or local not referenced : lpReserved
-				END DllMain
-
-				END main
-Microsoft (R) Macro Assembler Version 14.00.24210.0	    12/13/17 20:24:29
->>>>>>> refs/remotes/github/master
+Microsoft (R) Macro Assembler Version 14.00.24210.0	    12/13/17 23:56:19
 AddTwo.asm						     Symbols 2 - 1
 
 
@@ -331,8 +290,8 @@ Segments and Groups:
 
 FLAT . . . . . . . . . . . . . .	GROUP
 STACK  . . . . . . . . . . . . .	32 Bit	 00001000 Para	  Stack	  'STACK'	 
-_DATA  . . . . . . . . . . . . .	32 Bit	 00000DE7 Para	  Public  'DATA'	
-_TEXT  . . . . . . . . . . . . .	32 Bit	 0000015A Para	  Public  'CODE'	
+_DATA  . . . . . . . . . . . . .	32 Bit	 00000DE9 Para	  Public  'DATA'	
+_TEXT  . . . . . . . . . . . . .	32 Bit	 0000014E Para	  Public  'CODE'	
 
 
 Procedures, parameters, and locals:
@@ -346,7 +305,7 @@ CreateFileA  . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External
 CreateOutputFile . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 Crlf . . . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 Delay  . . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-DllMain  . . . . . . . . . . . .	P Near	 0000014E _TEXT	Length= 0000000C Public STDCALL
+DllMain  . . . . . . . . . . . .	P Near	 00000142 _TEXT	Length= 0000000C Public STDCALL
   hInstance  . . . . . . . . . .	DWord	 bp + 00000008
   fdwReason  . . . . . . . . . .	DWord	 bp + 0000000C
   lpReserved . . . . . . . . . .	DWord	 bp + 00000010
@@ -444,7 +403,7 @@ WriteString  . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External
 WriteToFile  . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 WriteWindowsMsg  . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 appendTxtFile  . . . . . . . . .	P Near	 00000042 _TEXT	Length= 00000023 Public STDCALL
-enroll2  . . . . . . . . . . . .	P Near	 000000B6 _TEXT	Length= 00000098 Public STDCALL
+enroll2  . . . . . . . . . . . .	P Near	 000000B6 _TEXT	Length= 0000008C Public STDCALL
   ID . . . . . . . . . . . . . .	DWord	 bp + 00000008
   Namee  . . . . . . . . . . . .	DWord	 bp + 0000000C
   IDSize . . . . . . . . . . . .	DWord	 bp + 00000010
@@ -677,6 +636,7 @@ black  . . . . . . . . . . . . .	Number	 00000000h
 blue . . . . . . . . . . . . . .	Number	 00000001h   
 brown  . . . . . . . . . . . . .	Number	 00000006h   
 buffer . . . . . . . . . . . . .	Byte	 00000020 _DATA	
+carriageReturn . . . . . . . . .	Byte	 00000DE7 _DATA	
 cyan . . . . . . . . . . . . . .	Number	 00000003h   
 exit . . . . . . . . . . . . . .	Text   	 INVOKE ExitProcess,0
 fileHandle . . . . . . . . . . .	DWord	 0000001C _DATA	

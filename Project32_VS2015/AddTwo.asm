@@ -8,7 +8,7 @@ buffer byte 1000 dup(0)
 
 WriteToFile_1 dword 0 
 BigBuffer byte 2523 dup(0)
-
+carriageReturn BYTE 13, 10
 .code
 
 ;make file function 
@@ -58,55 +58,41 @@ ret
 readFile2 endP
 
 enroll2 proc ID : ptr Byte, Namee : ptr Byte, IDSize : Dword, NameSize : Dword
-cld 
-INVOKE readfile2 , offset buffer
-
-mov ebx,eax
-mov ecx,ebx
-mov esi,offset buffer
-mov edi, offset bigBuffer
-rep movsb
-
-mov edx,edi
-
-mov esi,ID
-mov edi, offset buffer
-mov ecx, IDSize
-rep movsb
-
-mov al, ','
-mov [edi], al
-inc edi
-
-mov esi, Namee
-mov ecx, NameSize
-rep movsb
-
-mov edi,edx
-mov al, '%'
-mov [edi],al
-inc edi
-
-mov eax,IDSize
-add eax,NameSize
-inc eax
-mov ecx,eax
-
-
-mov esi ,offset buffer
-rep movsb
-mov edx, offset str1
+mov edx,offset str1
 INVOKE CreateFile,
 edx, GENERIC_WRITE, DO_NOT_SHARE, NULL,
 OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0
 mov filehandle, EAX
-mov edx,OFFSET bigbuffer
-MOV ecx,ebx
+mov esi,ID
+mov edi, offset buffer
+mov ecx, IDSize
+rep movsb
+mov al,','
+mov [edi], al
+inc edi
+mov esi, Namee
+mov ecx, NameSize
+rep movsb
+mov al, carriageReturn
+mov [edi],al
+inc edi
+mov al, carriageReturn+1
+mov [edi],al
+inc edi
+
+
+INVOKE SetFilePointer,
+fileHandle, ; file handle
+0, ; distance low
+0, ; distance high
+FILE_END
+MOV EAX,fileHandle
+mov edx,OFFSET buffer
+MOV ecx,0
 add ecx,IDSize
 add ecx,NameSize
-add ecx,1
+add ecx,3
 call WriteToFile
-mov  WriteToFile_1,eaX
 
 INVOKE CloseHandle, filehandle
 
