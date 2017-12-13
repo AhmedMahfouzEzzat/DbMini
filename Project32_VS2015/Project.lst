@@ -1,4 +1,4 @@
-Microsoft (R) Macro Assembler Version 14.00.24210.0	    12/13/17 20:24:29
+Microsoft (R) Macro Assembler Version 14.00.23506.0	    12/13/17 22:27:31
 AddTwo.asm						     Page 1 - 1
 
 
@@ -161,7 +161,7 @@ AddTwo.asm(89) : warning A6004:procedure argument or local not referenced : lpRe
 				END DllMain
 
 				END main
-Microsoft (R) Macro Assembler Version 14.00.24210.0	    12/13/17 20:24:29
+Microsoft (R) Macro Assembler Version 14.00.23506.0	    12/13/17 22:27:31
 AddTwo.asm						     Symbols 2 - 1
 
 
