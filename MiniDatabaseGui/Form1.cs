@@ -35,11 +35,6 @@ namespace MiniDatabaseGui
             MessageBox.Show(new string(c));
         }
 
-        private void textBox2_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
         private void button2_Click(object sender, EventArgs e)
         {   char[] txt = textBox1.Text.ToCharArray();
             char[] txt1 = textBox2.Text.ToCharArray();

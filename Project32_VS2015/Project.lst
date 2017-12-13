@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 Microsoft (R) Macro Assembler Version 14.00.24210.0	    12/13/17 23:04:20
+=======
+Microsoft (R) Macro Assembler Version 14.00.24210.0	    12/13/17 20:24:29
+>>>>>>> refs/remotes/github/master
 AddTwo.asm						     Page 1 - 1
 
 
@@ -40,7 +44,11 @@ AddTwo.asm						     Page 1 - 1
 
  00000000			.code
 
+<<<<<<< HEAD
 				;make file function 
+=======
+
+>>>>>>> refs/remotes/github/master
  00000000			makeFile proc
  00000000  BA 00000000 R		mov edx, offset str1
 					INVOKE CreateFile,
@@ -66,12 +74,20 @@ AddTwo.asm						     Page 1 - 1
  00000041  C3				ret
  00000042			makefile endp
 
+<<<<<<< HEAD
 				;append TXT File 
  00000042			appendTxtFile proc
  00000042  BA 00000000 R		mov edx, offset str1
 					INVOKE CreateFile,
 					edx, GENERIC_READ, DO_NOT_SHARE, NULL,
 					OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0
+=======
+ 00000042			AppendTxtFile proc
+ 00000042  BA 00000000 R	mov edx, offset str1
+				INVOKE CreateFile,
+				edx, GENERIC_READ, DO_NOT_SHARE, NULL,
+				OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0
+>>>>>>> refs/remotes/github/master
  00000047  6A 00	   *	    push   +000000000h
  00000049  68 00000080	   *	    push   +000000080h
  0000004E  6A 03	   *	    push   +000000003h
@@ -119,7 +135,11 @@ AddTwo.asm						     Page 1 - 1
  000000B3  C2 0004	   *	    ret    00004h
  000000B6			readFile2 endP
 
+<<<<<<< HEAD
  000000B6			enroll2 proc ID : ptr Byte, Namee : ptr Byte, IDSize : Dword, NameSize : Dword
+=======
+ 000000B6			enroll2 proc ID : ptr Byte, Namee : ptr Byte, IDSize : Dword, NameSize : Dword, buf: ptr Byte
+>>>>>>> refs/remotes/github/master
  000000B6  55		   *	    push   ebp
  000000B7  8B EC	   *	    mov    ebp, esp
  000000B9  FC			cld 
@@ -195,6 +215,7 @@ AddTwo.asm						     Page 1 - 1
  0000014F  8B EC	   *	    mov    ebp, esp
  00000151  B8 00000001		mov eax, 1; Return true to caller. 
 				ret 
+<<<<<<< HEAD
  00000156  C9		   *	    leave  
  00000157  C2 000C	   *	    ret    0000Ch
  0000015A			DllMain ENDP
@@ -205,6 +226,18 @@ AddTwo.asm(118) : warning A6004:procedure argument or local not referenced : lpR
 
 				END main
 Microsoft (R) Macro Assembler Version 14.00.24210.0	    12/13/17 23:04:20
+=======
+ 000000F5  C9		   *	    leave  
+ 000000F6  C2 000C	   *	    ret    0000Ch
+ 000000F9			DllMain ENDP
+AddTwo.asm(89) : warning A6004:procedure argument or local not referenced : hInstance
+AddTwo.asm(89) : warning A6004:procedure argument or local not referenced : fdwReason
+AddTwo.asm(89) : warning A6004:procedure argument or local not referenced : lpReserved
+				END DllMain
+
+				END main
+Microsoft (R) Macro Assembler Version 14.00.24210.0	    12/13/17 20:24:29
+>>>>>>> refs/remotes/github/master
 AddTwo.asm						     Symbols 2 - 1
 
 
