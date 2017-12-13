@@ -1,0 +1,4 @@
+EXPORTS		
+makeFile @1
+AppendTxtFile @2
+readFile2 @3
