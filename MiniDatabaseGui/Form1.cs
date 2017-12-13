@@ -28,16 +28,11 @@ namespace MiniDatabaseGui
 
         private void button1_Click(object sender, EventArgs e)
         {
-            //makeFile();
+            makeFile();
             char[] c = new char[101];
             readFile2(c);
             label1.Text = new string(c);
             MessageBox.Show(new string(c));
-        }
-
-        private void textBox2_TextChanged(object sender, EventArgs e)
-        {
-
         }
 
         private void button2_Click(object sender, EventArgs e)
