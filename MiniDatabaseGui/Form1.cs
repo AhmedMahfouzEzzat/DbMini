@@ -28,7 +28,7 @@ namespace MiniDatabaseGui
 
         private void button1_Click(object sender, EventArgs e)
         {
-            //makeFile();
+            makeFile();
             char[] c = new char[101];
             readFile2(c);
             label1.Text = new string(c);
@@ -43,7 +43,7 @@ namespace MiniDatabaseGui
         private void button2_Click(object sender, EventArgs e)
         {   char[] txt = textBox1.Text.ToCharArray();
             char[] txt1 = textBox2.Text.ToCharArray();
-            enroll2(txt1, txt, txt1.Length, txt.Length);
+            enroll2(txt, txt1, txt.Length, txt1.Length);
             
 
         }

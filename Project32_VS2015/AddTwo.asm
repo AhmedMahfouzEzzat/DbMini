@@ -4,10 +4,10 @@ str1 byte  "ahmedFile.txt", 0
 str2 byte  "data gwa file", 0
 fileHandle handle ?
 BUFFER_SIZE = 1000
-buffer byte 101 dup(0)
+buffer byte 1000 dup(0)
 
- WriteToFile_1 dword 0 
-BigBuffer byte 150 dup(0)
+WriteToFile_1 dword 0 
+BigBuffer byte 2523 dup(0)
 
 .code
 
@@ -46,9 +46,8 @@ edx, GENERIC_READ, DO_NOT_SHARE, NULL,
 OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0
 mov fileHandle, eax
 mov edx, str12
-mov ecx, 100
+mov ecx, 1000
 call ReadFromFile
-
 mov buffer[eax], 0
 mov ebx, eax
 mov eax, offset buffer
@@ -59,6 +58,7 @@ ret
 readFile2 endP
 
 enroll2 proc ID : ptr Byte, Namee : ptr Byte, IDSize : Dword, NameSize : Dword
+cld 
 INVOKE readfile2 , offset buffer
 
 mov ebx,eax
@@ -68,34 +68,47 @@ mov edi, offset bigBuffer
 rep movsb
 
 mov edx,edi
+
 mov esi,ID
 mov edi, offset buffer
 mov ecx, IDSize
 rep movsb
+
 mov al, ','
 mov [edi], al
 inc edi
+
 mov esi, Namee
 mov ecx, NameSize
 rep movsb
+
+mov edi,edx
+mov al, '%'
+mov [edi],al
+inc edi
+
 mov eax,IDSize
-add eax ,NameSize
+add eax,NameSize
 inc eax
 mov ecx,eax
-mov edi,edx
+
+
 mov esi ,offset buffer
 rep movsb
 mov edx, offset str1
 INVOKE CreateFile,
-	edx, GENERIC_WRITE, DO_NOT_SHARE, NULL,
-	OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0
-	mov  filehandle, EAX
-mov  edx,OFFSET bigbuffer
-    mov  ecx,151
-    call WriteToFile
-    mov  WriteToFile_1,eaX
+edx, GENERIC_WRITE, DO_NOT_SHARE, NULL,
+OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0
+mov filehandle, EAX
+mov edx,OFFSET bigbuffer
+MOV ecx,ebx
+add ecx,IDSize
+add ecx,NameSize
+add ecx,1
+call WriteToFile
+mov  WriteToFile_1,eaX
 
-INVOKE CloseHandle, eax
+INVOKE CloseHandle, filehandle
 
 ret
 enroll2 endP
