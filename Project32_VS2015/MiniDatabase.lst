@@ -1,4 +1,4 @@
-Microsoft (R) Macro Assembler Version 14.00.24210.0	    12/16/17 21:11:21
+Microsoft (R) Macro Assembler Version 14.00.24210.0	    12/16/17 21:21:40
 source.asm						     Page 1 - 1
 
 
@@ -208,6 +208,7 @@ source.asm(114) : warning A6004:procedure argument or local not referenced : f_n
 source.asm(114) : warning A6004:procedure argument or local not referenced : sortby
 
  00000118			SplitBuffer proc 
+				;//file example : "10,Ahmed,100,", 13, 10, "20,Zaki,300,", 13, 10, "30,Hassan,600,", 13, 10, 0
  0000280E			.data
  0000280E  0000001E [		id byte 30 dup(? );// id array
 	    00
@@ -299,12 +300,12 @@ source.asm(114) : warning A6004:procedure argument or local not referenced : sor
  000001FD  C9		   *	    leave  
  000001FE  C2 000C	   *	    ret    0000Ch
  00000201			DllMain ENDP
-source.asm(194) : warning A6004:procedure argument or local not referenced : hInstance
-source.asm(194) : warning A6004:procedure argument or local not referenced : fdwReason
-source.asm(194) : warning A6004:procedure argument or local not referenced : lpReserved
+source.asm(195) : warning A6004:procedure argument or local not referenced : hInstance
+source.asm(195) : warning A6004:procedure argument or local not referenced : fdwReason
+source.asm(195) : warning A6004:procedure argument or local not referenced : lpReserved
 				END DllMain
 
-Microsoft (R) Macro Assembler Version 14.00.24210.0	    12/16/17 21:11:21
+Microsoft (R) Macro Assembler Version 14.00.24210.0	    12/16/17 21:21:40
 source.asm						     Symbols 2 - 1
 
 
