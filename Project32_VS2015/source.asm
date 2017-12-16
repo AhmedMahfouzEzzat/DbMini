@@ -1,4 +1,12 @@
 INCLUDE Irvine32.inc
+
+Student STRUCT
+IdNum byte 3 dup(0)  ; 9
+StudentName BYTE 30 DUP(0) ; 30
+Studentgrade byte 3 dup(0)
+StudentAlphaGrade byte 1 dup('A')
+Student ENDS
+
 .data
 	BUFSIZE = 5120;//5kb
 	record_size=30
@@ -8,7 +16,14 @@ INCLUDE Irvine32.inc
 	buffer BYTE BUFSIZE DUP(?),0
 	new_buffer BYTE BUFSIZE DUP(?),0
 	fileSize dword 0
+	allStudents Student 20 dup(<"000","ahmed","090",'A'>)
 .code
+Open_Createfile proc,f_Name:ptr byte
+	INVOKE CreateFile,
+	f_Name, GENERIC_WRITE OR GENERIC_READ, DO_NOT_SHARE, NULL,
+	OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, 0
+	ret
+Open_Createfile endp
 
 OpenDatabase proc,f_Name:ptr byte,kye:byte
 	;//open the file
@@ -173,29 +188,29 @@ SplitBuffer proc
 	ret
 SplitBuffer endp
 
-AlphaGrade proc grade: ptr byte
+AlphaGrade proc grade2: ptr byte
 	.data
 	gradeF byte "059", 0
 	gradeD byte "069", 0
 	gradeC byte "079", 0
 	gradeB byte "089", 0
 	.code
-	mov esi, offset grade
+	mov esi,  grade2
 	mov edi, offset gradeF
 	repe cmpsb
 	jb FG
 
-	mov esi, offset grade
+	mov esi,  grade2
 	mov edi, offset gradeD
 	repe cmpsb
 	jb DG
 
-	mov esi, offset grade
+	mov esi,  grade2
 	mov edi, offset gradeC
 	repe cmpsb
 	jb CG
 
-	mov esi, offset grade
+	mov esi,  grade2
 	mov edi, offset gradeB
 	repe cmpsb
 	jb BG
@@ -216,7 +231,7 @@ AlphaGrade proc grade: ptr byte
 	mov al, 'F'
 	done :
 	ret
-AlaphaGrade endp
+AlphaGrade endp
 
 DllMain PROC hInstance:DWORD, fdwReason:DWORD, lpReserved:DWORD 
 	mov eax, 1; Return true to caller. 
