@@ -1,14 +1,8 @@
 INCLUDE Irvine32.inc
 .data
-	
-	BUFSIZE = 5120              ;5kb
-								;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-								;4bytes 20byte			  3bytes 1byte   2bytes  ;
-	record_size=30				;------ ---------------- ------ -----   ------- ;
-								;key	Name			  grade  A_grade endline ;
-								;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	BUFSIZE = 5120;//5kb
+	record_size=30
 	grade_size=3
-
 	filehandle dword ?
 	re_ffilehandle dword ?
 	buffer BYTE BUFSIZE DUP(?),0
@@ -16,14 +10,7 @@ INCLUDE Irvine32.inc
 	fileSize dword 0
 .code
 
-Open_Createfile proc,f_Name:ptr byte
-	INVOKE CreateFile,
-	f_Name, GENERIC_WRITE OR GENERIC_READ, DO_NOT_SHARE, NULL,
-	OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, 0
-	ret
-Open_Createfile endp
-
-OpenDatabase  proc,f_Name:ptr byte,kye:byte
+OpenDatabase proc,f_Name:ptr byte,kye:byte
 	;//open the file
 	INVOKE Open_Createfile,f_Name
 	mov filehandle, eax
@@ -45,9 +32,9 @@ OpenDatabase  proc,f_Name:ptr byte,kye:byte
 	;//close the file
 	INVOKE CloseHandle,filehandle
 	ret
-OpenDatabase  endp
+OpenDatabase endp
 
-SaveDatabase  proc,f_Name:ptr byte,kye:byte
+SaveDatabase proc,f_Name:ptr byte,kye:byte
 	;//open the file
 	INVOKE Open_Createfile,f_Name
 	mov filehandle,eax
@@ -66,7 +53,7 @@ SaveDatabase  proc,f_Name:ptr byte,kye:byte
 	;//close the file
 	INVOKE CloseHandle,filehandle
 	ret
-SaveDatabase  endp
+SaveDatabase endp
 
 EnrollStudent proc,s_id:ptr byte,s_name:ptr byte, id_size: dword, name_size: dword
 	;//set pointer to the end of the bufferr
@@ -105,10 +92,10 @@ EnrollStudent proc,s_id:ptr byte,s_name:ptr byte, id_size: dword, name_size: dwo
 	ret
 EnrollStudent endp
 
-UpdateGrade   proc,s_id:dword,s_grade:dword
+UpdateGrade proc,s_id:dword,s_grade:dword
 
 	ret
-UpdateGrade   endp
+UpdateGrade endp
 
 DeleteStudent proc,s_id:dword
 
@@ -126,129 +113,115 @@ GenerateReport proc,f_name:ptr byte,sortby:byte
 GenerateReport endp
 
 SplitBuffer proc 
-;//file example : "10,Ahmed,100,", 13, 10, "20,Zaki,300,", 13, 10, "30,Hassan,600,", 13, 10, 0
-.data
-id byte 30 dup(? );// id array
-nam byte 30 dup(? );// name array
-grade byte 30 dup(? );// grade array
-startF dword ? ;// start of field which is needed to be copied
-endF dword ? ;// end of field which is needed to be copied
-idS dword ? ;// offset of last id written in (id) array
-namS dword ? ;// offset of last name written in (nam) array
-gradeS dword ? ;// offset of last id written in (grade) array
-tmp byte ?
-.code
-mov edi, offset buffer
-mov idS, offset id
-mov namS, offset nam
-mov gradeS, offset grade
-mov al, ','
-outer :;//loop until the buffer end with 0
-mov edx, offset id
-mov ecx, 3;//3 for id and name and grade
-inner:
-push ecx
-mov ecx, lengthof buffer
-mov startF, edi
-repne scasb;// move edi to the offset that have (,)
-mov endF, edi
-dec endF
-pop ecx
-mov ebx, endF;// ebx equals the number of bytes read (endF - startF)
-sub ebx, startF
-push edi
-;// fill arrays with data between startF and endF
-cmp dword ptr ecx, 2
-je N
-cmp dword ptr ecx, 1
-je G
-mov edi, idS
-add idS, ebx
-jmp next
-N :
-mov edi, namS
-add namS, ebx
-jmp next
-G :
-mov edi, gradeS
-add gradeS, ebx
-next :
-push ecx
-mov ecx, ebx
-mov esi, startF
-rep movsb
-pop ecx
-pop edi
-Loop inner
-add edi, 2
-cmp byte ptr[edi], 0
-jne outer
-;// display id array
-mov edx, offset id
-mov ecx, lengthof id
-call writestring
-call crlf
-;// display name array
-mov edx, offset nam
-mov ecx, lengthof nam
-call writestring
-call crlf
-;// display grade array
-mov edx, offset grade
-mov ecx, lengthof grade
-call writestring
-call crlf
-ret
+	;//file example : "10,Ahmed,100,", 13, 10, "20,Zaki,300,", 13, 10, "30,Hassan,600,", 13, 10, 0
+	.data
+	id byte 30 dup(? );// id array
+	nam byte 30 dup(? );// name array
+	grade byte 30 dup(? );// grade array
+	startF dword ? ;// start of field which is needed to be copied
+	endF dword ? ;// end of field which is needed to be copied
+	idS dword ? ;// offset of last id written in (id) array
+	namS dword ? ;// offset of last name written in (nam) array
+	gradeS dword ? ;// offset of last id written in (grade) array
+	tmp byte ?
+	.code
+	mov edi, offset buffer
+	mov idS, offset id
+	mov namS, offset nam
+	mov gradeS, offset grade
+	mov al, ','
+	outer :;//loop until the buffer end with 0
+	mov edx, offset id
+	mov ecx, 3;//3 for id and name and grade
+	inner:
+	push ecx
+	mov ecx, lengthof buffer
+	mov startF, edi
+	repne scasb;// move edi to the offset that have (,)
+	mov endF, edi
+	dec endF
+	pop ecx
+	mov ebx, endF;// ebx equals the number of bytes read (endF - startF)
+	sub ebx, startF
+	push edi
+	;// fill arrays with data between startF and endF
+	cmp dword ptr ecx, 2
+	je N
+	cmp dword ptr ecx, 1
+	je G
+	mov edi, idS
+	add idS, ebx
+	jmp next
+	N :
+	mov edi, namS
+	add namS, ebx
+	jmp next
+	G :
+	mov edi, gradeS
+	add gradeS, ebx
+	next :
+	push ecx
+	mov ecx, ebx
+	mov esi, startF
+	rep movsb
+	pop ecx
+	pop edi
+	Loop inner
+	add edi, 2
+	cmp byte ptr[edi], 0
+	jne outer
+	ret
 SplitBuffer endp
 
 AlphaGrade proc grade: ptr byte
-.data
-gradeF byte "059", 0
-gradeD byte "069", 0
-gradeC byte "079", 0
-gradeB byte "089", 0
-.code
-mov esi, offset grade
-mov edi, offset gradeF
-repe cmpsb
-jb FG
+	.data
+	gradeF byte "059", 0
+	gradeD byte "069", 0
+	gradeC byte "079", 0
+	gradeB byte "089", 0
+	.code
+	mov esi, offset grade
+	mov edi, offset gradeF
+	repe cmpsb
+	jb FG
 
-mov esi, offset grade
-mov edi, offset gradeD
-repe cmpsb
-jb DG
+	mov esi, offset grade
+	mov edi, offset gradeD
+	repe cmpsb
+	jb DG
 
-mov esi, offset grade
-mov edi, offset gradeC
-repe cmpsb
-jb CG
+	mov esi, offset grade
+	mov edi, offset gradeC
+	repe cmpsb
+	jb CG
 
-mov esi, offset grade
-mov edi, offset gradeB
-repe cmpsb
-jb BG
+	mov esi, offset grade
+	mov edi, offset gradeB
+	repe cmpsb
+	jb BG
 
-AG :
-mov al, 'A'
-jmp done
-BG :
-mov al, 'B'
-jmp done
-CG :
-mov al, 'C'
-jmp done
-DG :
-mov al, 'D'
-jmp done
-FG :
-mov al, 'F'
-done :
-ret
+	AG :
+	mov al, 'A'
+	jmp done
+	BG :
+	mov al, 'B'
+	jmp done
+	CG :
+	mov al, 'C'
+	jmp done
+	DG :
+	mov al, 'D'
+	jmp done
+	FG :
+	mov al, 'F'
+	done :
+	ret
 AlaphaGrade endp
 
 DllMain PROC hInstance:DWORD, fdwReason:DWORD, lpReserved:DWORD 
-mov eax, 1; Return true to caller. 
-ret 
+	mov eax, 1; Return true to caller. 
+	ret 
 DllMain ENDP
+
 END DllMain
 
