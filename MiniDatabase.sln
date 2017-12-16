@@ -1,11 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
-MinimumVisualStudioVersion = 10.0.40219.1
+# Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MiniDatabaseGui", "MiniDatabaseGui\MiniDatabaseGui.csproj", "{E7B2FB86-8311-4F2C-A858-9CACDDF82BCB}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Project", "Project32_VS2015\Project.vcxproj", "{4164AA65-1EF9-4E69-899B-D1BED776070B}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MiniDatabase", "Project32_VS2015\Project.vcxproj", "{4164AA65-1EF9-4E69-899B-D1BED776070B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

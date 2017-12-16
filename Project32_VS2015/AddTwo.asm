@@ -16,7 +16,7 @@ makeFile proc
 	mov edx, offset str1
 	INVOKE CreateFile,
 	edx, GENERIC_WRITE, DO_NOT_SHARE, NULL,
-	CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, 0
+	OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, 0
 	mov fileHandle, eax
 	mov eax, fileHandle
 	mov edx, OFFSET str2

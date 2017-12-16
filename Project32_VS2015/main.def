@@ -1,5 +1,4 @@
 EXPORTS		
-makeFile @1
-appendTxtFile @2
-readFile2 @3
-enroll2 @4
+OpenDatabase @1
+SaveDatabase @2
+EnrollStudent @3

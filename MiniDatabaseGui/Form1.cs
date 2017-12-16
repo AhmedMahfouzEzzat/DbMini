@@ -13,34 +13,26 @@ namespace MiniDatabaseGui
 {
     public partial class Form1 : Form
     {
-        [DllImport("Project.dll")]
-        private static extern void makeFile();
+        [DllImport("MiniDatabase.dll")]
+        private static extern void OpenDatabase([In]char[] filename, byte key);
 
-        [DllImport("Project.dll")]
-        private static extern void readFile2([In, Out]char[] arr);
+        [DllImport("MiniDatabase.dll")]
+        private static extern void SaveDatabase([In]char[] filename, byte key);
 
-        [DllImport("Project.dll")]
-        private static extern void enroll2([In, Out]char[] id, [In, Out]char[] name,int size, int size2);
+        [DllImport("MiniDatabase.dll")]
+        private static extern void EnrollStudent([In]char[] id, [In]char[] name);
         public Form1()
         {
             InitializeComponent();
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        char[] name = "Mini_DataBase.txt".ToCharArray();
+        private void Form1_Load(object sender, EventArgs e)
         {
-            makeFile();
-            char[] c = new char[101];
-            readFile2(c);
-            label1.Text = new string(c);
-            MessageBox.Show(new string(c));
-        }
-
-        private void button2_Click(object sender, EventArgs e)
-        {   char[] txt = textBox1.Text.ToCharArray();
-            char[] txt1 = textBox2.Text.ToCharArray();
-            enroll2(txt, txt1, txt.Length, txt1.Length);
             
-
+            OpenDatabase(name,170);
         }
+
+
     }
 }
