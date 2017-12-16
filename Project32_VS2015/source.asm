@@ -7,8 +7,6 @@ INCLUDE Irvine32.inc
 	record_size=30				;------ ---------------- ------ -----   ------- ;
 								;key	Name			  grade  A_grade endline ;
 								;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-	id_size=4
-	name_size=20
 	grade_size=3
 
 	filehandle dword ?
@@ -26,13 +24,13 @@ Open_Createfile proc,f_Name:ptr byte
 Open_Createfile endp
 
 OpenDatabase  proc,f_Name:ptr byte,kye:byte
-	;open the file
+	;//open the file
 	INVOKE Open_Createfile,f_Name
 	mov filehandle, eax
-	;load the file in buffer
+	;//load the file in buffer
 	INVOKE ReadFile,
 	filehandle,offset buffer,BUFSIZE,offset fileSize,NULL
-	;decrypt data 
+	;//decrypt data 
 	mov esi ,offset buffer
 	mov edi ,esi
 	mov ecx, fileSize
@@ -44,16 +42,16 @@ OpenDatabase  proc,f_Name:ptr byte,kye:byte
 		stosb
 	loop L
 	done:
-	;close the file
+	;//close the file
 	INVOKE CloseHandle,filehandle
 	ret
 OpenDatabase  endp
 
 SaveDatabase  proc,f_Name:ptr byte,kye:byte
-	;open the file
+	;//open the file
 	INVOKE Open_Createfile,f_Name
 	mov filehandle,eax
-	;encrypt data 
+	;//encrypt data 
 	mov esi ,offset buffer
 	mov edi ,esi
 	mov ecx, fileSize
@@ -62,34 +60,48 @@ SaveDatabase  proc,f_Name:ptr byte,kye:byte
 		xor al,kye
 		stosb
 	loop L
-	;write data in the file
+	;//write data in the file
 	INVOKE WriteFile,
 	filehandle,offset buffer,fileSize,offset fileSize,null
-	;close the file
+	;//close the file
 	INVOKE CloseHandle,filehandle
 	ret
 SaveDatabase  endp
 
-EnrollStudent proc,s_id:ptr byte,s_name:ptr byte 
-	;set pointer to the end of the bufferr
+EnrollStudent proc,s_id:ptr byte,s_name:ptr byte, id_size: dword, name_size: dword
+	;//set pointer to the end of the bufferr
 	mov edi , offset buffer 
 	add edi , fileSize			
-	;store id
+	;//store id
 	mov esi , s_id
 	mov ecx ,id_size
-	rep movsb					
-	;store name
+	rep movsb
+	;//write (,)
+	mov byte ptr [edi], ','
+	inc edi
+	;//store name
 	mov esi , s_name
 	mov ecx , name_size
-	rep movsb					
-	;save space to grade and Alpha_gread
-	add edi,grade_size+1
-	;carrying_return
+	rep movsb
+	;//write (,)
+	mov byte ptr[edi], ','
+	inc edi
+	;//save space to grade and Alpha_gread
+	add edi,grade_size +1
+	;//write (,)
+	mov byte ptr[edi], ','
+	inc edi
+	;//carrying_return
 	mov byte ptr[edi],13		
 	inc edi
-	;line_feed
-	mov byte ptr[edi],10		
-	add fileSize,record_size
+	;//line_feed
+	mov byte ptr[edi],10
+	mov eax, 0
+	add eax, id_size
+	add eax, name_size
+	add eax, grade_size
+	add eax, 6
+	add fileSize, eax
 	ret
 EnrollStudent endp
 
@@ -188,6 +200,51 @@ call writestring
 call crlf
 ret
 SplitBuffer endp
+
+AlphaGrade proc grade: ptr byte
+.data
+gradeF byte "059", 0
+gradeD byte "069", 0
+gradeC byte "079", 0
+gradeB byte "089", 0
+.code
+mov esi, offset grade
+mov edi, offset gradeF
+repe cmpsb
+jb FG
+
+mov esi, offset grade
+mov edi, offset gradeD
+repe cmpsb
+jb DG
+
+mov esi, offset grade
+mov edi, offset gradeC
+repe cmpsb
+jb CG
+
+mov esi, offset grade
+mov edi, offset gradeB
+repe cmpsb
+jb BG
+
+AG :
+mov al, 'A'
+jmp done
+BG :
+mov al, 'B'
+jmp done
+CG :
+mov al, 'C'
+jmp done
+DG :
+mov al, 'D'
+jmp done
+FG :
+mov al, 'F'
+done :
+ret
+AlaphaGrade endp
 
 DllMain PROC hInstance:DWORD, fdwReason:DWORD, lpReserved:DWORD 
 mov eax, 1; Return true to caller. 

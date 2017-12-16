@@ -58,13 +58,14 @@
             this.button1.TabIndex = 0;
             this.button1.Text = "OK";
             this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // radioButton1
             // 
             this.radioButton1.AutoSize = true;
             this.radioButton1.Location = new System.Drawing.Point(20, 17);
             this.radioButton1.Name = "radioButton1";
-            this.radioButton1.Size = new System.Drawing.Size(89, 17);
+            this.radioButton1.Size = new System.Drawing.Size(88, 17);
             this.radioButton1.TabIndex = 1;
             this.radioButton1.TabStop = true;
             this.radioButton1.Text = "EnrollStudent";
@@ -75,7 +76,7 @@
             this.radioButton2.AutoSize = true;
             this.radioButton2.Location = new System.Drawing.Point(20, 64);
             this.radioButton2.Name = "radioButton2";
-            this.radioButton2.Size = new System.Drawing.Size(94, 17);
+            this.radioButton2.Size = new System.Drawing.Size(93, 17);
             this.radioButton2.TabIndex = 2;
             this.radioButton2.TabStop = true;
             this.radioButton2.Text = "DeleteStudent";
@@ -86,7 +87,7 @@
             this.radioButton3.AutoSize = true;
             this.radioButton3.Location = new System.Drawing.Point(314, 64);
             this.radioButton3.Name = "radioButton3";
-            this.radioButton3.Size = new System.Drawing.Size(120, 17);
+            this.radioButton3.Size = new System.Drawing.Size(119, 17);
             this.radioButton3.TabIndex = 3;
             this.radioButton3.TabStop = true;
             this.radioButton3.Text = "DisplayStudentData";
@@ -156,7 +157,7 @@
             this.radioButton6.AutoSize = true;
             this.radioButton6.Location = new System.Drawing.Point(477, 365);
             this.radioButton6.Name = "radioButton6";
-            this.radioButton6.Size = new System.Drawing.Size(53, 17);
+            this.radioButton6.Size = new System.Drawing.Size(52, 17);
             this.radioButton6.TabIndex = 12;
             this.radioButton6.TabStop = true;
             this.radioButton6.Text = "grade";
@@ -194,7 +195,7 @@
             this.label3.AutoSize = true;
             this.label3.Location = new System.Drawing.Point(31, 256);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(35, 13);
+            this.label3.Size = new System.Drawing.Size(34, 13);
             this.label3.TabIndex = 16;
             this.label3.Text = "grade";
             // 
@@ -203,7 +204,7 @@
             this.label4.AutoSize = true;
             this.label4.Location = new System.Drawing.Point(221, 256);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(65, 13);
+            this.label4.Size = new System.Drawing.Size(64, 13);
             this.label4.TabIndex = 17;
             this.label4.Text = "Alpha grade";
             // 
@@ -212,7 +213,7 @@
             this.label5.AutoSize = true;
             this.label5.Location = new System.Drawing.Point(419, 344);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(41, 13);
+            this.label5.Size = new System.Drawing.Size(38, 13);
             this.label5.TabIndex = 18;
             this.label5.Text = "sort by";
             // 

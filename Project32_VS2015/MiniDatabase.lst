@@ -1,4 +1,4 @@
-Microsoft (R) Macro Assembler Version 14.00.24210.0	    12/16/17 21:11:21
+Microsoft (R) Macro Assembler Version 14.00.24210.0	    12/16/17 22:11:04
 source.asm						     Page 1 - 1
 
 
@@ -28,8 +28,6 @@ source.asm						     Page 1 - 1
  = 0000001E				record_size=30				;------ ---------------- ------ -----   ------- ;
 												;key	Name			  grade  A_grade endline ;
 												;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
- = 00000004				id_size=4
- = 00000014				name_size=20
  = 00000003				grade_size=3
 
  00000000 00000000			filehandle dword ?
@@ -63,14 +61,14 @@ source.asm						     Page 1 - 1
  00000021			Open_Createfile endp
 
  00000021			OpenDatabase  proc,f_Name:ptr byte,kye:byte
-					;open the file
+					;//open the file
  00000021  55		   *	    push   ebp
  00000022  8B EC	   *	    mov    ebp, esp
 					INVOKE Open_Createfile,f_Name
  00000024  FF 75 08	   *	    push   dword  ptr ss:[ebp]+000000008h
  00000027  E8 FFFFFFD4	   *	    call   Open_Createfile
  0000002C  A3 00000000 R		mov filehandle, eax
-					;load the file in buffer
+					;//load the file in buffer
 					INVOKE ReadFile,
 					filehandle,offset buffer,BUFSIZE,offset fileSize,NULL
  00000031  6A 00	   *	    push   +000000000h
@@ -79,7 +77,7 @@ source.asm						     Page 1 - 1
  0000003D  68 00000008 R   *	    push   dword  ptr OFFSET FLAT: buffer
  00000042  FF 35 00000000 R *	    push   filehandle
  00000048  E8 00000000 E   *	    call   ReadFile
-					;decrypt data 
+					;//decrypt data 
  0000004D  BE 00000008 R		mov esi ,offset buffer
  00000052  8B FE			mov edi ,esi
  00000054  8B 0D 0000280A R		mov ecx, fileSize
@@ -91,7 +89,7 @@ source.asm						     Page 1 - 1
  00000063  AA					stosb
  00000064  E2 F9			loop L
  00000066				done:
-					;close the file
+					;//close the file
 					INVOKE CloseHandle,filehandle
  00000066  FF 35 00000000 R *	    push   filehandle
  0000006C  E8 00000000 E   *	    call   CloseHandle
@@ -101,14 +99,14 @@ source.asm						     Page 1 - 1
  00000075			OpenDatabase  endp
 
  00000075			SaveDatabase  proc,f_Name:ptr byte,kye:byte
-					;open the file
+					;//open the file
  00000075  55		   *	    push   ebp
  00000076  8B EC	   *	    mov    ebp, esp
 					INVOKE Open_Createfile,f_Name
  00000078  FF 75 08	   *	    push   dword  ptr ss:[ebp]+000000008h
  0000007B  E8 FFFFFF80	   *	    call   Open_Createfile
  00000080  A3 00000000 R		mov filehandle,eax
-					;encrypt data 
+					;//encrypt data 
  00000085  BE 00000008 R		mov esi ,offset buffer
  0000008A  8B FE			mov edi ,esi
  0000008C  8B 0D 0000280A R		mov ecx, fileSize
@@ -117,7 +115,7 @@ source.asm						     Page 1 - 1
  00000093  32 45 0C				xor al,kye
  00000096  AA					stosb
  00000097  E2 F9			loop L
-					;write data in the file
+					;//write data in the file
 					INVOKE WriteFile,
 					filehandle,offset buffer,fileSize,offset fileSize,null
  00000099  6A 00	   *	    push   +000000000h
@@ -126,7 +124,7 @@ source.asm						     Page 1 - 1
  000000A6  68 00000008 R   *	    push   dword  ptr OFFSET FLAT: buffer
  000000AB  FF 35 00000000 R *	    push   filehandle
  000000B1  E8 00000000 E   *	    call   WriteFile
-					;close the file
+					;//close the file
 					INVOKE CloseHandle,filehandle
  000000B6  FF 35 00000000 R *	    push   filehandle
  000000BC  E8 00000000 E   *	    call   CloseHandle
@@ -135,79 +133,93 @@ source.asm						     Page 1 - 1
  000000C2  C2 0008	   *	    ret    00008h
  000000C5			SaveDatabase  endp
 
- 000000C5			EnrollStudent proc,s_id:ptr byte,s_name:ptr byte 
-					;set pointer to the end of the bufferr
+ 000000C5			EnrollStudent proc,s_id:ptr byte,s_name:ptr byte, id_size: dword, name_size: dword
+					;//set pointer to the end of the bufferr
  000000C5  55		   *	    push   ebp
  000000C6  8B EC	   *	    mov    ebp, esp
  000000C8  BF 00000008 R		mov edi , offset buffer 
  000000CD  03 3D 0000280A R		add edi , fileSize			
-					;store id
+					;//store id
  000000D3  8B 75 08			mov esi , s_id
- 000000D6  B9 00000004			mov ecx ,id_size
- 000000DB  F3/ A4			rep movsb					
-					;store name
- 000000DD  8B 75 0C			mov esi , s_name
- 000000E0  B9 00000014			mov ecx , name_size
- 000000E5  F3/ A4			rep movsb					
-					;save space to grade and Alpha_gread
- 000000E7  83 C7 04			add edi,grade_size+1
-					;carrying_return
- 000000EA  C6 07 0D			mov byte ptr[edi],13		
- 000000ED  47				inc edi
-					;line_feed
- 000000EE  C6 07 0A			mov byte ptr[edi],10		
- 000000F1  83 05 0000280A R		add fileSize,record_size
-	   1E
+ 000000D6  8B 4D 10			mov ecx ,id_size
+ 000000D9  F3/ A4			rep movsb
+					;//write (,)
+ 000000DB  C6 07 2C			mov byte ptr [edi], ','
+ 000000DE  47				inc edi
+					;//store name
+ 000000DF  8B 75 0C			mov esi , s_name
+ 000000E2  8B 4D 14			mov ecx , name_size
+ 000000E5  F3/ A4			rep movsb
+					;//write (,)
+ 000000E7  C6 07 2C			mov byte ptr[edi], ','
+ 000000EA  47				inc edi
+					;//save space to grade and Alpha_gread
+ 000000EB  83 C7 04			add edi,grade_size +1
+					;//write (,)
+ 000000EE  C6 07 2C			mov byte ptr[edi], ','
+ 000000F1  47				inc edi
+					;//carrying_return
+ 000000F2  C6 07 0D			mov byte ptr[edi],13		
+ 000000F5  47				inc edi
+					;//line_feed
+ 000000F6  C6 07 0A			mov byte ptr[edi],10
+ 000000F9  B8 00000000			mov eax, 0
+ 000000FE  03 45 10			add eax, id_size
+ 00000101  03 45 14			add eax, name_size
+ 00000104  83 C0 03			add eax, grade_size
+ 00000107  83 C0 06			add eax, 6
+ 0000010A  01 05 0000280A R		add fileSize, eax
 					ret
- 000000F8  C9		   *	    leave  
- 000000F9  C2 0008	   *	    ret    00008h
- 000000FC			EnrollStudent endp
+ 00000110  C9		   *	    leave  
+ 00000111  C2 0010	   *	    ret    00010h
+ 00000114			EnrollStudent endp
 
- 000000FC			UpdateGrade   proc,s_id:dword,s_grade:dword
+ 00000114			UpdateGrade   proc,s_id:dword,s_grade:dword
 
- 000000FC  55		   *	    push   ebp
- 000000FD  8B EC	   *	    mov    ebp, esp
+ 00000114  55		   *	    push   ebp
+ 00000115  8B EC	   *	    mov    ebp, esp
 					ret
- 000000FF  C9		   *	    leave  
- 00000100  C2 0008	   *	    ret    00008h
- 00000103			UpdateGrade   endp
-source.asm(99) : warning A6004:procedure argument or local not referenced : s_id
-source.asm(99) : warning A6004:procedure argument or local not referenced : s_grade
+ 00000117  C9		   *	    leave  
+ 00000118  C2 0008	   *	    ret    00008h
+ 0000011B			UpdateGrade   endp
+source.asm(111) : warning A6004:procedure argument or local not referenced : s_id
+source.asm(111) : warning A6004:procedure argument or local not referenced : s_grade
 
- 00000103			DeleteStudent proc,s_id:dword
+ 0000011B			DeleteStudent proc,s_id:dword
 
- 00000103  55		   *	    push   ebp
- 00000104  8B EC	   *	    mov    ebp, esp
+ 0000011B  55		   *	    push   ebp
+ 0000011C  8B EC	   *	    mov    ebp, esp
 					ret
- 00000106  C9		   *	    leave  
- 00000107  C2 0004	   *	    ret    00004h
- 0000010A			DeleteStudent endp
-source.asm(104) : warning A6004:procedure argument or local not referenced : s_id
+ 0000011E  C9		   *	    leave  
+ 0000011F  C2 0004	   *	    ret    00004h
+ 00000122			DeleteStudent endp
+source.asm(116) : warning A6004:procedure argument or local not referenced : s_id
 
- 0000010A			DisStudentData proc,s_id:dword,s_name:ptr byte,s_grade:ptr dword
+ 00000122			DisStudentData proc,s_id:dword,s_name:ptr byte,s_grade:ptr dword
 					
- 0000010A  55		   *	    push   ebp
- 0000010B  8B EC	   *	    mov    ebp, esp
+ 00000122  55		   *	    push   ebp
+ 00000123  8B EC	   *	    mov    ebp, esp
 					ret
- 0000010D  C9		   *	    leave  
- 0000010E  C2 000C	   *	    ret    0000Ch
- 00000111			DisStudentData endp
-source.asm(109) : warning A6004:procedure argument or local not referenced : s_id
-source.asm(109) : warning A6004:procedure argument or local not referenced : s_name
-source.asm(109) : warning A6004:procedure argument or local not referenced : s_grade
+ 00000125  C9		   *	    leave  
+ 00000126  C2 000C	   *	    ret    0000Ch
+ 00000129			DisStudentData endp
+source.asm(121) : warning A6004:procedure argument or local not referenced : s_id
+source.asm(121) : warning A6004:procedure argument or local not referenced : s_name
+source.asm(121) : warning A6004:procedure argument or local not referenced : s_grade
 
- 00000111			GenerateReport proc,f_name:ptr byte,sortby:byte
+ 00000129			GenerateReport proc,f_name:ptr byte,sortby:byte
 
- 00000111  55		   *	    push   ebp
- 00000112  8B EC	   *	    mov    ebp, esp
+ 00000129  55		   *	    push   ebp
+ 0000012A  8B EC	   *	    mov    ebp, esp
 					ret
- 00000114  C9		   *	    leave  
- 00000115  C2 0008	   *	    ret    00008h
- 00000118			GenerateReport endp
-source.asm(114) : warning A6004:procedure argument or local not referenced : f_name
-source.asm(114) : warning A6004:procedure argument or local not referenced : sortby
+ 0000012C  C9		   *	    leave  
+ 0000012D  C2 0008	   *	    ret    00008h
+ 00000130			GenerateReport endp
+source.asm(126) : warning A6004:procedure argument or local not referenced : f_name
+source.asm(126) : warning A6004:procedure argument or local not referenced : sortby
 
- 00000118			SplitBuffer proc 
+ 00000130			SplitBuffer proc 
+				;//file example : "10,Ahmed,100,", 13, 10, "20,Zaki,300,", 13, 10, "30,Hassan,600,", 13, 10, 0
  0000280E			.data
  0000280E  0000001E [		id byte 30 dup(? );// id array
 	    00
@@ -224,87 +236,87 @@ source.asm(114) : warning A6004:procedure argument or local not referenced : sor
  00002874 00000000		namS dword ? ;// offset of last name written in (nam) array
  00002878 00000000		gradeS dword ? ;// offset of last id written in (grade) array
  0000287C 00			tmp byte ?
- 00000118			.code
- 00000118  BF 00000008 R	mov edi, offset buffer
- 0000011D  C7 05 00002870 R	mov idS, offset id
+ 00000130			.code
+ 00000130  BF 00000008 R	mov edi, offset buffer
+ 00000135  C7 05 00002870 R	mov idS, offset id
 	   0000280E R
- 00000127  C7 05 00002874 R	mov namS, offset nam
+ 0000013F  C7 05 00002874 R	mov namS, offset nam
 	   0000282C R
- 00000131  C7 05 00002878 R	mov gradeS, offset grade
+ 00000149  C7 05 00002878 R	mov gradeS, offset grade
 	   0000284A R
- 0000013B  B0 2C		mov al, ','
- 0000013D			outer :;//loop until the buffer end with 0
- 0000013D  BA 0000280E R	mov edx, offset id
- 00000142  B9 00000003		mov ecx, 3;//3 for id and name and grade
- 00000147			inner:
- 00000147  51			push ecx
- 00000148  B9 00001401		mov ecx, lengthof buffer
- 0000014D  89 3D 00002868 R	mov startF, edi
- 00000153  F2/ AE		repne scasb;// move edi to the offset that have (,)
- 00000155  89 3D 0000286C R	mov endF, edi
- 0000015B  FF 0D 0000286C R	dec endF
- 00000161  59			pop ecx
- 00000162  8B 1D 0000286C R	mov ebx, endF;// ebx equals the number of bytes read (endF - startF)
- 00000168  2B 1D 00002868 R	sub ebx, startF
- 0000016E  57			push edi
+ 00000153  B0 2C		mov al, ','
+ 00000155			outer :;//loop until the buffer end with 0
+ 00000155  BA 0000280E R	mov edx, offset id
+ 0000015A  B9 00000003		mov ecx, 3;//3 for id and name and grade
+ 0000015F			inner:
+ 0000015F  51			push ecx
+ 00000160  B9 00001401		mov ecx, lengthof buffer
+ 00000165  89 3D 00002868 R	mov startF, edi
+ 0000016B  F2/ AE		repne scasb;// move edi to the offset that have (,)
+ 0000016D  89 3D 0000286C R	mov endF, edi
+ 00000173  FF 0D 0000286C R	dec endF
+ 00000179  59			pop ecx
+ 0000017A  8B 1D 0000286C R	mov ebx, endF;// ebx equals the number of bytes read (endF - startF)
+ 00000180  2B 1D 00002868 R	sub ebx, startF
+ 00000186  57			push edi
 				;// fill arrays with data between startF and endF
- 0000016F  83 F9 02		cmp dword ptr ecx, 2
- 00000172  74 13		je N
- 00000174  83 F9 01		cmp dword ptr ecx, 1
- 00000177  74 1C		je G
- 00000179  8B 3D 00002870 R	mov edi, idS
- 0000017F  01 1D 00002870 R	add idS, ebx
- 00000185  EB 1A		jmp next
- 00000187			N :
- 00000187  8B 3D 00002874 R	mov edi, namS
- 0000018D  01 1D 00002874 R	add namS, ebx
- 00000193  EB 0C		jmp next
- 00000195			G :
- 00000195  8B 3D 00002878 R	mov edi, gradeS
- 0000019B  01 1D 00002878 R	add gradeS, ebx
- 000001A1			next :
- 000001A1  51			push ecx
- 000001A2  8B CB		mov ecx, ebx
- 000001A4  8B 35 00002868 R	mov esi, startF
- 000001AA  F3/ A4		rep movsb
- 000001AC  59			pop ecx
- 000001AD  5F			pop edi
- 000001AE  E2 97		Loop inner
- 000001B0  83 C7 02		add edi, 2
- 000001B3  80 3F 00		cmp byte ptr[edi], 0
- 000001B6  75 85		jne outer
+ 00000187  83 F9 02		cmp dword ptr ecx, 2
+ 0000018A  74 13		je N
+ 0000018C  83 F9 01		cmp dword ptr ecx, 1
+ 0000018F  74 1C		je G
+ 00000191  8B 3D 00002870 R	mov edi, idS
+ 00000197  01 1D 00002870 R	add idS, ebx
+ 0000019D  EB 1A		jmp next
+ 0000019F			N :
+ 0000019F  8B 3D 00002874 R	mov edi, namS
+ 000001A5  01 1D 00002874 R	add namS, ebx
+ 000001AB  EB 0C		jmp next
+ 000001AD			G :
+ 000001AD  8B 3D 00002878 R	mov edi, gradeS
+ 000001B3  01 1D 00002878 R	add gradeS, ebx
+ 000001B9			next :
+ 000001B9  51			push ecx
+ 000001BA  8B CB		mov ecx, ebx
+ 000001BC  8B 35 00002868 R	mov esi, startF
+ 000001C2  F3/ A4		rep movsb
+ 000001C4  59			pop ecx
+ 000001C5  5F			pop edi
+ 000001C6  E2 97		Loop inner
+ 000001C8  83 C7 02		add edi, 2
+ 000001CB  80 3F 00		cmp byte ptr[edi], 0
+ 000001CE  75 85		jne outer
 				;// display id array
- 000001B8  BA 0000280E R	mov edx, offset id
- 000001BD  B9 0000001E		mov ecx, lengthof id
- 000001C2  E8 00000000 E	call writestring
- 000001C7  E8 00000000 E	call crlf
+ 000001D0  BA 0000280E R	mov edx, offset id
+ 000001D5  B9 0000001E		mov ecx, lengthof id
+ 000001DA  E8 00000000 E	call writestring
+ 000001DF  E8 00000000 E	call crlf
 				;// display name array
- 000001CC  BA 0000282C R	mov edx, offset nam
- 000001D1  B9 0000001E		mov ecx, lengthof nam
- 000001D6  E8 00000000 E	call writestring
- 000001DB  E8 00000000 E	call crlf
+ 000001E4  BA 0000282C R	mov edx, offset nam
+ 000001E9  B9 0000001E		mov ecx, lengthof nam
+ 000001EE  E8 00000000 E	call writestring
+ 000001F3  E8 00000000 E	call crlf
 				;// display grade array
- 000001E0  BA 0000284A R	mov edx, offset grade
- 000001E5  B9 0000001E		mov ecx, lengthof grade
- 000001EA  E8 00000000 E	call writestring
- 000001EF  E8 00000000 E	call crlf
- 000001F4  C3			ret
- 000001F5			SplitBuffer endp
+ 000001F8  BA 0000284A R	mov edx, offset grade
+ 000001FD  B9 0000001E		mov ecx, lengthof grade
+ 00000202  E8 00000000 E	call writestring
+ 00000207  E8 00000000 E	call crlf
+ 0000020C  C3			ret
+ 0000020D			SplitBuffer endp
 
- 000001F5			DllMain PROC hInstance:DWORD, fdwReason:DWORD, lpReserved:DWORD 
- 000001F5  55		   *	    push   ebp
- 000001F6  8B EC	   *	    mov    ebp, esp
- 000001F8  B8 00000001		mov eax, 1; Return true to caller. 
+ 0000020D			DllMain PROC hInstance:DWORD, fdwReason:DWORD, lpReserved:DWORD 
+ 0000020D  55		   *	    push   ebp
+ 0000020E  8B EC	   *	    mov    ebp, esp
+ 00000210  B8 00000001		mov eax, 1; Return true to caller. 
 				ret 
- 000001FD  C9		   *	    leave  
- 000001FE  C2 000C	   *	    ret    0000Ch
- 00000201			DllMain ENDP
-source.asm(194) : warning A6004:procedure argument or local not referenced : hInstance
-source.asm(194) : warning A6004:procedure argument or local not referenced : fdwReason
-source.asm(194) : warning A6004:procedure argument or local not referenced : lpReserved
+ 00000215  C9		   *	    leave  
+ 00000216  C2 000C	   *	    ret    0000Ch
+ 00000219			DllMain ENDP
+source.asm(207) : warning A6004:procedure argument or local not referenced : hInstance
+source.asm(207) : warning A6004:procedure argument or local not referenced : fdwReason
+source.asm(207) : warning A6004:procedure argument or local not referenced : lpReserved
 				END DllMain
 
-Microsoft (R) Macro Assembler Version 14.00.24210.0	    12/16/17 21:11:21
+Microsoft (R) Macro Assembler Version 14.00.24210.0	    12/16/17 22:11:04
 source.asm						     Symbols 2 - 1
 
 
@@ -399,7 +411,7 @@ Segments and Groups:
 FLAT . . . . . . . . . . . . . .	GROUP
 STACK  . . . . . . . . . . . . .	32 Bit	 00001000 Para	  Stack	  'STACK'	 
 _DATA  . . . . . . . . . . . . .	32 Bit	 0000287D Para	  Public  'DATA'	
-_TEXT  . . . . . . . . . . . . .	32 Bit	 00000201 Para	  Public  'CODE'	
+_TEXT  . . . . . . . . . . . . .	32 Bit	 00000219 Para	  Public  'CODE'	
 
 
 Procedures, parameters, and locals:
@@ -413,27 +425,29 @@ CreateFileA  . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External
 CreateOutputFile . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 Crlf . . . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 Delay  . . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-DeleteStudent  . . . . . . . . .	P Near	 00000103 _TEXT	Length= 00000007 Public STDCALL
+DeleteStudent  . . . . . . . . .	P Near	 0000011B _TEXT	Length= 00000007 Public STDCALL
   s_id . . . . . . . . . . . . .	DWord	 bp + 00000008
-DisStudentData . . . . . . . . .	P Near	 0000010A _TEXT	Length= 00000007 Public STDCALL
+DisStudentData . . . . . . . . .	P Near	 00000122 _TEXT	Length= 00000007 Public STDCALL
   s_id . . . . . . . . . . . . .	DWord	 bp + 00000008
   s_name . . . . . . . . . . . .	DWord	 bp + 0000000C
   s_grade  . . . . . . . . . . .	DWord	 bp + 00000010
-DllMain  . . . . . . . . . . . .	P Near	 000001F5 _TEXT	Length= 0000000C Public STDCALL
+DllMain  . . . . . . . . . . . .	P Near	 0000020D _TEXT	Length= 0000000C Public STDCALL
   hInstance  . . . . . . . . . .	DWord	 bp + 00000008
   fdwReason  . . . . . . . . . .	DWord	 bp + 0000000C
   lpReserved . . . . . . . . . .	DWord	 bp + 00000010
 DumpMem  . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 DumpRegs . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-EnrollStudent  . . . . . . . . .	P Near	 000000C5 _TEXT	Length= 00000037 Public STDCALL
+EnrollStudent  . . . . . . . . .	P Near	 000000C5 _TEXT	Length= 0000004F Public STDCALL
   s_id . . . . . . . . . . . . .	DWord	 bp + 00000008
   s_name . . . . . . . . . . . .	DWord	 bp + 0000000C
+  id_size  . . . . . . . . . . .	DWord	 bp + 00000010
+  name_size  . . . . . . . . . .	DWord	 bp + 00000014
 ExitProcess  . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 FileTimeToDosDateTime  . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 FileTimeToSystemTime . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 FlushConsoleInputBuffer  . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 FormatMessageA . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-GenerateReport . . . . . . . . .	P Near	 00000111 _TEXT	Length= 00000007 Public STDCALL
+GenerateReport . . . . . . . . .	P Near	 00000129 _TEXT	Length= 00000007 Public STDCALL
   f_name . . . . . . . . . . . .	DWord	 bp + 00000008
   sortby . . . . . . . . . . . .	Byte	 bp + 0000000C
 GetCommandLineA  . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
@@ -508,12 +522,12 @@ SetLocalTime . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External
 SetTextColor . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 ShowFPUStack . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 Sleep  . . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-SplitBuffer  . . . . . . . . . .	P Near	 00000118 _TEXT	Length= 000000DD Public STDCALL
-  outer  . . . . . . . . . . . .	L Near	 0000013D _TEXT	
-  inner  . . . . . . . . . . . .	L Near	 00000147 _TEXT	
-  N  . . . . . . . . . . . . . .	L Near	 00000187 _TEXT	
-  G  . . . . . . . . . . . . . .	L Near	 00000195 _TEXT	
-  next . . . . . . . . . . . . .	L Near	 000001A1 _TEXT	
+SplitBuffer  . . . . . . . . . .	P Near	 00000130 _TEXT	Length= 000000DD Public STDCALL
+  outer  . . . . . . . . . . . .	L Near	 00000155 _TEXT	
+  inner  . . . . . . . . . . . .	L Near	 0000015F _TEXT	
+  N  . . . . . . . . . . . . . .	L Near	 0000019F _TEXT	
+  G  . . . . . . . . . . . . . .	L Near	 000001AD _TEXT	
+  next . . . . . . . . . . . . .	L Near	 000001B9 _TEXT	
 StrLength  . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 Str_compare  . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 Str_copy . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
@@ -521,7 +535,7 @@ Str_length . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External
 Str_trim . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 Str_ucase  . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 SystemTimeToFileTime . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-UpdateGrade  . . . . . . . . . .	P Near	 000000FC _TEXT	Length= 00000007 Public STDCALL
+UpdateGrade  . . . . . . . . . .	P Near	 00000114 _TEXT	Length= 00000007 Public STDCALL
   s_id . . . . . . . . . . . . .	DWord	 bp + 00000008
   s_grade  . . . . . . . . . . .	DWord	 bp + 0000000C
 WaitMsg  . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
@@ -776,7 +790,6 @@ grade  . . . . . . . . . . . . .	Byte	 0000284A _DATA
 gray . . . . . . . . . . . . . .	Number	 00000008h   
 green  . . . . . . . . . . . . .	Number	 00000002h   
 idS  . . . . . . . . . . . . . .	DWord	 00002870 _DATA	
-id_size  . . . . . . . . . . . .	Number	 00000004h   
 id . . . . . . . . . . . . . . .	Byte	 0000280E _DATA	
 lightBlue  . . . . . . . . . . .	Number	 00000009h   
 lightCyan  . . . . . . . . . . .	Number	 0000000Bh   
@@ -786,7 +799,6 @@ lightMagenta . . . . . . . . . .	Number	 0000000Dh
 lightRed . . . . . . . . . . . .	Number	 0000000Ch   
 magenta  . . . . . . . . . . . .	Number	 00000005h   
 namS . . . . . . . . . . . . . .	DWord	 00002874 _DATA	
-name_size  . . . . . . . . . . .	Number	 00000014h   
 nam  . . . . . . . . . . . . . .	Byte	 0000282C _DATA	
 new_buffer . . . . . . . . . . .	Byte	 00001409 _DATA	
 re_ffilehandle . . . . . . . . .	DWord	 00000004 _DATA	
