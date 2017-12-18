@@ -12,7 +12,6 @@ Student ENDS
 	record_size=30
 	grade_size=3
 	filehandle dword ?
-	re_ffilehandle dword ?
 	buffer BYTE BUFSIZE DUP(?),0
 	new_buffer BYTE BUFSIZE DUP(?),0
 	fileSize dword 0
@@ -24,6 +23,7 @@ Open_Createfile proc,f_Name:ptr byte
 	OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, 0
 	ret
 Open_Createfile endp
+
 
 OpenDatabase proc,f_Name:ptr byte,kye:byte
 	;//open the file
@@ -89,7 +89,10 @@ EnrollStudent proc,s_id:ptr byte,s_name:ptr byte, id_size: dword, name_size: dwo
 	mov byte ptr[edi], ','
 	inc edi
 	;//save space to grade and Alpha_gread
-	add edi,grade_size +1
+	add edi,grade_size 
+	;//write (,)
+	mov byte ptr[edi], ','
+	add edi,2
 	;//write (,)
 	mov byte ptr[edi], ','
 	inc edi
