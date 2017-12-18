@@ -33,18 +33,19 @@ OpenDatabase proc,f_Name:ptr byte,kye:byte
 	INVOKE ReadFile,
 	filehandle,offset buffer,BUFSIZE,offset fileSize,NULL
 	;//decrypt data 
-	mov esi ,offset buffer
-	mov edi ,esi
-	mov ecx, fileSize
-	cmp ecx,0
-	je done
-	L:
-		lodsb
-		xor al,kye
-		stosb
-	loop L
-	done:
+	;mov esi ,offset buffer
+	;mov edi ,esi
+	;mov ecx, fileSize
+	;cmp ecx,0
+	;je done
+	;L:
+		;lodsb
+		;xor al,kye
+		;stosb
+	;loop L
+	;done:
 	;//close the file
+	;call splitBuffer
 	INVOKE CloseHandle,filehandle
 	ret
 OpenDatabase endp
@@ -54,15 +55,15 @@ SaveDatabase proc,f_Name:ptr byte,kye:byte
 	INVOKE Open_Createfile,f_Name
 	mov filehandle,eax
 	;//encrypt data 
-	mov esi ,offset buffer
-	mov edi ,esi
-	mov ecx, fileSize
-	L:
-		lodsb
-		xor al,kye
-		stosb
-	loop L
-	;//write data in the file
+	;mov esi ,offset buffer
+	;mov edi ,esi
+	;mov ecx, fileSize
+	;L:
+		;lodsb
+		;xor al,kye
+		;stosb
+	;loop L
+	;;//write data in the file
 	INVOKE WriteFile,
 	filehandle,offset buffer,fileSize,offset fileSize,null
 	;//close the file
@@ -130,65 +131,95 @@ GenerateReport proc,f_name:ptr byte,sortby:byte
 	ret
 GenerateReport endp
 
-SplitBuffer proc 
-	;//file example : "10,Ahmed,100,", 13, 10, "20,Zaki,300,", 13, 10, "30,Hassan,600,", 13, 10, 0
-	.data
-	id byte 30 dup(? );// id array
-	nam byte 30 dup(? );// name array
-	grade byte 30 dup(? );// grade array
-	startF dword ? ;// start of field which is needed to be copied
-	endF dword ? ;// end of field which is needed to be copied
-	idS dword ? ;// offset of last id written in (id) array
-	namS dword ? ;// offset of last name written in (nam) array
-	gradeS dword ? ;// offset of last id written in (grade) array
-	tmp byte ?
-	.code
-	mov edi, offset buffer
-	mov idS, offset id
-	mov namS, offset nam
-	mov gradeS, offset grade
-	mov al, ','
-	outer :;//loop until the buffer end with 0
-	mov edx, offset id
-	mov ecx, 3;//3 for id and name and grade
-	inner:
-	push ecx
-	mov ecx, lengthof buffer
-	mov startF, edi
-	repne scasb;// move edi to the offset that have (,)
-	mov endF, edi
-	dec endF
-	pop ecx
-	mov ebx, endF;// ebx equals the number of bytes read (endF - startF)
-	sub ebx, startF
-	push edi
-	;// fill arrays with data between startF and endF
-	cmp dword ptr ecx, 2
-	je N
-	cmp dword ptr ecx, 1
-	je G
-	mov edi, idS
-	add idS, ebx
-	jmp next
-	N :
-	mov edi, namS
-	add namS, ebx
-	jmp next
-	G :
-	mov edi, gradeS
-	add gradeS, ebx
-	next :
-	push ecx
-	mov ecx, ebx
-	mov esi, startF
-	rep movsb
-	pop ecx
-	pop edi
-	Loop inner
-	add edi, 2
-	cmp byte ptr[edi], 0
-	jne outer
-	ret
+SplitBuffer proc
+;//file example : "10,Ahmed,100,", 13, 10, "20,Zaki,300,", 13, 10, "30,Hassan,600,", 13, 10, 0
+.data
+idArr byte 30 dup(? )
+nameArr byte 30 dup(? )
+gradeArr byte 30 dup(? )
+alphaGradeArr byte 30 dup(? )
+startF dword ? ;// start of field which is needed to be copied
+endF dword ? ;// end of field which is needed to be copied
+idS dword ? ;// offset of last id written in (id) array
+namS dword ? ;// offset of last name written in (nam) array
+gradeS dword ? ;// offset of last grade written in (grade) array
+alphaGradeS dword ? ;// offset of last alpha grade written in (alphaGrade) array
+.code
+mov edi, offset buffer
+mov idS, offset idArr
+mov namS, offset nameArr
+mov gradeS, offset gradeArr
+mov alphaGradeS, offset alphaGradeArr
+mov al, ','
+outer :;//loop until the file end with 0
+mov edx, offset idArr
+mov ecx, 4;//3 for id and name and grade
+inner:
+push ecx
+mov ecx, lengthof buffer
+mov startF, edi
+repne scasb;// move edi to the offset that have (,)
+mov endF, edi
+dec endF
+pop ecx
+mov ebx, endF;// ebx equals the number of bytes read (endF - startF)
+sub ebx, startF
+push edi
+;// fill arrays with data between startF and endF
+cmp dword ptr ecx, 3
+je N
+cmp dword ptr ecx, 2
+je G
+cmp dword ptr ecx, 1
+je A
+mov edi, idS
+add idS, ebx
+
+jmp next
+N :
+mov edi, namS
+add namS, ebx
+jmp next
+G :
+mov edi, gradeS
+add gradeS, ebx
+jmp next
+A :
+mov edi, alphaGradeS
+add alphaGradeS, ebx
+next :
+push ecx
+mov ecx, ebx
+mov esi, startF
+rep movsb
+pop ecx
+pop edi
+Loop inner
+add edi, 2
+cmp byte ptr[edi], 0
+jne outer
+
+;// display id array
+mov edx, offset idArr
+mov ecx, lengthof idArr
+call writestring
+call crlf
+;// display name array
+mov edx, offset nameArr
+mov ecx, lengthof nameArr
+call writestring
+call crlf
+;// display grade array
+mov edx, offset gradeArr
+mov ecx, lengthof gradeArr
+call writestring
+call crlf
+;// display grade array
+mov edx, offset alphaGradeArr
+mov ecx, lengthof alphaGradeArr
+call writestring
+call crlf
+ret
 SplitBuffer endp
 
 AlphaGrade proc grade2: ptr byte
@@ -240,6 +271,7 @@ DllMain PROC hInstance:DWORD, fdwReason:DWORD, lpReserved:DWORD
 	mov eax, 1; Return true to caller. 
 	ret 
 DllMain ENDP
+
 
 END DllMain
 

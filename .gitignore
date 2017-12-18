@@ -244,3 +244,4 @@ ModelManifest.xml
 # FAKE - F# Make
 .fake/
 Project32_VS2015/MiniDatabase.lst
+*.lst
