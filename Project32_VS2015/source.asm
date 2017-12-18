@@ -16,6 +16,16 @@ Student ENDS
 	new_buffer BYTE BUFSIZE DUP(?),0
 	fileSize dword 0
 	allStudents Student 20 dup(<"000","ahmed","090",'A'>)
+		idArr byte 30 dup(? )
+		nameArr byte 30 dup(? )
+		gradeArr byte 30 dup(? )
+		alphaGradeArr byte 30 dup(? )
+		startF dword ? ;// start of field which is needed to be copied
+	endF dword ? ;// end of field which is needed to be copied
+	idS dword ? ;// offset of last id written in (id) array
+	namS dword ? ;// offset of last name written in (nam) array
+	gradeS dword ? ;// offset of last grade written in (grade) array
+	alphaGradeS dword ? ;// offset of last alpha grade written in (alphaGrade) array
 .code
 Open_Createfile proc,f_Name:ptr byte
 	INVOKE CreateFile,
@@ -45,7 +55,7 @@ OpenDatabase proc,f_Name:ptr byte,kye:byte
 	;loop L
 	;done:
 	;//close the file
-	;call splitBuffer
+	call SplitBuffer
 	INVOKE CloseHandle,filehandle
 	ret
 OpenDatabase endp
@@ -131,20 +141,9 @@ GenerateReport proc,f_name:ptr byte,sortby:byte
 	ret
 GenerateReport endp
 
-SplitBuffer proc
+SplitBuffer proc 
 ;//file example : "10,Ahmed,100,", 13, 10, "20,Zaki,300,", 13, 10, "30,Hassan,600,", 13, 10, 0
-.data
-idArr byte 30 dup(? )
-nameArr byte 30 dup(? )
-gradeArr byte 30 dup(? )
-alphaGradeArr byte 30 dup(? )
-startF dword ? ;// start of field which is needed to be copied
-endF dword ? ;// end of field which is needed to be copied
-idS dword ? ;// offset of last id written in (id) array
-namS dword ? ;// offset of last name written in (nam) array
-gradeS dword ? ;// offset of last grade written in (grade) array
-alphaGradeS dword ? ;// offset of last alpha grade written in (alphaGrade) array
-.code
+pushad
 mov edi, offset buffer
 mov idS, offset idArr
 mov namS, offset nameArr
@@ -198,27 +197,7 @@ Loop inner
 add edi, 2
 cmp byte ptr[edi], 0
 jne outer
-
-;// display id array
-mov edx, offset idArr
-mov ecx, lengthof idArr
-call writestring
-call crlf
-;// display name array
-mov edx, offset nameArr
-mov ecx, lengthof nameArr
-call writestring
-call crlf
-;// display grade array
-mov edx, offset gradeArr
-mov ecx, lengthof gradeArr
-call writestring
-call crlf
-;// display grade array
-mov edx, offset alphaGradeArr
-mov ecx, lengthof alphaGradeArr
-call writestring
-call crlf
+popad
 ret
 SplitBuffer endp
 

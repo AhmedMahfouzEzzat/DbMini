@@ -11,7 +11,11 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <MASM Include="source.asm" />
+    <MASM Include="source.asm">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+      <PerformSyntaxCheckOnly Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</PerformSyntaxCheckOnly>
+      <EnableMASM51Compatibility Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</EnableMASM51Compatibility>
+    </MASM>
   </ItemGroup>
   <ItemGroup>
     <None Include="main.def" />

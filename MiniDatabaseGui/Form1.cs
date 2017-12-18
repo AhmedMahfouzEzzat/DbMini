@@ -21,8 +21,6 @@ namespace MiniDatabaseGui
 
         [DllImport("MiniDatabase.dll")]
         private static extern void EnrollStudent([In]char[] id, [In]char[] name, int id_size, int name_size);
-        [DllImport("MiniDatabase.dll")]
-        private static extern void SplitBuffer();
 
 
         public Form1()
@@ -34,11 +32,11 @@ namespace MiniDatabaseGui
         private void Form1_Load(object sender, EventArgs e)
         {
             OpenDatabase(name,170);
-            SplitBuffer();
         }
 
         private void button1_Click(object sender, EventArgs e)
         {   
+            
             EnrollStudent(textBox1.Text.ToCharArray(), textBox3.Text.ToCharArray(), textBox1.Text.Length, textBox3.Text.Length);
             SaveDatabase(name, 170);
         }
