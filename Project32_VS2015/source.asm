@@ -105,7 +105,7 @@ EnrollStudent proc,s_id:ptr byte,s_name:ptr byte, id_size: dword, name_size: dwo
 	add eax, id_size
 	add eax, name_size
 	add eax, grade_size
-	add eax, 6
+	add eax, 7
 	add fileSize, eax
 	ret
 EnrollStudent endp
