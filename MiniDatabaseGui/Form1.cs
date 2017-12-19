@@ -23,10 +23,10 @@ namespace MiniDatabaseGui
         private static extern void EnrollStudent([In]char[] id, [In]char[] name, int id_size, int name_size);
 
         [DllImport("MiniDatabase.dll")]
-        private static extern void DeleteStudent([In]char id);
+        private static extern void DeleteStudent([In]char[] id, int id_size);
 
         [DllImport("MiniDatabase.dll")]
-        private static extern void UpdateGrade([In]char id,[In]char[] grade,[In] int size);
+        private static extern void UpdateGrade([In]char[] id, [In]char[] grade, int id_size, [In] int size);
     
 
         public Form1()
@@ -41,35 +41,30 @@ namespace MiniDatabaseGui
         }
 
         private void button1_Click(object sender, EventArgs e)
-        {       foreach (RadioButton control in this.groupBox1.Controls)
+        {
+            foreach (RadioButton control in this.groupBox1.Controls)
+            {
+                if (control.Checked)
                 {
-                        if (control.Checked)
-                        {
                     if (control.Name == Enroll_rb.Name)
                     {
                         EnrollStudent(ID_tb.Text.ToCharArray(), Name_tb.Text.ToCharArray(), ID_tb.Text.Length, Name_tb.Text.Length);
-                        MessageBox.Show("Enroll");
                     }
                     else if (control.Name == Delete_rb.Name)
                     {
                         char[] d = ID_tb.Text.ToCharArray();
-                        DeleteStudent(d[0]);
-                        MessageBox.Show("Delete");
+                        DeleteStudent(d, ID_tb.Text.Length);
                     }
-                    else if (control.Name == Update_rb.Name) {
-                        char[] d = ID_tb.Text.ToCharArray();
-                        UpdateGrade(d[0],Grade_tb.Text.ToCharArray(),Grade_tb.Text.ToCharArray().Length);
-
+                    else if (control.Name == Update_rb.Name)
+                    {
+                        UpdateGrade(ID_tb.Text.ToCharArray(), Grade_tb.Text.ToCharArray(), ID_tb.Text.Length, Grade_tb.Text.ToCharArray().Length);
                     }
                     else if (control.Name == Display_rb.Name) { }
-
-
                     break;
-
-
-                    }
                 }
-        }
+            }
+        }       
+        
 
         private void button3_Click(object sender, EventArgs e)
         {

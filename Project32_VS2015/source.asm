@@ -20,30 +20,6 @@ Open_Createfile proc,f_Name:ptr byte
 	ret
 Open_Createfile endp
 
-getIdIndex proc, IDS: ptr byte
-	cld
-	mov edi, offset idArr
-	mov ecx, lengthof idArr
-	mov eax,0
-	mov eax, IDS
-	repne scasb ;scan string till 'ID' is found
-	jne not_found ;'w' is not found, jump to not_found label
-	;Otherwise, ecx has the index of that character but reversed
-	;So, make eax = lengthof(str1) - ecx - 1
-	mov eax, lengthof idArr - 1
-	sub eax, ecx
-	jmp found
-	not_found:
-		mov eax, -1
-		jmp done
-	found:
-	mov ebx,4
-	mov edx,0
-	div ebx
-	done:
-	ret
-getIdIndex endP
-
 OpenDatabase proc,f_Name:ptr byte,kye:byte
 	;//open the file
 	INVOKE Open_Createfile,f_Name
@@ -52,37 +28,38 @@ OpenDatabase proc,f_Name:ptr byte,kye:byte
 	INVOKE ReadFile,
 	filehandle,offset buffer,BUFSIZE,offset fileSize,NULL
 	;//decrypt data 
-	;mov esi ,offset buffer
-	;mov edi ,esi
-	;mov ecx, fileSize
-	;cmp ecx,0
-	;je done
+	mov esi ,offset buffer
+	mov edi ,esi
+	mov ecx, fileSize
+	cmp ecx,0
+	je done
 	;L:
 		;lodsb
 		;xor al,kye
 		;stosb
 	;loop L
-	;done:
-	;//close the file
 	call SplitBuffer
+	done:
+	;//close the file
 	INVOKE CloseHandle,filehandle
 	ret
 OpenDatabase endp
 
 SaveDatabase proc,f_Name:ptr byte,kye:byte
+	call fillBuffer
 	;//open the file
 	INVOKE Open_Createfile,f_Name
 	mov filehandle,eax
 	;//encrypt data 
-	;mov esi ,offset buffer
-	;mov edi ,esi
-	;mov ecx, fileSize
+	mov esi ,offset buffer
+	mov edi ,esi
+	mov ecx, fileSize
 	;L:
 		;lodsb
 		;xor al,kye
 		;stosb
 	;loop L
-	;;//write data in the file
+	;//write data in the file
 	INVOKE WriteFile,
 	filehandle,offset buffer,fileSize,offset fileSize,null
 	;//close the file
@@ -127,12 +104,42 @@ EnrollStudent proc,s_id:ptr byte,s_name:ptr byte, id_size: dword, name_size: dwo
 	add eax, grade_size
 	add eax, 7
 	add fileSize, eax
+	;//calling SplitBuffer to split the first buffer
+	call SplitBuffer
 	ret
 EnrollStudent endp
 
+getIdIndex proc, s_id:ptr byte, s_id_size : dword
+	;// ids should be sortrd to work properly
+	mov ebx, offset idArr
+	mov edx, 0
+	Outer :
+	mov esi, s_id
+	mov edi, ebx
+	mov ecx, s_id_size
+	Inner :
+	mov al, [edi]
+	cmp[esi], al
+	jne fail
+	inc esi
+	inc edi
+	Loop Inner
+	jmp found
+	fail :
+	add ebx, 4
+	inc edx
+	cmp byte ptr[ebx], 0
+	jne Outer
+	mov eax, -1
+	jmp done
+	found :
+	mov eax, edx
+	done :
+	ret
+getIdIndex endP
+
 fillBuffer proc
 	mov edi, offset buffer
-	mov ebx, idS
 	;//copy id
 	mov esi, offset idArr
 	L1 :
@@ -177,8 +184,8 @@ fillBuffer proc
 	ret
 fillBuffer endp
 
-UpdateGrade proc,s_id:dword,s_grade:ptr byte,s_grade_size: dword
-invoke getIdIndex,s_id
+UpdateGrade proc, s_id:ptr byte, s_grade:ptr byte, s_id_size:dword, s_grade_size:dword
+invoke getIdIndex,s_id, s_id_size
 mov temp2,eax
 mov ebx,3
 mul ebx
@@ -191,8 +198,8 @@ rep movsb
 ret
 UpdateGrade endp
 
-DeleteStudent proc,s_id:ptr byte
-invoke getIdIndex,s_id
+DeleteStudent proc,s_id:ptr byte, s_id_size:dword
+invoke getIdIndex,s_id, s_id_size
 
 ;// moving ids back
 mov temp2,eax
@@ -322,32 +329,32 @@ SplitBuffer proc
 	ret
 SplitBuffer endp
 
-AlphaGrade proc grade2: ptr byte
+AlphaGrade proc grade: ptr byte
 	.data
 	gradeF byte " 60", 0
 	gradeD byte " 70", 0
 	gradeC byte " 80", 0
 	gradeB byte " 90", 0
 	.code
-	mov esi,  grade2
+	mov esi,  grade
 	mov edi, offset gradeF
 	mov ecx, 3
 	repe cmpsb
 	jb FG
 
-	mov esi,  grade2
+	mov esi,  grade
 	mov edi, offset gradeD
 	mov ecx, 3
 	repe cmpsb
 	jb DG
 
-	mov esi,  grade2
+	mov esi,  grade
 	mov edi, offset gradeC
 	mov ecx, 3
 	repe cmpsb
 	jb CG
 
-	mov esi,  grade2
+	mov esi,  grade
 	mov edi, offset gradeB
 	mov ecx, 3
 	repe cmpsb
