@@ -130,6 +130,7 @@ EnrollStudent proc,s_id:ptr byte,s_name:ptr byte, id_size: dword, name_size: dwo
 	ret
 EnrollStudent endp
 
+	L1 :
 UpdateGrade proc,s_id:dword,s_grade:dword
 
 	ret
