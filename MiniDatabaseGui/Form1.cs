@@ -36,7 +36,7 @@ namespace MiniDatabaseGui
 
         private void button1_Click(object sender, EventArgs e)
         {   
-            EnrollStudent(textBox1.Text.ToCharArray(), textBox3.Text.ToCharArray(), textBox1.Text.Length, textBox3.Text.Length);
+            EnrollStudent(ID_tb.Text.ToCharArray(), Name_tb.Text.ToCharArray(), ID_tb.Text.Length, Name_tb.Text.Length);
         }
 
         private void button3_Click(object sender, EventArgs e)

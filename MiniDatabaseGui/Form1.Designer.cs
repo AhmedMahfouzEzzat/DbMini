@@ -28,234 +28,266 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.button1 = new System.Windows.Forms.Button();
-            this.radioButton1 = new System.Windows.Forms.RadioButton();
-            this.radioButton2 = new System.Windows.Forms.RadioButton();
-            this.radioButton3 = new System.Windows.Forms.RadioButton();
-            this.radioButton4 = new System.Windows.Forms.RadioButton();
-            this.textBox1 = new System.Windows.Forms.TextBox();
-            this.textBox2 = new System.Windows.Forms.TextBox();
-            this.textBox3 = new System.Windows.Forms.TextBox();
-            this.textBox4 = new System.Windows.Forms.TextBox();
-            this.button2 = new System.Windows.Forms.Button();
-            this.radioButton5 = new System.Windows.Forms.RadioButton();
-            this.radioButton6 = new System.Windows.Forms.RadioButton();
-            this.button3 = new System.Windows.Forms.Button();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
+            this.OK_button = new System.Windows.Forms.Button();
+            this.Enroll_rb = new System.Windows.Forms.RadioButton();
+            this.Delete_rb = new System.Windows.Forms.RadioButton();
+            this.Display_rb = new System.Windows.Forms.RadioButton();
+            this.Update_rb = new System.Windows.Forms.RadioButton();
+            this.ID_tb = new System.Windows.Forms.TextBox();
+            this.Grade_tb = new System.Windows.Forms.TextBox();
+            this.Name_tb = new System.Windows.Forms.TextBox();
+            this.A_Grade = new System.Windows.Forms.TextBox();
+            this.Generate_report_bn = new System.Windows.Forms.Button();
+            this.SB_ID = new System.Windows.Forms.RadioButton();
+            this.SB_GRADE = new System.Windows.Forms.RadioButton();
+            this.Save_changes_bn = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
-            this.label4 = new System.Windows.Forms.Label();
-            this.label5 = new System.Windows.Forms.Label();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.groupBox1.SuspendLayout();
+            this.groupBox2.SuspendLayout();
             this.SuspendLayout();
             // 
-            // button1
+            // OK_button
             // 
-            this.button1.Location = new System.Drawing.Point(433, 250);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 23);
-            this.button1.TabIndex = 0;
-            this.button1.Text = "OK";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.OK_button.BackColor = System.Drawing.Color.MintCream;
+            this.OK_button.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.OK_button.Location = new System.Drawing.Point(221, 161);
+            this.OK_button.Name = "OK_button";
+            this.OK_button.Size = new System.Drawing.Size(122, 29);
+            this.OK_button.TabIndex = 0;
+            this.OK_button.Text = "OK";
+            this.OK_button.UseVisualStyleBackColor = false;
+            this.OK_button.Click += new System.EventHandler(this.button1_Click);
             // 
-            // radioButton1
+            // Enroll_rb
             // 
-            this.radioButton1.AutoSize = true;
-            this.radioButton1.Location = new System.Drawing.Point(20, 17);
-            this.radioButton1.Name = "radioButton1";
-            this.radioButton1.Size = new System.Drawing.Size(88, 17);
-            this.radioButton1.TabIndex = 1;
-            this.radioButton1.TabStop = true;
-            this.radioButton1.Text = "EnrollStudent";
-            this.radioButton1.UseVisualStyleBackColor = true;
+            this.Enroll_rb.AutoSize = true;
+            this.Enroll_rb.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.Enroll_rb.ForeColor = System.Drawing.Color.Black;
+            this.Enroll_rb.Location = new System.Drawing.Point(23, 21);
+            this.Enroll_rb.Name = "Enroll_rb";
+            this.Enroll_rb.Size = new System.Drawing.Size(104, 17);
+            this.Enroll_rb.TabIndex = 1;
+            this.Enroll_rb.TabStop = true;
+            this.Enroll_rb.Text = "EnrollStudent";
+            this.Enroll_rb.UseVisualStyleBackColor = true;
             // 
-            // radioButton2
+            // Delete_rb
             // 
-            this.radioButton2.AutoSize = true;
-            this.radioButton2.Location = new System.Drawing.Point(20, 64);
-            this.radioButton2.Name = "radioButton2";
-            this.radioButton2.Size = new System.Drawing.Size(93, 17);
-            this.radioButton2.TabIndex = 2;
-            this.radioButton2.TabStop = true;
-            this.radioButton2.Text = "DeleteStudent";
-            this.radioButton2.UseVisualStyleBackColor = true;
+            this.Delete_rb.AutoSize = true;
+            this.Delete_rb.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.Delete_rb.ForeColor = System.Drawing.Color.Black;
+            this.Delete_rb.Location = new System.Drawing.Point(22, 44);
+            this.Delete_rb.Name = "Delete_rb";
+            this.Delete_rb.Size = new System.Drawing.Size(110, 17);
+            this.Delete_rb.TabIndex = 2;
+            this.Delete_rb.TabStop = true;
+            this.Delete_rb.Text = "DeleteStudent";
+            this.Delete_rb.UseVisualStyleBackColor = true;
             // 
-            // radioButton3
+            // Display_rb
             // 
-            this.radioButton3.AutoSize = true;
-            this.radioButton3.Location = new System.Drawing.Point(314, 64);
-            this.radioButton3.Name = "radioButton3";
-            this.radioButton3.Size = new System.Drawing.Size(119, 17);
-            this.radioButton3.TabIndex = 3;
-            this.radioButton3.TabStop = true;
-            this.radioButton3.Text = "DisplayStudentData";
-            this.radioButton3.UseVisualStyleBackColor = true;
+            this.Display_rb.AutoSize = true;
+            this.Display_rb.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.Display_rb.ForeColor = System.Drawing.Color.Black;
+            this.Display_rb.Location = new System.Drawing.Point(324, 44);
+            this.Display_rb.Name = "Display_rb";
+            this.Display_rb.Size = new System.Drawing.Size(140, 17);
+            this.Display_rb.TabIndex = 3;
+            this.Display_rb.TabStop = true;
+            this.Display_rb.Text = "DisplayStudentData";
+            this.Display_rb.UseVisualStyleBackColor = true;
             // 
-            // radioButton4
+            // Update_rb
             // 
-            this.radioButton4.AutoSize = true;
-            this.radioButton4.Location = new System.Drawing.Point(314, 17);
-            this.radioButton4.Name = "radioButton4";
-            this.radioButton4.Size = new System.Drawing.Size(89, 17);
-            this.radioButton4.TabIndex = 4;
-            this.radioButton4.TabStop = true;
-            this.radioButton4.Text = "UpdateGrade";
-            this.radioButton4.UseVisualStyleBackColor = true;
+            this.Update_rb.AutoSize = true;
+            this.Update_rb.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.Update_rb.ForeColor = System.Drawing.Color.Black;
+            this.Update_rb.Location = new System.Drawing.Point(324, 21);
+            this.Update_rb.Name = "Update_rb";
+            this.Update_rb.Size = new System.Drawing.Size(104, 17);
+            this.Update_rb.TabIndex = 4;
+            this.Update_rb.TabStop = true;
+            this.Update_rb.Text = "UpdateGrade";
+            this.Update_rb.UseVisualStyleBackColor = true;
             // 
-            // textBox1
+            // ID_tb
             // 
-            this.textBox1.Location = new System.Drawing.Point(72, 204);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(100, 20);
-            this.textBox1.TabIndex = 6;
+            this.ID_tb.Location = new System.Drawing.Point(49, 123);
+            this.ID_tb.Name = "ID_tb";
+            this.ID_tb.Size = new System.Drawing.Size(54, 21);
+            this.ID_tb.TabIndex = 6;
             // 
-            // textBox2
+            // Grade_tb
             // 
-            this.textBox2.Location = new System.Drawing.Point(72, 253);
-            this.textBox2.Name = "textBox2";
-            this.textBox2.Size = new System.Drawing.Size(100, 20);
-            this.textBox2.TabIndex = 7;
+            this.Grade_tb.Location = new System.Drawing.Point(462, 124);
+            this.Grade_tb.Name = "Grade_tb";
+            this.Grade_tb.Size = new System.Drawing.Size(63, 21);
+            this.Grade_tb.TabIndex = 7;
             // 
-            // textBox3
+            // Name_tb
             // 
-            this.textBox3.Location = new System.Drawing.Point(292, 204);
-            this.textBox3.Name = "textBox3";
-            this.textBox3.Size = new System.Drawing.Size(100, 20);
-            this.textBox3.TabIndex = 8;
+            this.Name_tb.Location = new System.Drawing.Point(173, 124);
+            this.Name_tb.Name = "Name_tb";
+            this.Name_tb.Size = new System.Drawing.Size(216, 21);
+            this.Name_tb.TabIndex = 8;
             // 
-            // textBox4
+            // A_Grade
             // 
-            this.textBox4.Location = new System.Drawing.Point(292, 253);
-            this.textBox4.Name = "textBox4";
-            this.textBox4.Size = new System.Drawing.Size(100, 20);
-            this.textBox4.TabIndex = 9;
+            this.A_Grade.Location = new System.Drawing.Point(533, 124);
+            this.A_Grade.Name = "A_Grade";
+            this.A_Grade.Size = new System.Drawing.Size(35, 21);
+            this.A_Grade.TabIndex = 9;
             // 
-            // button2
+            // Generate_report_bn
             // 
-            this.button2.Location = new System.Drawing.Point(265, 344);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(139, 58);
-            this.button2.TabIndex = 10;
-            this.button2.Text = "Generate\r\n Full Report";
-            this.button2.UseVisualStyleBackColor = true;
+            this.Generate_report_bn.BackColor = System.Drawing.Color.MintCream;
+            this.Generate_report_bn.Location = new System.Drawing.Point(286, 216);
+            this.Generate_report_bn.Name = "Generate_report_bn";
+            this.Generate_report_bn.Size = new System.Drawing.Size(162, 58);
+            this.Generate_report_bn.TabIndex = 10;
+            this.Generate_report_bn.Text = "Generate\r\n Full Report";
+            this.Generate_report_bn.UseVisualStyleBackColor = false;
             // 
-            // radioButton5
+            // SB_ID
             // 
-            this.radioButton5.AutoSize = true;
-            this.radioButton5.Location = new System.Drawing.Point(477, 344);
-            this.radioButton5.Name = "radioButton5";
-            this.radioButton5.Size = new System.Drawing.Size(33, 17);
-            this.radioButton5.TabIndex = 11;
-            this.radioButton5.TabStop = true;
-            this.radioButton5.Text = "id";
-            this.radioButton5.UseVisualStyleBackColor = true;
+            this.SB_ID.AutoSize = true;
+            this.SB_ID.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.SB_ID.ForeColor = System.Drawing.Color.Black;
+            this.SB_ID.Location = new System.Drawing.Point(13, 16);
+            this.SB_ID.Name = "SB_ID";
+            this.SB_ID.Size = new System.Drawing.Size(38, 17);
+            this.SB_ID.TabIndex = 11;
+            this.SB_ID.TabStop = true;
+            this.SB_ID.Text = "id";
+            this.SB_ID.UseVisualStyleBackColor = true;
             // 
-            // radioButton6
+            // SB_GRADE
             // 
-            this.radioButton6.AutoSize = true;
-            this.radioButton6.Location = new System.Drawing.Point(477, 365);
-            this.radioButton6.Name = "radioButton6";
-            this.radioButton6.Size = new System.Drawing.Size(52, 17);
-            this.radioButton6.TabIndex = 12;
-            this.radioButton6.TabStop = true;
-            this.radioButton6.Text = "grade";
-            this.radioButton6.UseVisualStyleBackColor = true;
+            this.SB_GRADE.AutoSize = true;
+            this.SB_GRADE.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.SB_GRADE.ForeColor = System.Drawing.Color.Black;
+            this.SB_GRADE.Location = new System.Drawing.Point(13, 35);
+            this.SB_GRADE.Name = "SB_GRADE";
+            this.SB_GRADE.Size = new System.Drawing.Size(62, 17);
+            this.SB_GRADE.TabIndex = 12;
+            this.SB_GRADE.TabStop = true;
+            this.SB_GRADE.Text = "grade";
+            this.SB_GRADE.UseVisualStyleBackColor = true;
             // 
-            // button3
+            // Save_changes_bn
             // 
-            this.button3.Location = new System.Drawing.Point(40, 344);
-            this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(139, 58);
-            this.button3.TabIndex = 13;
-            this.button3.Text = "save \r\nchanges ";
-            this.button3.UseVisualStyleBackColor = true;
-            this.button3.Click += new System.EventHandler(this.button3_Click);
+            this.Save_changes_bn.BackColor = System.Drawing.Color.MintCream;
+            this.Save_changes_bn.Location = new System.Drawing.Point(49, 216);
+            this.Save_changes_bn.Name = "Save_changes_bn";
+            this.Save_changes_bn.Size = new System.Drawing.Size(161, 58);
+            this.Save_changes_bn.TabIndex = 13;
+            this.Save_changes_bn.Text = "save \r\nchanges ";
+            this.Save_changes_bn.UseVisualStyleBackColor = false;
+            this.Save_changes_bn.Click += new System.EventHandler(this.button3_Click);
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(31, 207);
+            this.label1.BackColor = System.Drawing.Color.Transparent;
+            this.label1.Font = new System.Drawing.Font("Tahoma", 9.75F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))), System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label1.ForeColor = System.Drawing.Color.Blue;
+            this.label1.Location = new System.Drawing.Point(9, 126);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(15, 13);
+            this.label1.Size = new System.Drawing.Size(31, 16);
             this.label1.TabIndex = 14;
-            this.label1.Text = "id";
+            this.label1.Text = "ID :";
             // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(242, 207);
+            this.label2.BackColor = System.Drawing.Color.Transparent;
+            this.label2.Font = new System.Drawing.Font("Tahoma", 9.75F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))), System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label2.ForeColor = System.Drawing.Color.Blue;
+            this.label2.Location = new System.Drawing.Point(107, 126);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(33, 13);
+            this.label2.Size = new System.Drawing.Size(52, 16);
             this.label2.TabIndex = 15;
-            this.label2.Text = "name";
+            this.label2.Text = "Name :";
             // 
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(31, 256);
+            this.label3.BackColor = System.Drawing.Color.Transparent;
+            this.label3.Font = new System.Drawing.Font("Tahoma", 9.75F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))), System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label3.ForeColor = System.Drawing.Color.Blue;
+            this.label3.Location = new System.Drawing.Point(392, 126);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(34, 13);
+            this.label3.Size = new System.Drawing.Size(55, 16);
             this.label3.TabIndex = 16;
-            this.label3.Text = "grade";
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(221, 256);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(64, 13);
-            this.label4.TabIndex = 17;
-            this.label4.Text = "Alpha grade";
-            // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(419, 344);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(38, 13);
-            this.label5.TabIndex = 18;
-            this.label5.Text = "sort by";
+            this.label3.Text = "Grade :";
             // 
             // groupBox1
             // 
-            this.groupBox1.Controls.Add(this.radioButton4);
-            this.groupBox1.Controls.Add(this.radioButton3);
-            this.groupBox1.Controls.Add(this.radioButton2);
-            this.groupBox1.Controls.Add(this.radioButton1);
-            this.groupBox1.Location = new System.Drawing.Point(20, 8);
+            this.groupBox1.BackColor = System.Drawing.Color.Transparent;
+            this.groupBox1.Controls.Add(this.Update_rb);
+            this.groupBox1.Controls.Add(this.Display_rb);
+            this.groupBox1.Controls.Add(this.Delete_rb);
+            this.groupBox1.Controls.Add(this.Enroll_rb);
+            this.groupBox1.Font = new System.Drawing.Font("Tahoma", 9.75F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))), System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.groupBox1.ForeColor = System.Drawing.Color.Blue;
+            this.groupBox1.Location = new System.Drawing.Point(14, 25);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(472, 110);
+            this.groupBox1.Size = new System.Drawing.Size(555, 73);
             this.groupBox1.TabIndex = 19;
             this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "groupBox1";
+            this.groupBox1.Text = "Select your procces";
+            // 
+            // groupBox2
+            // 
+            this.groupBox2.BackColor = System.Drawing.Color.Transparent;
+            this.groupBox2.Controls.Add(this.SB_GRADE);
+            this.groupBox2.Controls.Add(this.SB_ID);
+            this.groupBox2.Font = new System.Drawing.Font("Tahoma", 9.75F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))), System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.groupBox2.ForeColor = System.Drawing.Color.Blue;
+            this.groupBox2.Location = new System.Drawing.Point(462, 216);
+            this.groupBox2.Name = "groupBox2";
+            this.groupBox2.Size = new System.Drawing.Size(108, 58);
+            this.groupBox2.TabIndex = 20;
+            this.groupBox2.TabStop = false;
+            this.groupBox2.Text = "Sorted By ";
             // 
             // Form1
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(581, 426);
+            this.BackgroundImage = global::MiniDatabaseGui.Properties.Resources.abstract_blue_abstract_wallpaper_background_for_smart_phones_apple_download_wallpaper_amazing_cool_wallpaper_of_abstract_drawing_2560x1600_736x459;
+            this.ClientSize = new System.Drawing.Size(584, 312);
+            this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
-            this.Controls.Add(this.label5);
-            this.Controls.Add(this.label4);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
-            this.Controls.Add(this.button3);
-            this.Controls.Add(this.radioButton6);
-            this.Controls.Add(this.radioButton5);
-            this.Controls.Add(this.button2);
-            this.Controls.Add(this.textBox4);
-            this.Controls.Add(this.textBox3);
-            this.Controls.Add(this.textBox2);
-            this.Controls.Add(this.textBox1);
-            this.Controls.Add(this.button1);
+            this.Controls.Add(this.Save_changes_bn);
+            this.Controls.Add(this.Generate_report_bn);
+            this.Controls.Add(this.A_Grade);
+            this.Controls.Add(this.Name_tb);
+            this.Controls.Add(this.Grade_tb);
+            this.Controls.Add(this.ID_tb);
+            this.Controls.Add(this.OK_button);
+            this.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(192)))));
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
             this.Name = "Form1";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = " ";
             this.Load += new System.EventHandler(this.Form1_Load);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
+            this.groupBox2.ResumeLayout(false);
+            this.groupBox2.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -263,25 +295,24 @@
 
         #endregion
 
-        private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.RadioButton radioButton1;
-        private System.Windows.Forms.RadioButton radioButton2;
-        private System.Windows.Forms.RadioButton radioButton3;
-        private System.Windows.Forms.RadioButton radioButton4;
-        private System.Windows.Forms.TextBox textBox1;
-        private System.Windows.Forms.TextBox textBox2;
-        private System.Windows.Forms.TextBox textBox3;
-        private System.Windows.Forms.TextBox textBox4;
-        private System.Windows.Forms.Button button2;
-        private System.Windows.Forms.RadioButton radioButton5;
-        private System.Windows.Forms.RadioButton radioButton6;
-        private System.Windows.Forms.Button button3;
+        private System.Windows.Forms.Button OK_button;
+        private System.Windows.Forms.RadioButton Enroll_rb;
+        private System.Windows.Forms.RadioButton Delete_rb;
+        private System.Windows.Forms.RadioButton Display_rb;
+        private System.Windows.Forms.RadioButton Update_rb;
+        private System.Windows.Forms.TextBox ID_tb;
+        private System.Windows.Forms.TextBox Grade_tb;
+        private System.Windows.Forms.TextBox Name_tb;
+        private System.Windows.Forms.TextBox A_Grade;
+        private System.Windows.Forms.Button Generate_report_bn;
+        private System.Windows.Forms.RadioButton SB_ID;
+        private System.Windows.Forms.RadioButton SB_GRADE;
+        private System.Windows.Forms.Button Save_changes_bn;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.Label label5;
         private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.GroupBox groupBox2;
 
     }
 }

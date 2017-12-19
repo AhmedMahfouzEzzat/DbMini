@@ -59,5 +59,16 @@ namespace MiniDatabaseGui.Properties {
                 resourceCulture = value;
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap abstract_blue_abstract_wallpaper_background_for_smart_phones_apple_download_wallpaper_amazing_cool_wallpaper_of_abstract_drawing_2560x1600_736x459 {
+            get {
+                object obj = ResourceManager.GetObject("abstract-blue-abstract-wallpaper-background-for-smart-phones-apple-download-wallp" +
+                        "aper-amazing-cool-wallpaper-of-abstract-drawing-2560x1600-736x459", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
     }
 }
