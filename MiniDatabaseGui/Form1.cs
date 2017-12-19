@@ -36,8 +36,11 @@ namespace MiniDatabaseGui
 
         private void button1_Click(object sender, EventArgs e)
         {   
-            
             EnrollStudent(textBox1.Text.ToCharArray(), textBox3.Text.ToCharArray(), textBox1.Text.Length, textBox3.Text.Length);
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
             SaveDatabase(name, 170);
         }
     }

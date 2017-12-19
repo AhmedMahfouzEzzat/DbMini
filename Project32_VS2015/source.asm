@@ -1,12 +1,4 @@
 INCLUDE Irvine32.inc
-
-Student STRUCT
-IdNum byte 3 dup(0)  ; 9
-StudentName BYTE 30 DUP(0) ; 30
-Studentgrade byte 3 dup(0)
-StudentAlphaGrade byte 1 dup('A')
-Student ENDS
-
 .data
 	BUFSIZE = 5120;//5kb
 	record_size=30
@@ -15,17 +7,6 @@ Student ENDS
 	buffer BYTE BUFSIZE DUP(?),0
 	new_buffer BYTE BUFSIZE DUP(?),0
 	fileSize dword 0
-	allStudents Student 20 dup(<"000","ahmed","090",'A'>)
-		idArr byte 30 dup(? )
-		nameArr byte 30 dup(? )
-		gradeArr byte 30 dup(? )
-		alphaGradeArr byte 30 dup(? )
-		startF dword ? ;// start of field which is needed to be copied
-	endF dword ? ;// end of field which is needed to be copied
-	idS dword ? ;// offset of last id written in (id) array
-	namS dword ? ;// offset of last name written in (nam) array
-	gradeS dword ? ;// offset of last grade written in (grade) array
-	alphaGradeS dword ? ;// offset of last alpha grade written in (alphaGrade) array
 .code
 Open_Createfile proc,f_Name:ptr byte
 	INVOKE CreateFile,
@@ -33,7 +14,6 @@ Open_Createfile proc,f_Name:ptr byte
 	OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, 0
 	ret
 Open_Createfile endp
-
 
 OpenDatabase proc,f_Name:ptr byte,kye:byte
 	;//open the file
@@ -141,90 +121,104 @@ GenerateReport proc,f_name:ptr byte,sortby:byte
 	ret
 GenerateReport endp
 
-SplitBuffer proc 
-;//file example : "10,Ahmed,100,", 13, 10, "20,Zaki,300,", 13, 10, "30,Hassan,600,", 13, 10, 0
-pushad
-mov edi, offset buffer
-mov idS, offset idArr
-mov namS, offset nameArr
-mov gradeS, offset gradeArr
-mov alphaGradeS, offset alphaGradeArr
-mov al, ','
-outer :;//loop until the file end with 0
-mov edx, offset idArr
-mov ecx, 4;//3 for id and name and grade
-inner:
-push ecx
-mov ecx, lengthof buffer
-mov startF, edi
-repne scasb;// move edi to the offset that have (,)
-mov endF, edi
-dec endF
-pop ecx
-mov ebx, endF;// ebx equals the number of bytes read (endF - startF)
-sub ebx, startF
-push edi
-;// fill arrays with data between startF and endF
-cmp dword ptr ecx, 3
-je N
-cmp dword ptr ecx, 2
-je G
-cmp dword ptr ecx, 1
-je A
-mov edi, idS
-add idS, ebx
-
-jmp next
-N :
-mov edi, namS
-add namS, ebx
-jmp next
-G :
-mov edi, gradeS
-add gradeS, ebx
-jmp next
-A :
-mov edi, alphaGradeS
-add alphaGradeS, ebx
-next :
-push ecx
-mov ecx, ebx
-mov esi, startF
-rep movsb
-pop ecx
-pop edi
-Loop inner
-add edi, 2
-cmp byte ptr[edi], 0
-jne outer
-popad
-ret
+SplitBuffer proc
+	;//file example : "10,Ahmed,100,", 13, 10, "20,Zaki,300,", 13, 10, "30,Hassan,600,", 13, 10, 0
+	.data
+	idArr byte 40 dup('_'), 0
+	nameArr byte 200 dup('_'), 0
+	gradeArr byte 30 dup('_'), 0
+	alphaGradeArr byte 10 dup('_'), 0
+	startF dword ? ;// start of field which is needed to be copied
+	endF dword ? ;// end of field which is needed to be copied
+	idS dword ? ;// offset of last id written in (id) array
+	namS dword ? ;// offset of last name written in (nam) array
+	gradeS dword ? ;// offset of last grade written in (grade) array
+	alphaGradeS dword ? ;// offset of last alpha grade written in (alphaGrade) array
+	.code
+	pushad
+	mov edi, offset buffer
+	mov idS, offset idArr
+	mov namS, offset nameArr
+	mov gradeS, offset gradeArr
+	mov alphaGradeS, offset alphaGradeArr
+	mov al, ','
+	outer :;//loop until the file end with 0
+	mov ecx, 4;//3 for id and name and grade
+	inner:
+	push ecx
+	mov ecx, lengthof buffer
+	mov startF, edi
+	repne scasb;// move edi to the offset that have (,)
+	mov endF, edi
+	dec endF
+	pop ecx
+	mov ebx, endF;// ebx equals the number of bytes read (endF - startF)
+	sub ebx, startF
+	push edi
+	;// fill arrays with data between startF and endF
+	cmp dword ptr ecx, 3
+	je N
+	cmp dword ptr ecx, 2
+	je G
+	cmp dword ptr ecx, 1
+	je A
+	mov edi, idS
+	add idS, 4
+	jmp next
+	N :
+	mov edi, namS
+	add namS, 20
+	jmp next
+	G :
+	mov edi, gradeS
+	add gradeS, 3
+	jmp next
+	A :
+	mov edi, alphaGradeS
+	add alphaGradeS, 1
+	next :
+	push ecx
+	mov ecx, ebx
+	mov esi, startF
+	rep movsb
+	pop ecx
+	pop edi
+	Loop inner
+	add edi, 2
+	cmp byte ptr[edi], 0
+	jne outer
+	popad
+	ret
 SplitBuffer endp
 
 AlphaGrade proc grade2: ptr byte
 	.data
-	gradeF byte "059", 0
-	gradeD byte "069", 0
-	gradeC byte "079", 0
-	gradeB byte "089", 0
+	gradeF byte " 60", 0
+	gradeD byte " 70", 0
+	gradeC byte " 80", 0
+	gradeB byte " 90", 0
 	.code
 	mov esi,  grade2
 	mov edi, offset gradeF
+	mov ecx, 3
 	repe cmpsb
 	jb FG
 
 	mov esi,  grade2
 	mov edi, offset gradeD
+	mov ecx, 3
 	repe cmpsb
 	jb DG
 
 	mov esi,  grade2
 	mov edi, offset gradeC
+	mov ecx, 3
 	repe cmpsb
 	jb CG
 
 	mov esi,  grade2
 	mov edi, offset gradeB
+	mov ecx, 3
 	repe cmpsb
 	jb BG
 
