@@ -11,7 +11,7 @@ INCLUDE Irvine32.inc
 	nameArr byte 200 dup('_'), 0
 	gradeArr byte 30 dup('_'), 0
 	alphaGradeArr byte 10 dup('_'), 0
-	
+	temp2 dword 0
 .code
 Open_Createfile proc,f_Name:ptr byte
 	INVOKE CreateFile,
@@ -20,27 +20,28 @@ Open_Createfile proc,f_Name:ptr byte
 	ret
 Open_Createfile endp
 
-getIdIndex proc, IDS: Dword
-cld
-mov edi, offset idArr
-mov ecx, lengthof idArr
-mov eax, IDS
-repne scasb ;scan string till 'w' is found
-jne not_found ;'w' is not found, jump to not_found label
-;Otherwise, ecx has the index of that character but reversed
-;So, make eax = lengthof(str1) - ecx - 1
-mov eax, lengthof idArr - 1
-sub eax, ecx
-jmp found
-not_found:
-	mov eax, -1
-	jmp done
-found:
-mov ebx,4
-mov edx,0
-div ebx
-done:
-ret
+getIdIndex proc, IDS: ptr byte
+	cld
+	mov edi, offset idArr
+	mov ecx, lengthof idArr
+	mov eax,0
+	mov eax, IDS
+	repne scasb ;scan string till 'ID' is found
+	jne not_found ;'w' is not found, jump to not_found label
+	;Otherwise, ecx has the index of that character but reversed
+	;So, make eax = lengthof(str1) - ecx - 1
+	mov eax, lengthof idArr - 1
+	sub eax, ecx
+	jmp found
+	not_found:
+		mov eax, -1
+		jmp done
+	found:
+	mov ebx,4
+	mov edx,0
+	div ebx
+	done:
+	ret
 getIdIndex endP
 
 OpenDatabase proc,f_Name:ptr byte,kye:byte
@@ -134,9 +135,63 @@ UpdateGrade proc,s_id:dword,s_grade:dword
 	ret
 UpdateGrade endp
 
-DeleteStudent proc,s_id:dword
+DeleteStudent proc,s_id:ptr byte
+.data
+idSpitter byte 4 dup('_'),0
+namesplitter byte 21 dup('_'),0
+.code
+invoke getIdIndex,s_id
 
-	ret
+;// moving ids back
+mov temp2,eax
+mov ebx,4
+mul ebx
+mov edi,offset idArr
+add edi,eax
+mov ecx,lengthof idArr
+sub ecx,eax
+sub ecx,5
+mov esi,edi
+add esi,4
+rep movsb
+;;// moving name back
+mov eax,temp2
+mov ebx,20
+mul ebx
+mov edi,offset nameArr
+add edi,eax
+mov ecx,lengthof nameArr
+sub ecx,eax
+sub ecx,21
+mov esi,edi
+add esi,20
+rep movsb
+;// moving grades back
+mov eax,temp2
+mov ebx,3
+mul ebx
+mov edi,offset gradeArr
+add edi,eax
+mov ecx,lengthof gradeArr
+sub ecx,eax
+sub ecx,4
+mov esi,edi
+add esi,3
+rep movsb
+;// moving alphaGrade
+mov eax,temp2
+mov ebx,3
+mul ebx
+mov edi,offset AlphagradeArr
+add edi,eax
+mov ecx,lengthof alphagradeArr
+sub ecx,eax
+sub ecx,2
+mov esi,edi
+add esi,1
+rep movsb
+
+ret
 DeleteStudent endp
 
 DisStudentData proc,s_id:dword,s_name:ptr byte,s_grade:ptr dword

@@ -22,6 +22,8 @@ namespace MiniDatabaseGui
         [DllImport("MiniDatabase.dll")]
         private static extern void EnrollStudent([In]char[] id, [In]char[] name, int id_size, int name_size);
 
+        [DllImport("MiniDatabase.dll")]
+        private static extern void DeleteStudent([In]char id);
 
         public Form1()
         {
@@ -35,8 +37,30 @@ namespace MiniDatabaseGui
         }
 
         private void button1_Click(object sender, EventArgs e)
-        {   
-            EnrollStudent(ID_tb.Text.ToCharArray(), Name_tb.Text.ToCharArray(), ID_tb.Text.Length, Name_tb.Text.Length);
+        {       foreach (RadioButton control in this.groupBox1.Controls)
+                {
+                        if (control.Checked)
+                        {
+                    if (control.Name == Enroll_rb.Name)
+                    {
+                        EnrollStudent(ID_tb.Text.ToCharArray(), Name_tb.Text.ToCharArray(), ID_tb.Text.Length, Name_tb.Text.Length);
+                        MessageBox.Show("Enroll");
+                    }
+                    else if (control.Name == Delete_rb.Name)
+                    {
+                        char[] d = ID_tb.Text.ToCharArray();
+                        DeleteStudent(d[0]);
+                        MessageBox.Show("Delete");
+                    }
+                    else if (control.Name == Update_rb.Name) { }
+                    else if (control.Name == Display_rb.Name) { }
+
+
+                    break;
+
+
+                    }
+                }
         }
 
         private void button3_Click(object sender, EventArgs e)

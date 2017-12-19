@@ -70,7 +70,7 @@
             this.Enroll_rb.ForeColor = System.Drawing.Color.Black;
             this.Enroll_rb.Location = new System.Drawing.Point(23, 21);
             this.Enroll_rb.Name = "Enroll_rb";
-            this.Enroll_rb.Size = new System.Drawing.Size(104, 17);
+            this.Enroll_rb.Size = new System.Drawing.Size(89, 17);
             this.Enroll_rb.TabIndex = 1;
             this.Enroll_rb.TabStop = true;
             this.Enroll_rb.Text = "EnrollStudent";
@@ -83,7 +83,7 @@
             this.Delete_rb.ForeColor = System.Drawing.Color.Black;
             this.Delete_rb.Location = new System.Drawing.Point(22, 44);
             this.Delete_rb.Name = "Delete_rb";
-            this.Delete_rb.Size = new System.Drawing.Size(110, 17);
+            this.Delete_rb.Size = new System.Drawing.Size(94, 17);
             this.Delete_rb.TabIndex = 2;
             this.Delete_rb.TabStop = true;
             this.Delete_rb.Text = "DeleteStudent";
@@ -96,7 +96,7 @@
             this.Display_rb.ForeColor = System.Drawing.Color.Black;
             this.Display_rb.Location = new System.Drawing.Point(324, 44);
             this.Display_rb.Name = "Display_rb";
-            this.Display_rb.Size = new System.Drawing.Size(140, 17);
+            this.Display_rb.Size = new System.Drawing.Size(120, 17);
             this.Display_rb.TabIndex = 3;
             this.Display_rb.TabStop = true;
             this.Display_rb.Text = "DisplayStudentData";
@@ -109,7 +109,7 @@
             this.Update_rb.ForeColor = System.Drawing.Color.Black;
             this.Update_rb.Location = new System.Drawing.Point(324, 21);
             this.Update_rb.Name = "Update_rb";
-            this.Update_rb.Size = new System.Drawing.Size(104, 17);
+            this.Update_rb.Size = new System.Drawing.Size(89, 17);
             this.Update_rb.TabIndex = 4;
             this.Update_rb.TabStop = true;
             this.Update_rb.Text = "UpdateGrade";
@@ -118,6 +118,7 @@
             // ID_tb
             // 
             this.ID_tb.Location = new System.Drawing.Point(49, 123);
+            this.ID_tb.MaxLength = 3;
             this.ID_tb.Name = "ID_tb";
             this.ID_tb.Size = new System.Drawing.Size(54, 21);
             this.ID_tb.TabIndex = 6;
@@ -160,7 +161,7 @@
             this.SB_ID.ForeColor = System.Drawing.Color.Black;
             this.SB_ID.Location = new System.Drawing.Point(13, 16);
             this.SB_ID.Name = "SB_ID";
-            this.SB_ID.Size = new System.Drawing.Size(38, 17);
+            this.SB_ID.Size = new System.Drawing.Size(33, 17);
             this.SB_ID.TabIndex = 11;
             this.SB_ID.TabStop = true;
             this.SB_ID.Text = "id";
@@ -173,7 +174,7 @@
             this.SB_GRADE.ForeColor = System.Drawing.Color.Black;
             this.SB_GRADE.Location = new System.Drawing.Point(13, 35);
             this.SB_GRADE.Name = "SB_GRADE";
-            this.SB_GRADE.Size = new System.Drawing.Size(62, 17);
+            this.SB_GRADE.Size = new System.Drawing.Size(53, 17);
             this.SB_GRADE.TabIndex = 12;
             this.SB_GRADE.TabStop = true;
             this.SB_GRADE.Text = "grade";
