@@ -177,16 +177,21 @@ fillBuffer proc
 	ret
 fillBuffer endp
 
-UpdateGrade proc,s_id:dword,s_grade:dword
+UpdateGrade proc,s_id:dword,s_grade:ptr byte,s_grade_size: dword
+invoke getIdIndex,s_id
+mov temp2,eax
+mov ebx,3
+mul ebx
+mov edi,offset gradeArr
+add edi,eax
+mov ecx,s_grade_size 
+mov esi,s_grade
+rep movsb
 
-	ret
+ret
 UpdateGrade endp
 
 DeleteStudent proc,s_id:ptr byte
-.data
-idSpitter byte 4 dup('_'),0
-namesplitter byte 21 dup('_'),0
-.code
 invoke getIdIndex,s_id
 
 ;// moving ids back

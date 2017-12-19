@@ -3,4 +3,5 @@ OpenDatabase @1
 SaveDatabase @2
 EnrollStudent @3
 SplitBuffer @4
-DeleteStudent @5
+UpdateGrade @5
+DeleteStudent @7

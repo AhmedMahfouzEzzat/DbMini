@@ -25,6 +25,10 @@ namespace MiniDatabaseGui
         [DllImport("MiniDatabase.dll")]
         private static extern void DeleteStudent([In]char id);
 
+        [DllImport("MiniDatabase.dll")]
+        private static extern void UpdateGrade([In]char id,[In]char[] grade,[In] int size);
+    
+
         public Form1()
         {
             InitializeComponent();
@@ -52,7 +56,11 @@ namespace MiniDatabaseGui
                         DeleteStudent(d[0]);
                         MessageBox.Show("Delete");
                     }
-                    else if (control.Name == Update_rb.Name) { }
+                    else if (control.Name == Update_rb.Name) {
+                        char[] d = ID_tb.Text.ToCharArray();
+                        UpdateGrade(d[0],Grade_tb.Text.ToCharArray(),Grade_tb.Text.ToCharArray().Length);
+
+                    }
                     else if (control.Name == Display_rb.Name) { }
 
 
