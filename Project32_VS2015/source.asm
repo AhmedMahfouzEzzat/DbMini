@@ -130,7 +130,53 @@ EnrollStudent proc,s_id:ptr byte,s_name:ptr byte, id_size: dword, name_size: dwo
 	ret
 EnrollStudent endp
 
+fillBuffer proc
+	mov edi, offset buffer
+	mov ebx, idS
+	;//copy id
+	mov esi, offset idArr
 	L1 :
+	movsb
+	dec edx
+	cmp byte ptr[esi], '_'
+	jne L1
+	;//write (,)
+	mov byte ptr[edi], ','
+	inc edi
+	;//copy name
+	mov esi, offset nameArr
+	L2 :
+	movsb
+	dec edx
+	cmp byte ptr[esi], '_'
+	jne L2
+	;//write (,)
+	mov byte ptr[edi], ','
+	inc edi
+	;//copy Grade
+	mov esi, offset gradeArr
+	mov ecx, 3
+	L3 :
+	movsb
+	dec edx
+	Loop L3
+	;//write (,)
+	mov byte ptr[edi], ','
+	inc edi
+	;//copy alphaGrade
+	mov esi, offset alphaGradeArr
+	movsb
+	;//write (,)
+	mov byte ptr[edi], ','
+	inc edi
+	;//add new line
+	mov byte ptr[edi], 13
+	inc edi
+	mov byte ptr[edi], 10
+	inc edi
+	ret
+fillBuffer endp
+
 UpdateGrade proc,s_id:dword,s_grade:dword
 
 	ret
