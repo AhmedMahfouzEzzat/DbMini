@@ -265,7 +265,7 @@ AlphaGrade proc grade2: ptr byte
 AlphaGrade endp
 
 DllMain PROC hInstance:DWORD, fdwReason:DWORD, lpReserved:DWORD 
-	mov eax, 1; Return true to caller. 
+	mov eax, 1;//Return true to caller. 
 	ret 
 DllMain ENDP
 
