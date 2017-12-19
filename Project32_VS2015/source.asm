@@ -7,6 +7,11 @@ INCLUDE Irvine32.inc
 	buffer BYTE BUFSIZE DUP(?),0
 	new_buffer BYTE BUFSIZE DUP(?),0
 	fileSize dword 0
+	idArr byte 40 dup('_'), 0
+	nameArr byte 200 dup('_'), 0
+	gradeArr byte 30 dup('_'), 0
+	alphaGradeArr byte 10 dup('_'), 0
+	
 .code
 Open_Createfile proc,f_Name:ptr byte
 	INVOKE CreateFile,
@@ -14,6 +19,29 @@ Open_Createfile proc,f_Name:ptr byte
 	OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, 0
 	ret
 Open_Createfile endp
+
+getIdIndex proc, IDS: Dword
+cld
+mov edi, offset idArr
+mov ecx, lengthof idArr
+mov eax, IDS
+repne scasb ;scan string till 'w' is found
+jne not_found ;'w' is not found, jump to not_found label
+;Otherwise, ecx has the index of that character but reversed
+;So, make eax = lengthof(str1) - ecx - 1
+mov eax, lengthof idArr - 1
+sub eax, ecx
+jmp found
+not_found:
+	mov eax, -1
+	jmp done
+found:
+mov ebx,4
+mov edx,0
+div ebx
+done:
+ret
+getIdIndex endP
 
 OpenDatabase proc,f_Name:ptr byte,kye:byte
 	;//open the file
@@ -124,10 +152,6 @@ GenerateReport endp
 SplitBuffer proc
 	;//file example : "10,Ahmed,100,", 13, 10, "20,Zaki,300,", 13, 10, "30,Hassan,600,", 13, 10, 0
 	.data
-	idArr byte 40 dup('_'), 0
-	nameArr byte 200 dup('_'), 0
-	gradeArr byte 30 dup('_'), 0
-	alphaGradeArr byte 10 dup('_'), 0
 	startF dword ? ;// start of field which is needed to be copied
 	endF dword ? ;// end of field which is needed to be copied
 	idS dword ? ;// offset of last id written in (id) array
