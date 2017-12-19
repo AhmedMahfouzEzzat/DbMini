@@ -21,26 +21,26 @@ Open_Createfile proc,f_Name:ptr byte
 Open_Createfile endp
 
 getIdIndex proc, IDS: Dword
-cld
-mov edi, offset idArr
-mov ecx, lengthof idArr
-mov eax, IDS
-repne scasb ;scan string till 'w' is found
-jne not_found ;'w' is not found, jump to not_found label
-;Otherwise, ecx has the index of that character but reversed
-;So, make eax = lengthof(str1) - ecx - 1
-mov eax, lengthof idArr - 1
-sub eax, ecx
-jmp found
-not_found:
+	cld
+	mov edi, offset idArr
+	mov ecx, lengthof idArr
+	mov eax, IDS
+	repne scasb ;//scan string till 'w' is found
+	jne not_found ;//'w' is not found, jump to not_found label
+	;//Otherwise, ecx has the index of that character but reversed
+	;//So, make eax = lengthof(str1) - ecx - 1
+	mov eax, lengthof idArr - 1
+	sub eax, ecx
+	jmp found
+	not_found:
 	mov eax, -1
 	jmp done
-found:
-mov ebx,4
-mov edx,0
-div ebx
-done:
-ret
+	found:
+	mov ebx,4
+	mov edx,0
+	div ebx
+	done:
+	ret
 getIdIndex endP
 
 OpenDatabase proc,f_Name:ptr byte,kye:byte
@@ -51,19 +51,21 @@ OpenDatabase proc,f_Name:ptr byte,kye:byte
 	INVOKE ReadFile,
 	filehandle,offset buffer,BUFSIZE,offset fileSize,NULL
 	;//decrypt data 
-	;mov esi ,offset buffer
-	;mov edi ,esi
-	;mov ecx, fileSize
-	;cmp ecx,0
-	;je done
-	;L:
-		;lodsb
-		;xor al,kye
-		;stosb
-	;loop L
-	;done:
-	;//close the file
+	comment @
+	mov esi ,offset buffer
+	mov edi ,esi
+	mov ecx, fileSize
+	cmp ecx,0
+	je done
+	L:
+		lodsb
+		xor al,kye
+		stosb
+	loop L
 	call SplitBuffer
+	done:
+	@
+	;//close the file
 	INVOKE CloseHandle,filehandle
 	ret
 OpenDatabase endp
@@ -72,16 +74,18 @@ SaveDatabase proc,f_Name:ptr byte,kye:byte
 	;//open the file
 	INVOKE Open_Createfile,f_Name
 	mov filehandle,eax
-	;//encrypt data 
-	;mov esi ,offset buffer
-	;mov edi ,esi
-	;mov ecx, fileSize
-	;L:
-		;lodsb
-		;xor al,kye
-		;stosb
-	;loop L
-	;;//write data in the file
+	;//encrypt data
+	comment @
+	mov esi ,offset buffer
+	mov edi ,esi
+	mov ecx, fileSize
+	L:
+		lodsb
+		xor al,kye
+		stosb
+	loop L
+	@
+	;//write data in the file
 	INVOKE WriteFile,
 	filehandle,offset buffer,fileSize,offset fileSize,null
 	;//close the file
@@ -129,6 +133,53 @@ EnrollStudent proc,s_id:ptr byte,s_name:ptr byte, id_size: dword, name_size: dwo
 	ret
 EnrollStudent endp
 
+fillBuffer proc
+	mov edi, offset buffer
+	mov ebx, idS
+	;//copy id
+	mov esi, offset idArr
+	L1 :
+	movsb
+	dec edx
+	cmp byte ptr[esi], '_'
+	jne L1
+	;//write (,)
+	mov byte ptr[edi], ','
+	inc edi
+	;//copy name
+	mov esi, offset nameArr
+	L2 :
+	movsb
+	dec edx
+	cmp byte ptr[esi], '_'
+	jne L2
+	;//write (,)
+	mov byte ptr[edi], ','
+	inc edi
+	;//copy Grade
+	mov esi, offset gradeArr
+	mov ecx, 3
+	L3 :
+	movsb
+	dec edx
+	Loop L3
+	;//write (,)
+	mov byte ptr[edi], ','
+	inc edi
+	;//copy alphaGrade
+	mov esi, offset alphaGradeArr
+	movsb
+	;//write (,)
+	mov byte ptr[edi], ','
+	inc edi
+	;//add new line
+	mov byte ptr[edi], 13
+	inc edi
+	mov byte ptr[edi], 10
+	inc edi
+	ret
+fillBuffer endp
+
 UpdateGrade proc,s_id:dword,s_grade:dword
 
 	ret
@@ -154,10 +205,10 @@ SplitBuffer proc
 	.data
 	startF dword ? ;// start of field which is needed to be copied
 	endF dword ? ;// end of field which is needed to be copied
-	idS dword ? ;// offset of last id written in (id) array
-	namS dword ? ;// offset of last name written in (nam) array
-	gradeS dword ? ;// offset of last grade written in (grade) array
-	alphaGradeS dword ? ;// offset of last alpha grade written in (alphaGrade) array
+	idS dword ?
+	namS dword ?
+	gradeS dword ?
+	alphaGradeS dword ?
 	.code
 	pushad
 	mov edi, offset buffer
