@@ -20,6 +20,17 @@ Open_Createfile proc,f_Name:ptr byte
 	ret
 Open_Createfile endp
 
+encrypt_or_decrypt_buffer proc,kye:byte
+	mov esi ,offset buffer
+	mov edi ,esi
+	L:
+		lodsb
+		xor al,kye
+		stosb
+	loop L
+	ret
+encrypt_or_decrypt_buffer endp
+
 OpenDatabase proc,f_Name:ptr byte,kye:byte
 	;//open the file
 	INVOKE Open_Createfile,f_Name
@@ -28,16 +39,10 @@ OpenDatabase proc,f_Name:ptr byte,kye:byte
 	INVOKE ReadFile,
 	filehandle,offset buffer,BUFSIZE,offset fileSize,NULL
 	;//decrypt data 
-	mov esi ,offset buffer
-	mov edi ,esi
 	mov ecx, fileSize
 	cmp ecx,0
 	je done
-	;L:
-		;lodsb
-		;xor al,kye
-		;stosb
-	;loop L
+	;INVOKE encrypt_or_decrypt_buffer,kye
 	call SplitBuffer
 	done:
 	;//close the file
@@ -51,14 +56,8 @@ SaveDatabase proc,f_Name:ptr byte,kye:byte
 	INVOKE Open_Createfile,f_Name
 	mov filehandle,eax
 	;//encrypt data 
-	mov esi ,offset buffer
-	mov edi ,esi
 	mov ecx, fileSize
-	;L:
-		;lodsb
-		;xor al,kye
-		;stosb
-	;loop L
+	;INVOKE encrypt_or_decrypt_buffer,kye
 	;//write data in the file
 	INVOKE WriteFile,
 	filehandle,offset buffer,fileSize,offset fileSize,null
