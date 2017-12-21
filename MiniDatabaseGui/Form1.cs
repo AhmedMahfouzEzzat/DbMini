@@ -46,35 +46,40 @@ namespace MiniDatabaseGui
 
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void OK_button_Click(object sender, EventArgs e)
         {
-            foreach (RadioButton control in this.groupBox1.Controls)
-            {
-                if (control.Checked)
-                {
-                    if (control.Name == Enroll_rb.Name)
-                    {
-                        EnrollStudent(ID_tb.Text.ToCharArray(), Name_tb.Text.ToCharArray(), ID_tb.Text.Length, Name_tb.Text.Length);
-                    }
-                    else if (control.Name == Delete_rb.Name)
-                    {
-                        char[] d = ID_tb.Text.ToCharArray();
-                        DeleteStudent(d, ID_tb.Text.Length);
-                    }
-                    else if (control.Name == Update_rb.Name)
-                    {
-                        UpdateGrade(ID_tb.Text.ToCharArray(), Grade_tb.Text.ToCharArray(), ID_tb.Text.Length, Grade_tb.Text.ToCharArray().Length);
-                    }
-                    else if (control.Name == Display_rb.Name) { }
-                    break;
-                }
-            }
-        }       
-        
 
-        private void button3_Click(object sender, EventArgs e)
+            if (Enroll_rb.Checked)
+            {
+                EnrollStudent(ID_tb.Text.ToCharArray(), Name_tb.Text.ToCharArray(), ID_tb.Text.Length, Name_tb.Text.Length);
+            }
+            else if (Delete_rb.Checked)
+            {
+                char[] d = ID_tb.Text.ToCharArray();
+                DeleteStudent(d, ID_tb.Text.Length);
+            }
+            else if (Update_rb.Checked)
+            {
+                string s = Grade_tb.Text.PadLeft(3, ' ');
+                UpdateGrade(ID_tb.Text.ToCharArray(), s.ToCharArray(), ID_tb.Text.Length, s.Length);
+            }
+            else if (Display_rb.Checked)
+            { }
+        }
+
+
+        private void Save_changes_bn_Click(object sender, EventArgs e)
         {
             SaveDatabase(filename, filekey);
+        }
+
+        private void Generate_report_bn_Click(object sender, EventArgs e)
+        {
+            if (SB_ID.Checked)
+            { }
+            else
+            { }
+            System.Diagnostics.Process.Start("Mini_DataBase.txt");
         }
     }
 }

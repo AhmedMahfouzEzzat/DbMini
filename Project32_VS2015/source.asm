@@ -42,8 +42,9 @@ OpenDatabase proc, f_Name:ptr byte, key:byte
 	mov ecx, fileSize
 	cmp ecx,0
 	je done
-	;INVOKE encrypt_or_decrypt_buffer,kye
-	call SplitBuffer
+	;INVOKE encrypt_or_decrypt_buffer,key
+	;// fill the 4 arrays "idArr,nameArr,gradeArr,alphaGradeArr"
+	call SplitBuffer  
 	done:
 	;//close the file
 	INVOKE CloseHandle,filehandle
@@ -51,6 +52,7 @@ OpenDatabase proc, f_Name:ptr byte, key:byte
 OpenDatabase endp
 
 SaveDatabase proc, f_Name:ptr byte, key:byte
+	;// load the 4 arrays "idArr,nameArr,gradeArr,alphaGradeArr" in buffer
 	call fillBuffer
 	;//open the file
 	INVOKE Open_Createfile,f_Name
@@ -219,6 +221,56 @@ fillBuffer proc
 	ret
 fillBuffer endp
 
+AlphaGrade proc USES esi edi ecx,
+grade: ptr byte
+	.data
+	gradeF byte " 60", 0
+	gradeD byte " 70", 0
+	gradeC byte " 80", 0
+	gradeB byte " 90", 0
+	.code
+	mov esi,  grade
+	mov edi, offset gradeF
+	mov ecx, 3
+	repe cmpsb
+	jb FG
+
+	mov esi,  grade
+	mov edi, offset gradeD
+	mov ecx, 3
+	repe cmpsb
+	jb DG
+
+	mov esi,  grade
+	mov edi, offset gradeC
+	mov ecx, 3
+	repe cmpsb
+	jb CG
+
+	mov esi,  grade
+	mov edi, offset gradeB
+	mov ecx, 3
+	repe cmpsb
+	jb BG
+
+	AG :
+	mov al, 'A'
+	jmp done
+	BG :
+	mov al, 'B'
+	jmp done
+	CG :
+	mov al, 'C'
+	jmp done
+	DG :
+	mov al, 'D'
+	jmp done
+	FG :
+	mov al, 'F'
+	done :
+	ret
+AlphaGrade endp
+
 UpdateGrade proc, s_id:ptr byte, s_grade:ptr byte, s_id_size:dword, s_grade_size:dword
 invoke getIdIndex,s_id, s_id_size
 mov temp2,eax
@@ -229,7 +281,11 @@ add edi,eax
 mov ecx,s_grade_size 
 mov esi,s_grade
 rep movsb
-
+mov edi,offset alphaGradeArr
+mov eax,temp2
+add edi,eax
+INVOKE AlphaGrade,s_grade
+mov [edi],al
 ret
 UpdateGrade endp
 
@@ -248,7 +304,7 @@ sub ecx,5
 mov esi,edi
 add esi,4
 rep movsb
-;;// moving name back
+;// moving name back
 mov eax,temp2
 mov ebx,20
 mul ebx
@@ -363,55 +419,6 @@ SplitBuffer proc
 	popad
 	ret
 SplitBuffer endp
-
-AlphaGrade proc grade: ptr byte
-	.data
-	gradeF byte " 60", 0
-	gradeD byte " 70", 0
-	gradeC byte " 80", 0
-	gradeB byte " 90", 0
-	.code
-	mov esi,  grade
-	mov edi, offset gradeF
-	mov ecx, 3
-	repe cmpsb
-	jb FG
-
-	mov esi,  grade
-	mov edi, offset gradeD
-	mov ecx, 3
-	repe cmpsb
-	jb DG
-
-	mov esi,  grade
-	mov edi, offset gradeC
-	mov ecx, 3
-	repe cmpsb
-	jb CG
-
-	mov esi,  grade
-	mov edi, offset gradeB
-	mov ecx, 3
-	repe cmpsb
-	jb BG
-
-	AG :
-	mov al, 'A'
-	jmp done
-	BG :
-	mov al, 'B'
-	jmp done
-	CG :
-	mov al, 'C'
-	jmp done
-	DG :
-	mov al, 'D'
-	jmp done
-	FG :
-	mov al, 'F'
-	done :
-	ret
-AlphaGrade endp
 
 DllMain PROC hInstance:DWORD, fdwReason:DWORD, lpReserved:DWORD 
 	mov eax, 1;//Return true to caller. 

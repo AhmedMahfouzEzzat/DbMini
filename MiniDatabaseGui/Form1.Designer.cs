@@ -61,7 +61,7 @@
             this.OK_button.TabIndex = 0;
             this.OK_button.Text = "OK";
             this.OK_button.UseVisualStyleBackColor = false;
-            this.OK_button.Click += new System.EventHandler(this.button1_Click);
+            this.OK_button.Click += new System.EventHandler(this.OK_button_Click);
             // 
             // Enroll_rb
             // 
@@ -152,6 +152,7 @@
             this.Generate_report_bn.TabIndex = 10;
             this.Generate_report_bn.Text = "Generate\r\n Full Report";
             this.Generate_report_bn.UseVisualStyleBackColor = false;
+            this.Generate_report_bn.Click += new System.EventHandler(this.Generate_report_bn_Click);
             // 
             // SB_ID
             // 
@@ -188,7 +189,7 @@
             this.Save_changes_bn.TabIndex = 13;
             this.Save_changes_bn.Text = "save \r\nchanges ";
             this.Save_changes_bn.UseVisualStyleBackColor = false;
-            this.Save_changes_bn.Click += new System.EventHandler(this.button3_Click);
+            this.Save_changes_bn.Click += new System.EventHandler(this.Save_changes_bn_Click);
             // 
             // label1
             // 

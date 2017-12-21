@@ -14,7 +14,7 @@ namespace MiniDatabaseGui
     {
         public static byte file_key;
         public static char[] file_name;
-
+        bool flag = true;
         public OpenDataBase()
         {
             InitializeComponent();
@@ -24,7 +24,13 @@ namespace MiniDatabaseGui
         {
             file_key = Convert.ToByte(open_database_key.Text);
             file_name = (open_database_filename.Text + ".txt").ToCharArray();
+            flag = false;
             this.Close();
+        }
+
+        private void OpenDataBase_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            if(flag) Application.Exit();
         }
     }
 }

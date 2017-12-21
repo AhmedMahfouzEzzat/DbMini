@@ -106,6 +106,7 @@
             this.Name = "OpenDataBase";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "OpenDataBase";
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.OpenDataBase_FormClosed);
             this.ResumeLayout(false);
             this.PerformLayout();
 
