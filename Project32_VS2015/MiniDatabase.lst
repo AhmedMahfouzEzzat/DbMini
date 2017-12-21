@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 Microsoft (R) Macro Assembler Version 11.00.61030.0	    12/20/17 14:04:22
+=======
+Microsoft (R) Macro Assembler Version 14.00.24210.0	    12/21/17 12:49:54
+>>>>>>> origin/master
 source.asm						     Page 1 - 1
 
 
@@ -65,14 +69,14 @@ source.asm						     Page 1 - 1
  0000001E  C2 0004	   *	    ret    00004h
  00000021			Open_Createfile endp
 
- 00000021			encrypt_or_decrypt_buffer proc,kye:byte
+ 00000021			encrypt_or_decrypt_buffer proc, key:byte
  00000021  55		   *	    push   ebp
  00000022  8B EC	   *	    mov    ebp, esp
  00000024  BE 00000004 R		mov esi ,offset buffer
  00000029  8B FE			mov edi ,esi
  0000002B				L:
  0000002B  AC					lodsb
- 0000002C  32 45 08				xor al,kye
+ 0000002C  32 45 08				xor al,key
  0000002F  AA					stosb
  00000030  E2 F9			loop L
 					ret
@@ -80,7 +84,7 @@ source.asm						     Page 1 - 1
  00000033  C2 0004	   *	    ret    00004h
  00000036			encrypt_or_decrypt_buffer endp
 
- 00000036			OpenDatabase proc,f_Name:ptr byte,kye:byte
+ 00000036			OpenDatabase proc, f_Name:ptr byte, key:byte
 					;//open the file
  00000036  55		   *	    push   ebp
  00000037  8B EC	   *	    mov    ebp, esp
@@ -112,9 +116,9 @@ source.asm						     Page 1 - 1
  0000007D  C9		   *	    leave  
  0000007E  C2 0008	   *	    ret    00008h
  00000081			OpenDatabase endp
-source.asm(51) : warning A6004:procedure argument or local not referenced : kye
+source.asm(51) : warning A6004:procedure argument or local not referenced : key
 
- 00000081			SaveDatabase proc,f_Name:ptr byte,kye:byte
+ 00000081			SaveDatabase proc, f_Name:ptr byte, key:byte
  00000081  55		   *	    push   ebp
  00000082  8B EC	   *	    mov    ebp, esp
  00000084  E8 000000D0			call fillBuffer
@@ -125,7 +129,7 @@ source.asm(51) : warning A6004:procedure argument or local not referenced : kye
  00000091  A3 00000000 R		mov filehandle,eax
 					;//encrypt data 
  00000096  8B 0D 00002806 R		mov ecx, fileSize
-					;INVOKE encrypt_or_decrypt_buffer,kye
+					;INVOKE encrypt_or_decrypt_buffer, key
 					;//write data in the file
 					INVOKE WriteFile,
 					filehandle,offset buffer,fileSize,offset fileSize,null
@@ -143,7 +147,7 @@ source.asm(51) : warning A6004:procedure argument or local not referenced : kye
  000000C4  C9		   *	    leave  
  000000C5  C2 0008	   *	    ret    00008h
  000000C8			SaveDatabase endp
-source.asm(67) : warning A6004:procedure argument or local not referenced : kye
+source.asm(67) : warning A6004:procedure argument or local not referenced : key
 
  000000C8			EnrollStudent proc,s_id:ptr byte,s_name:ptr byte, id_size: dword, name_size: dword
 					;//set pointer to the end of the bufferr
@@ -226,10 +230,17 @@ source.asm(67) : warning A6004:procedure argument or local not referenced : kye
 
  00000159			fillBuffer proc
  0000292A				.data
+<<<<<<< HEAD
  0000292A 0000280A R			idPtr dword offset idArr
  0000292E 00002833 R			namePtr dword offset nameArr
  00002932 000028FC R			gradePtr dword offset gradeArr
  00002936 0000291B R			alphaGradePtr dword offset alphaGradeArr
+=======
+ 0000292A 00000000			idPtr dword ?
+ 0000292E 00000000			namePtr dword ?
+ 00002932 00000000			gradePtr dword ?
+ 00002936 00000000			alphaGradePtr dword ?
+>>>>>>> origin/master
  00000159				.code
  00000159  C7 05 0000292A R		mov idPtr, offset idArr
 	   0000280A R
@@ -237,7 +248,11 @@ source.asm(67) : warning A6004:procedure argument or local not referenced : kye
 	   00002833 R
  0000016D  C7 05 00002932 R		mov gradePtr, offset gradeArr
 	   000028FC R
+<<<<<<< HEAD
  00000177  C7 05 00002936 R		mov alphaGradePtr, offset alphaGradeArr
+=======
+ 00000177  C7 05 00002936 R		mov alphaGradePtr, offset alphaGradeArr 
+>>>>>>> origin/master
 	   0000291B R
 					;//clear the buffer
  00000181  B0 00			mov al, 0
@@ -313,7 +328,10 @@ source.asm(67) : warning A6004:procedure argument or local not referenced : kye
  00000223  C3				ret
  00000224			fillBuffer endp
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> origin/master
  00000224			UpdateGrade proc, s_id:ptr byte, s_grade:ptr byte, s_id_size:dword, s_grade_size:dword
  00000224  55		   *	    push   ebp
  00000225  8B EC	   *	    mov    ebp, esp
@@ -405,9 +423,15 @@ source.asm(67) : warning A6004:procedure argument or local not referenced : kye
  000002F6  C9		   *	    leave  
  000002F7  C2 000C	   *	    ret    0000Ch
  000002FA			DisStudentData endp
+<<<<<<< HEAD
 source.asm(295) : warning A6004:procedure argument or local not referenced : s_id
 source.asm(295) : warning A6004:procedure argument or local not referenced : s_name
 source.asm(295) : warning A6004:procedure argument or local not referenced : s_grade
+=======
+source.asm(294) : warning A6004:procedure argument or local not referenced : s_id
+source.asm(294) : warning A6004:procedure argument or local not referenced : s_name
+source.asm(294) : warning A6004:procedure argument or local not referenced : s_grade
+>>>>>>> origin/master
 
  000002FA			GenerateReport proc,f_name:ptr byte,sortby:byte
 
@@ -417,6 +441,7 @@ source.asm(295) : warning A6004:procedure argument or local not referenced : s_g
  000002FD  C9		   *	    leave  
  000002FE  C2 0008	   *	    ret    00008h
  00000301			GenerateReport endp
+<<<<<<< HEAD
 source.asm(300) : warning A6004:procedure argument or local not referenced : f_name
 source.asm(300) : warning A6004:procedure argument or local not referenced : sortby
 
@@ -429,6 +454,20 @@ source.asm(300) : warning A6004:procedure argument or local not referenced : sor
  00002946 00000000			namS dword ? ;// offset of last name written in (nam) array
  0000294A 00000000			gradeS dword ? ;// offset of last grade written in (grade) array
  0000294E 00000000			alphaGradeS dword ? ;// offset of last alpha grade written in (alphaGrade) array
+=======
+source.asm(299) : warning A6004:procedure argument or local not referenced : f_name
+source.asm(299) : warning A6004:procedure argument or local not referenced : sortby
+
+ 00000301			SplitBuffer proc
+					;//file example : "10,Ahmed,100,A,", 13, 10, "20,Zaki, 70,C,", 13, 10, 0
+ 0000293A				.data
+ 0000293A 00000000			startF dword ? ;// start of field which is needed to be copied
+ 0000293E 00000000			endF dword ? ;// end of field which is needed to be copied
+ 00002942 00000000			idS dword ?
+ 00002946 00000000			namS dword ?
+ 0000294A 00000000			gradeS dword ?
+ 0000294E 00000000			alphaGradeS dword ?
+>>>>>>> origin/master
  00000301				.code
  00000301  60				pushad
  00000302  BF 00000004 R		mov edi, offset buffer
@@ -442,8 +481,13 @@ source.asm(300) : warning A6004:procedure argument or local not referenced : sor
 	   0000291B R
  0000032F  B0 2C			mov al, ','
  00000331				outer :;//loop until the file end with 0
+<<<<<<< HEAD
  00000331  B9 00000004			mov ecx, 4;//3 for id and name and grade
  00000336				inner:
+=======
+ 00000331  B9 00000004			mov ecx, 4
+ 00000336				inner:;//loop on fieldss
+>>>>>>> origin/master
  00000336  51				push ecx
  00000337  B9 00001401			mov ecx, lengthof buffer
  0000033C  89 3D 0000293A R		mov startF, edi
@@ -555,14 +599,24 @@ source.asm(300) : warning A6004:procedure argument or local not referenced : sor
  00000429  C9		   *	    leave  
  0000042A  C2 000C	   *	    ret    0000Ch
  0000042D			DllMain ENDP
+<<<<<<< HEAD
 source.asm(420) : warning A6004:procedure argument or local not referenced : hInstance
 source.asm(420) : warning A6004:procedure argument or local not referenced : fdwReason
 source.asm(420) : warning A6004:procedure argument or local not referenced : lpReserved
+=======
+source.asm(419) : warning A6004:procedure argument or local not referenced : hInstance
+source.asm(419) : warning A6004:procedure argument or local not referenced : fdwReason
+source.asm(419) : warning A6004:procedure argument or local not referenced : lpReserved
+>>>>>>> origin/master
 
 
 				END DllMain
 
+<<<<<<< HEAD
 Microsoft (R) Macro Assembler Version 11.00.61030.0	    12/20/17 14:04:22
+=======
+Microsoft (R) Macro Assembler Version 14.00.24210.0	    12/21/17 12:49:54
+>>>>>>> origin/master
 source.asm						     Symbols 2 - 1
 
 
@@ -737,7 +791,7 @@ MsgBoxAsk  . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External
 MsgBox . . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 OpenDatabase . . . . . . . . . .	P Near	 00000036 _TEXT	Length= 0000004B Public STDCALL
   f_Name . . . . . . . . . . . .	DWord	 bp + 00000008
-  kye  . . . . . . . . . . . . .	Byte	 bp + 0000000C
+  key  . . . . . . . . . . . . .	Byte	 bp + 0000000C
   done . . . . . . . . . . . . .	L Near	 00000072 _TEXT	
 OpenInputFile  . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 Open_Createfile  . . . . . . . .	P Near	 00000000 _TEXT	Length= 00000021 Public STDCALL
@@ -762,7 +816,7 @@ ReadKey  . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External
 ReadString . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 SaveDatabase . . . . . . . . . .	P Near	 00000081 _TEXT	Length= 00000047 Public STDCALL
   f_Name . . . . . . . . . . . .	DWord	 bp + 00000008
-  kye  . . . . . . . . . . . . .	Byte	 bp + 0000000C
+  key  . . . . . . . . . . . . .	Byte	 bp + 0000000C
 SetConsoleCursorInfo . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 SetConsoleCursorPosition . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 SetConsoleMode . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
@@ -813,7 +867,7 @@ WriteString  . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External
 WriteToFile  . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 WriteWindowsMsg  . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 encrypt_or_decrypt_buffer  . . .	P Near	 00000021 _TEXT	Length= 00000015 Public STDCALL
-  kye  . . . . . . . . . . . . .	Byte	 bp + 00000008
+  key  . . . . . . . . . . . . .	Byte	 bp + 00000008
   L  . . . . . . . . . . . . . .	L Near	 0000002B _TEXT	
 fillBuffer . . . . . . . . . . .	P Near	 00000159 _TEXT	Length= 000000CB Public STDCALL
   O  . . . . . . . . . . . . . .	L Near	 00000194 _TEXT	
