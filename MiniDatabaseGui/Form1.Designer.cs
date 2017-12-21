@@ -156,6 +156,7 @@
             // SB_ID
             // 
             this.SB_ID.AutoSize = true;
+            this.SB_ID.Checked = true;
             this.SB_ID.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.SB_ID.ForeColor = System.Drawing.Color.Black;
             this.SB_ID.Location = new System.Drawing.Point(13, 16);
@@ -175,7 +176,6 @@
             this.SB_GRADE.Name = "SB_GRADE";
             this.SB_GRADE.Size = new System.Drawing.Size(53, 17);
             this.SB_GRADE.TabIndex = 12;
-            this.SB_GRADE.TabStop = true;
             this.SB_GRADE.Text = "grade";
             this.SB_GRADE.UseVisualStyleBackColor = true;
             // 
