@@ -422,56 +422,6 @@ SplitBuffer proc
 	ret
 SplitBuffer endp
 
-<<<<<<< HEAD
-=======
-AlphaGrade proc grade: ptr byte
-	.data
-	gradeF byte " 60", 0
-	gradeD byte " 70", 0
-	gradeC byte " 80", 0
-	gradeB byte " 90", 0
-	.code
-	mov esi,  grade
-	mov edi, offset gradeF
-	mov ecx, 3
-	repe cmpsb
-	jb FG
-
-	mov esi,  grade
-	mov edi, offset gradeD
-	mov ecx, 3
-	repe cmpsb
-	jb DG
-
-	mov esi,  grade
-	mov edi, offset gradeC
-	mov ecx, 3
-	repe cmpsb
-	jb CG
-
-	mov esi,  grade
-	mov edi, offset gradeB
-	mov ecx, 3
-	repe cmpsb
-	jb BG
-
-	AG :
-	mov al, 'A'
-	jmp done
-	BG :
-	mov al, 'B'
-	jmp done
-	CG :
-	mov al, 'C'
-	jmp done
-	DG :
-	mov al, 'D'
-	jmp done
-	FG :
-	mov al, 'F'
-	done :
-	ret
-AlphaGrade endp
 swap Proc sizes:dword,ptr1:ptr byte 
 mov esi,ptr1
 mov edi,offset temp1
@@ -528,8 +478,6 @@ loop L1 ; else repeat outer loop
 L4: ret
 BubbleSort ENDP
 
-
->>>>>>> 03e30fd6b8e1523eb25395957d2aacb5fae5b5c6
 DllMain PROC hInstance:DWORD, fdwReason:DWORD, lpReserved:DWORD 
 	mov eax, 1;//Return true to caller. 
 	ret 
