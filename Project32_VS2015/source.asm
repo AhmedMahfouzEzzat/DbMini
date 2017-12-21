@@ -12,6 +12,8 @@ INCLUDE Irvine32.inc
 	gradeArr byte 30 dup('_'), 0
 	alphaGradeArr byte 10 dup('_'), 0
 	temp2 dword 0
+	
+temp1 byte 20 dup(0)
 .code
 Open_Createfile proc,f_Name:ptr byte
 	INVOKE CreateFile,
@@ -420,6 +422,114 @@ SplitBuffer proc
 	ret
 SplitBuffer endp
 
+<<<<<<< HEAD
+=======
+AlphaGrade proc grade: ptr byte
+	.data
+	gradeF byte " 60", 0
+	gradeD byte " 70", 0
+	gradeC byte " 80", 0
+	gradeB byte " 90", 0
+	.code
+	mov esi,  grade
+	mov edi, offset gradeF
+	mov ecx, 3
+	repe cmpsb
+	jb FG
+
+	mov esi,  grade
+	mov edi, offset gradeD
+	mov ecx, 3
+	repe cmpsb
+	jb DG
+
+	mov esi,  grade
+	mov edi, offset gradeC
+	mov ecx, 3
+	repe cmpsb
+	jb CG
+
+	mov esi,  grade
+	mov edi, offset gradeB
+	mov ecx, 3
+	repe cmpsb
+	jb BG
+
+	AG :
+	mov al, 'A'
+	jmp done
+	BG :
+	mov al, 'B'
+	jmp done
+	CG :
+	mov al, 'C'
+	jmp done
+	DG :
+	mov al, 'D'
+	jmp done
+	FG :
+	mov al, 'F'
+	done :
+	ret
+AlphaGrade endp
+swap Proc sizes:dword,ptr1:ptr byte 
+mov esi,ptr1
+mov edi,offset temp1
+mov ecx,sizes
+rep movsb 
+mov esi,ptr1
+add esi,sizes
+mov edi,ptr1
+mov ecx,sizes
+rep movsb 
+mov edi,ptr1
+add edi,sizes
+mov esi,offset temp1
+mov ecx,sizes
+rep movsb
+ret
+swap endP
+
+BubbleSort PROC USES eax ecx esi ebx edx edi,
+Count:DWORD ; array size
+mov ecx,Count
+dec ecx; decrement count by 1
+L1: push ecx ; save outer loop count
+mov esi,offset idArr ; point to first value
+mov edi,offset nameArr
+mov ebx,offset gradeArr
+mov edx,offset alphaGradeArr
+L2: mov eax,[esi] ; get array value
+cmp [esi+4],eax ; compare a pair of values
+jg L3 ; if [ESI] <= [ESI+4], no exchange
+xchg eax,[esi+4] ; exchange the pair
+mov [esi],eax
+pushad
+invoke swap,4,esi
+popad
+pushad
+invoke swap,20,edi
+popad
+pushad
+invoke swap,3,ebx
+popad
+pushad
+invoke swap,1,edx
+popad
+
+L3: add esi,4 ; move both pointers forward
+add edi,20 ; move both pointers forward
+add ebx,3 ; move both pointers forward
+add edx,1 ; move both pointers forward
+
+loop L2 ; inner loop
+pop ecx ; retrieve outer loop count
+loop L1 ; else repeat outer loop
+L4: ret
+BubbleSort ENDP
+
+
+>>>>>>> 03e30fd6b8e1523eb25395957d2aacb5fae5b5c6
 DllMain PROC hInstance:DWORD, fdwReason:DWORD, lpReserved:DWORD 
 	mov eax, 1;//Return true to caller. 
 	ret 
