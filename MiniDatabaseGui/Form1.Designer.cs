@@ -66,6 +66,7 @@
             // Enroll_rb
             // 
             this.Enroll_rb.AutoSize = true;
+            this.Enroll_rb.Checked = true;
             this.Enroll_rb.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Enroll_rb.ForeColor = System.Drawing.Color.Black;
             this.Enroll_rb.Location = new System.Drawing.Point(23, 21);
@@ -85,7 +86,6 @@
             this.Delete_rb.Name = "Delete_rb";
             this.Delete_rb.Size = new System.Drawing.Size(94, 17);
             this.Delete_rb.TabIndex = 2;
-            this.Delete_rb.TabStop = true;
             this.Delete_rb.Text = "DeleteStudent";
             this.Delete_rb.UseVisualStyleBackColor = true;
             // 
@@ -98,7 +98,6 @@
             this.Display_rb.Name = "Display_rb";
             this.Display_rb.Size = new System.Drawing.Size(120, 17);
             this.Display_rb.TabIndex = 3;
-            this.Display_rb.TabStop = true;
             this.Display_rb.Text = "DisplayStudentData";
             this.Display_rb.UseVisualStyleBackColor = true;
             // 
@@ -111,14 +110,13 @@
             this.Update_rb.Name = "Update_rb";
             this.Update_rb.Size = new System.Drawing.Size(89, 17);
             this.Update_rb.TabIndex = 4;
-            this.Update_rb.TabStop = true;
             this.Update_rb.Text = "UpdateGrade";
             this.Update_rb.UseVisualStyleBackColor = true;
             // 
             // ID_tb
             // 
             this.ID_tb.Location = new System.Drawing.Point(49, 123);
-            this.ID_tb.MaxLength = 3;
+            this.ID_tb.MaxLength = 4;
             this.ID_tb.Name = "ID_tb";
             this.ID_tb.Size = new System.Drawing.Size(54, 21);
             this.ID_tb.TabIndex = 6;
@@ -126,6 +124,7 @@
             // Grade_tb
             // 
             this.Grade_tb.Location = new System.Drawing.Point(462, 124);
+            this.Grade_tb.MaxLength = 3;
             this.Grade_tb.Name = "Grade_tb";
             this.Grade_tb.Size = new System.Drawing.Size(63, 21);
             this.Grade_tb.TabIndex = 7;
@@ -157,6 +156,7 @@
             // SB_ID
             // 
             this.SB_ID.AutoSize = true;
+            this.SB_ID.Checked = true;
             this.SB_ID.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.SB_ID.ForeColor = System.Drawing.Color.Black;
             this.SB_ID.Location = new System.Drawing.Point(13, 16);
@@ -176,7 +176,6 @@
             this.SB_GRADE.Name = "SB_GRADE";
             this.SB_GRADE.Size = new System.Drawing.Size(53, 17);
             this.SB_GRADE.TabIndex = 12;
-            this.SB_GRADE.TabStop = true;
             this.SB_GRADE.Text = "grade";
             this.SB_GRADE.UseVisualStyleBackColor = true;
             // 

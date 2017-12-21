@@ -22,7 +22,18 @@ Open_Createfile proc,f_Name:ptr byte
 	ret
 Open_Createfile endp
 
-OpenDatabase proc,f_Name:ptr byte,kye:byte
+encrypt_or_decrypt_buffer proc, key:byte
+	mov esi ,offset buffer
+	mov edi ,esi
+	L:
+		lodsb
+		xor al,key
+		stosb
+	loop L
+	ret
+encrypt_or_decrypt_buffer endp
+
+OpenDatabase proc, f_Name:ptr byte, key:byte
 	;//open the file
 	INVOKE Open_Createfile,f_Name
 	mov filehandle, eax
@@ -30,16 +41,10 @@ OpenDatabase proc,f_Name:ptr byte,kye:byte
 	INVOKE ReadFile,
 	filehandle,offset buffer,BUFSIZE,offset fileSize,NULL
 	;//decrypt data 
-	mov esi ,offset buffer
-	mov edi ,esi
 	mov ecx, fileSize
 	cmp ecx,0
 	je done
-	;L:
-		;lodsb
-		;xor al,kye
-		;stosb
-	;loop L
+	;INVOKE encrypt_or_decrypt_buffer,kye
 	call SplitBuffer
 	done:
 	;//close the file
@@ -47,20 +52,14 @@ OpenDatabase proc,f_Name:ptr byte,kye:byte
 	ret
 OpenDatabase endp
 
-SaveDatabase proc,f_Name:ptr byte,kye:byte
+SaveDatabase proc, f_Name:ptr byte, key:byte
 	call fillBuffer
 	;//open the file
 	INVOKE Open_Createfile,f_Name
 	mov filehandle,eax
 	;//encrypt data 
-	mov esi ,offset buffer
-	mov edi ,esi
 	mov ecx, fileSize
-	;L:
-		;lodsb
-		;xor al,kye
-		;stosb
-	;loop L
+	;INVOKE encrypt_or_decrypt_buffer, key
 	;//write data in the file
 	INVOKE WriteFile,
 	filehandle,offset buffer,fileSize,offset fileSize,null
@@ -141,40 +140,69 @@ getIdIndex proc, s_id:ptr byte, s_id_size : dword
 getIdIndex endP
 
 fillBuffer proc
+	.data
+	idPtr dword ?
+	namePtr dword ?
+	gradePtr dword ?
+	alphaGradePtr dword ?
+	.code
+	mov idPtr, offset idArr
+	mov namePtr, offset nameArr
+	mov gradePtr, offset gradeArr
+	mov alphaGradePtr, offset alphaGradeArr 
+	;//clear the buffer
+	mov al, 0
+	mov ecx, BUFSIZE
 	mov edi, offset buffer
+	rep stosb
+	mov edi, offset buffer
+	O :
 	;//copy id
-	mov esi, offset idArr
+	mov esi, idPtr
+	mov ecx, 4
 	L1 :
+	cmp byte ptr[esi], '_'
+	je N1
+	cmp ecx, 0
+	je N1
+	dec ecx
 	movsb
 	dec edx
-	cmp byte ptr[esi], '_'
-	jne L1
+	jmp L1
+	N1 :
+	add idPtr, 4
 	;//write (,)
 	mov byte ptr[edi], ','
 	inc edi
 	;//copy name
-	mov esi, offset nameArr
+	mov esi, namePtr
+	mov ecx, 20
 	L2 :
+	cmp byte ptr[esi], '_'
+	je N2
+	cmp ecx, 0
+	je N2
+	dec ecx
 	movsb
 	dec edx
-	cmp byte ptr[esi], '_'
-	jne L2
+	jmp L2
+	N2 :
+	add namePtr, 20
 	;//write (,)
 	mov byte ptr[edi], ','
 	inc edi
 	;//copy Grade
-	mov esi, offset gradeArr
+	mov esi, gradePtr
 	mov ecx, 3
-	L3 :
-	movsb
-	dec edx
-	Loop L3
+	rep movsb
+	add gradePtr, 3
 	;//write (,)
 	mov byte ptr[edi], ','
 	inc edi
 	;//copy alphaGrade
-	mov esi, offset alphaGradeArr
+	mov esi, alphaGradePtr
 	movsb
+	inc alphaGradePtr
 	;//write (,)
 	mov byte ptr[edi], ','
 	inc edi
@@ -183,6 +211,13 @@ fillBuffer proc
 	inc edi
 	mov byte ptr[edi], 10
 	inc edi
+	;//repet to next record if there is any
+	mov ebx, idPtr
+	cmp byte ptr[ebx], 0
+	je done
+	cmp byte ptr[ebx], '_'
+	jne O
+	done :
 	ret
 fillBuffer endp
 
@@ -266,14 +301,14 @@ GenerateReport proc,f_name:ptr byte,sortby:byte
 GenerateReport endp
 
 SplitBuffer proc
-	;//file example : "10,Ahmed,100,", 13, 10, "20,Zaki,300,", 13, 10, "30,Hassan,600,", 13, 10, 0
+	;//file example : "10,Ahmed,100,A,", 13, 10, "20,Zaki, 70,C,", 13, 10, 0
 	.data
 	startF dword ? ;// start of field which is needed to be copied
 	endF dword ? ;// end of field which is needed to be copied
-	idS dword ? ;// offset of last id written in (id) array
-	namS dword ? ;// offset of last name written in (nam) array
-	gradeS dword ? ;// offset of last grade written in (grade) array
-	alphaGradeS dword ? ;// offset of last alpha grade written in (alphaGrade) array
+	idS dword ?
+	namS dword ?
+	gradeS dword ?
+	alphaGradeS dword ?
 	.code
 	pushad
 	mov edi, offset buffer
@@ -283,8 +318,8 @@ SplitBuffer proc
 	mov alphaGradeS, offset alphaGradeArr
 	mov al, ','
 	outer :;//loop until the file end with 0
-	mov ecx, 4;//3 for id and name and grade
-	inner:
+	mov ecx, 4
+	inner:;//loop on fieldss
 	push ecx
 	mov ecx, lengthof buffer
 	mov startF, edi

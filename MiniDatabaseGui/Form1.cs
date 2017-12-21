@@ -34,10 +34,16 @@ namespace MiniDatabaseGui
             InitializeComponent();
         }
 
-        char[] name = "Mini_DataBase.txt".ToCharArray();
+        char[] filename;
+        byte filekey ;
         private void Form1_Load(object sender, EventArgs e)
         {
-            OpenDatabase(name,170);
+            OpenDataBase OPEN_FORM = new OpenDataBase();
+            OPEN_FORM.ShowDialog();
+            filekey = OpenDataBase.file_key;
+            filename = OpenDataBase.file_name; 
+            OpenDatabase(filename,filekey);
+
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -68,7 +74,7 @@ namespace MiniDatabaseGui
 
         private void button3_Click(object sender, EventArgs e)
         {
-            SaveDatabase(name, 170);
+            SaveDatabase(filename, filekey);
         }
     }
 }
