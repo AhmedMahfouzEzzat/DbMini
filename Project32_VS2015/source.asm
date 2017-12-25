@@ -30,7 +30,14 @@ Open_Createfile proc,f_Name:ptr byte
 	f_Name, GENERIC_WRITE OR GENERIC_READ, DO_NOT_SHARE, NULL,
 	OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, 0
 	ret
-Open_Createfile endp  
+Open_Createfile endp
+
+CLEAR_Createfile proc, f_Name:ptr byte
+	INVOKE CreateFile,
+	f_Name, GENERIC_WRITE OR GENERIC_READ, DO_NOT_SHARE, NULL,
+	CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, 0
+	ret
+CLEAR_Createfile endp
 
 encrypt_or_decrypt_buffer proc, key:byte
 	mov esi ,offset buffer
@@ -136,7 +143,7 @@ SplitBuffer proc
 		sub filesize_temp,2 ;//for new line
 		inc student_count
 	cmp filesize_temp,0		
-	ja outer		        
+	ja outer
 	popad
 	ret
 SplitBuffer endp
@@ -247,16 +254,19 @@ fillBuffer endp
 
 SaveDatabase proc, f_Name:ptr byte, key:byte
 	;//open the file
-	INVOKE Open_Createfile,f_Name
+	INVOKE Clear_Createfile,f_Name
 	mov filehandle,eax
+	mov ecx, fileSize
+	cmp ecx,0
+	je done
 	;// load the 4 arrays "idArr,nameArr,gradeArr,alphaGradeArr" in buffer
 	call fillBuffer
 	;//encrypt data 
-	mov ecx, fileSize
 	;INVOKE encrypt_or_decrypt_buffer, key
 	;//write data in the file
 	INVOKE WriteFile,
 	filehandle,offset buffer,fileSize,offset fileSize,null
+	done:
 	;//close the file
 	INVOKE CloseHandle,filehandle
 	ret
@@ -380,6 +390,7 @@ AlphaGrade proc USES esi edi ecx , grade: ptr byte
 AlphaGrade endp
 
 DeleteStudent proc,s_id:ptr byte, s_id_size:dword
+	pushad
 	invoke getIdIndex,s_id, s_id_size
 	cld
 	;// moving ids back
@@ -464,6 +475,7 @@ DeleteStudent proc,s_id:ptr byte, s_id_size:dword
 	rep movsb
 	sub fileSize,2
 	dec student_count
+	popad
 	ret 
 DeleteStudent endp 
 
