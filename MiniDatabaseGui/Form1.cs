@@ -32,7 +32,7 @@ namespace MiniDatabaseGui
         private static extern void DisStudentData([In, Out]char[] id, int id_size, [In, Out]char[] name, [In, Out]char[] grade, [In, Out]char[] Alpha_grade);
 
         [DllImport("MiniDatabase.dll")]
-        private static extern void GenerateReport();
+        private static extern void GenerateReport([In]char[] fileName, char sortBy);
 
         public Form1()
         {
@@ -88,11 +88,13 @@ namespace MiniDatabaseGui
 
         private void Generate_report_bn_Click(object sender, EventArgs e)
         {
-            if (SB_ID.Checked)
-            { }
+            char sortBy;
+            if (SB_A.Checked)
+                sortBy = 'A';
             else
-            { }
-            System.Diagnostics.Process.Start("Mini_DataBase.txt");
+                sortBy = 'D';
+            GenerateReport("report.txt\0".ToCharArray(), sortBy);
+            System.Diagnostics.Process.Start("report.txt");
         }
 
         private void when_rb_checked(object sender, EventArgs e)

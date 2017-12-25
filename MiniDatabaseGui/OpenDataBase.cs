@@ -23,7 +23,7 @@ namespace MiniDatabaseGui
         private void open_database_btn_Click(object sender, EventArgs e)
         {
             file_key = Convert.ToByte(open_database_key.Text);
-            file_name = (open_database_filename.Text + ".txt").ToCharArray();
+            file_name = (open_database_filename.Text + ".txt\0").ToCharArray();
             flag = false;
             this.Close();
         }

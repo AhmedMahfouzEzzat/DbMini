@@ -6,7 +6,6 @@ INCLUDE Irvine32.inc
 	grade_element_size = 3
 	max_student_count = 50
 
-	report_file byte "report.txt",0
 	report_filehandle dword ?
 	filehandle dword ?
 	buffer BYTE BUFSIZE DUP(?),0
@@ -23,6 +22,10 @@ INCLUDE Irvine32.inc
 	student_count dword 0
 	id_index_temp dword 0
 	temp1 byte 20 dup(' ')
+	idPtr dword ?
+	namePtr dword ?
+	gradePtr dword ?
+	alphaGradePtr dword ?
 .code
 
 Open_Createfile proc,f_Name:ptr byte
@@ -64,17 +67,13 @@ SplitBuffer proc
 	.data
 	startF dword ? ;// start of field which is needed to be copied
 	endF dword ? ;// end of field which is needed to be copied
-	idS dword ?
-	namS dword ?
-	gradeS dword ?
-	alphaGradeS dword ?
 	.code
 	pushad
 	mov edi, offset buffer
-	mov idS, offset idArr
-	mov namS, offset nameArr
-	mov gradeS, offset gradeArr
-	mov alphaGradeS, offset alphaGradeArr
+	mov idPtr, offset idArr
+	mov namePtr, offset nameArr
+	mov gradePtr, offset gradeArr
+	mov alphaGradePtr, offset alphaGradeArr
 	mov al, ','
 	mov ecx, fileSize
 	mov filesize_temp,ecx
@@ -102,29 +101,29 @@ SplitBuffer proc
 			cmp ecx, 1
 			je A
 			i:
-			mov edi, idS
+			mov edi, idPtr
 			add edi, id_element_size-1
-			add idS, id_element_size
+			add idPtr, id_element_size
 			mov esi, endf
 			dec esi    ;//last byte in id
 			std
 			jmp next
 			N :
-			mov edi, namS
-			add namS, name_element_size
+			mov edi, namePtr
+			add namePtr, name_element_size
 			mov esi, startf
 			jmp next
 			G :
-			mov edi, gradeS
+			mov edi, gradePtr
 			add edi, grade_element_size-1
-			add gradeS, grade_element_size
+			add gradePtr, grade_element_size
 			mov esi, endf
 			dec esi
 			std
 			jmp next
 			A :
-			mov edi, alphaGradeS
-			add alphaGradeS, 1
+			mov edi, alphaGradePtr
+			add alphaGradePtr, 1
 			mov esi, startF
 			next :
 			cmp ebx,0
@@ -135,10 +134,8 @@ SplitBuffer proc
 			pop ecx	
 			done:
 			pop edi
-			
-		dec ecx			;//
-		cmp ecx,0		;//instade of short loop
-		jne inner		;//
+			dec ecx
+		jnz inner
 		add edi, 2
 		sub filesize_temp,2 ;//for new line
 		inc student_count
@@ -169,12 +166,6 @@ OpenDatabase proc, f_Name:ptr byte, key:byte
 OpenDatabase endp  
 
 fillBuffer proc
-	.data
-	idPtr dword ?
-	namePtr dword ?
-	gradePtr dword ?
-	alphaGradePtr dword ?
-	.code
 	mov edi,offset buffer
 	mov idPtr, offset idArr
 	mov namePtr, offset nameArr
@@ -245,11 +236,10 @@ fillBuffer proc
 		inc edi
 		mov byte ptr[edi], 10
 		inc edi
-	pop ecx
-	dec ecx			;//
-	cmp ecx,0		;//instade of short loop
-	jne OUTER		;//
-	ret
+		pop ecx
+		dec ecx	
+		jnz OUTER
+		ret
 fillBuffer endp
 
 SaveDatabase proc, f_Name:ptr byte, key:byte
@@ -562,64 +552,72 @@ DisStudentData proc,s_id:ptr byte,s_id_size:dword,s_name:ptr byte,s_grade:ptr by
 	ret
 DisStudentData endp
 
-Swap proc ,sizes:dword,ptr1:ptr byte 
-mov esi,ptr1
-mov edi,offset temp1
-mov ecx,sizes
-rep movsb 
-mov esi,ptr1
-add esi,sizes
-mov edi,ptr1
-mov ecx,sizes
-rep movsb 
-mov edi,ptr1
-add edi,sizes
-mov esi,offset temp1
-mov ecx,sizes
-rep movsb
-ret
+Swap proc USES esi edi ecx, sizes:dword,ptr1:ptr byte 
+	mov esi,ptr1
+	mov edi,offset temp1
+	mov ecx,sizes
+	rep movsb 
+
+	mov esi,ptr1
+	add esi,sizes
+	mov edi,ptr1
+	mov ecx,sizes
+	rep movsb 
+
+	mov edi,ptr1
+	add edi,sizes
+	mov esi,offset temp1
+	mov ecx,sizes
+	rep movsb
+	ret
 Swap endp
 
-BubbleSort PROC USES eax ecx esi ebx edx edi,
-Count:DWORD ;//array size
-mov ecx,Count
-dec ecx;//decrement count by 1
-L1: push ecx ;//save outer loop count
-mov esi,offset idArr ;//point to first value
-mov edi,offset nameArr
-mov ebx,offset gradeArr
-mov edx,offset alphaGradeArr
-L2: mov eax,[esi] ;//get array value
-cmp [esi+4],eax ;//compare a pair of values
-jg L3 ;//if [ESI] <= [ESI+4], no exchange
-xchg eax,[esi+4] ;//exchange the pair
-mov [esi],eax
-pushad
-invoke swap,4,esi
-popad
-pushad
-invoke swap,20,edi
-popad
-pushad
-invoke swap,3,ebx
-popad
-pushad
-invoke swap,1,edx
-popad
+BubbleSort PROC, Count:DWORD, sortType:byte
+	mov ecx,Count
+	dec ecx;//decrement count by 1
+	L1: 
+	push ecx ;//save outer loop count
+	mov idPtr, offset idArr
+	mov namePtr, offset nameArr
+	mov gradePtr, offset gradeArr
+	mov alphaGradePtr, offset alphaGradeArr
+	L2:
+	push ecx
+	mov ecx, 4
+	mov esi,idPtr
+	mov edi, esi
+	add edi, 4
+	mov al, 'A'
+	cmp sortType, al
+	je ascending
+	repe cmpsb ;//compare a pair of values 
+	jae next ;//if [idPtr] <= [idPtr+4], no exchange
+	jmp done
+	ascending:
+	repe cmpsb;//compare a pair of values 
+	jbe next;//if [idPtr] <= [idPtr+4], no exchange
+	done:
+	invoke swap,4, idPtr
+	invoke swap,20, namePtr
+	invoke swap,3, gradePtr
+	invoke swap,1, alphaGradePtr
 
-L3: add esi,4 ;//move both pointers forward
-add edi,20 ;//move both pointers forward
-add ebx,3 ;//move both pointers forward
-add edx,1 ;//move both pointers forward
-
-loop L2 ;//inner loop
-pop ecx ;//retrieve outer loop count
-loop L1 ;//else repeat outer loop
-L4: ret
+	next: 
+	add idPtr,4 ;//move both pointers forward
+	add namePtr,20 ;//move both pointers forward
+	add gradePtr,3 ;//move both pointers forward
+	add alphaGradePtr,1 ;//move both pointers forward
+	pop ecx
+	loop L2 ;//inner loop
+	pop ecx ;//retrieve outer loop count
+	dec ecx
+	jnz L1 ;//else repeat outer loop
+	ret
 BubbleSort ENDP
 
-GenerateReport proc,f_name:ptr byte,sortby:byte
-	
+GenerateReport proc,f_name:ptr byte, sortType:byte
+	invoke BubbleSort, student_count, sortType
+	invoke SaveDatabase, f_name, 170
 	ret
 GenerateReport endp
 
@@ -631,4 +629,3 @@ DllMain ENDP
 
 
 END DllMain
-
