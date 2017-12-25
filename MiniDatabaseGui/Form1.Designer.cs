@@ -37,7 +37,7 @@
             this.ID_tb = new System.Windows.Forms.TextBox();
             this.Grade_tb = new System.Windows.Forms.TextBox();
             this.Name_tb = new System.Windows.Forms.TextBox();
-            this.A_Grade = new System.Windows.Forms.TextBox();
+            this.A_Grade_tb = new System.Windows.Forms.TextBox();
             this.Generate_report_bn = new System.Windows.Forms.Button();
             this.SB_ID = new System.Windows.Forms.RadioButton();
             this.SB_GRADE = new System.Windows.Forms.RadioButton();
@@ -76,6 +76,7 @@
             this.Enroll_rb.TabStop = true;
             this.Enroll_rb.Text = "EnrollStudent";
             this.Enroll_rb.UseVisualStyleBackColor = true;
+            this.Enroll_rb.CheckedChanged += new System.EventHandler(this.when_rb_checked);
             // 
             // Delete_rb
             // 
@@ -88,6 +89,7 @@
             this.Delete_rb.TabIndex = 2;
             this.Delete_rb.Text = "DeleteStudent";
             this.Delete_rb.UseVisualStyleBackColor = true;
+            this.Delete_rb.CheckedChanged += new System.EventHandler(this.when_rb_checked);
             // 
             // Display_rb
             // 
@@ -100,6 +102,7 @@
             this.Display_rb.TabIndex = 3;
             this.Display_rb.Text = "DisplayStudentData";
             this.Display_rb.UseVisualStyleBackColor = true;
+            this.Display_rb.CheckedChanged += new System.EventHandler(this.when_rb_checked);
             // 
             // Update_rb
             // 
@@ -112,6 +115,7 @@
             this.Update_rb.TabIndex = 4;
             this.Update_rb.Text = "UpdateGrade";
             this.Update_rb.UseVisualStyleBackColor = true;
+            this.Update_rb.CheckedChanged += new System.EventHandler(this.when_rb_checked);
             // 
             // ID_tb
             // 
@@ -120,9 +124,11 @@
             this.ID_tb.Name = "ID_tb";
             this.ID_tb.Size = new System.Drawing.Size(54, 21);
             this.ID_tb.TabIndex = 6;
+            this.ID_tb.Click += new System.EventHandler(this.when_Click);
             // 
             // Grade_tb
             // 
+            this.Grade_tb.Enabled = false;
             this.Grade_tb.Location = new System.Drawing.Point(462, 124);
             this.Grade_tb.MaxLength = 3;
             this.Grade_tb.Name = "Grade_tb";
@@ -136,12 +142,13 @@
             this.Name_tb.Size = new System.Drawing.Size(216, 21);
             this.Name_tb.TabIndex = 8;
             // 
-            // A_Grade
+            // A_Grade_tb
             // 
-            this.A_Grade.Location = new System.Drawing.Point(533, 124);
-            this.A_Grade.Name = "A_Grade";
-            this.A_Grade.Size = new System.Drawing.Size(35, 21);
-            this.A_Grade.TabIndex = 9;
+            this.A_Grade_tb.Enabled = false;
+            this.A_Grade_tb.Location = new System.Drawing.Point(533, 124);
+            this.A_Grade_tb.Name = "A_Grade_tb";
+            this.A_Grade_tb.Size = new System.Drawing.Size(35, 21);
+            this.A_Grade_tb.TabIndex = 9;
             // 
             // Generate_report_bn
             // 
@@ -270,7 +277,7 @@
             this.Controls.Add(this.label1);
             this.Controls.Add(this.Save_changes_bn);
             this.Controls.Add(this.Generate_report_bn);
-            this.Controls.Add(this.A_Grade);
+            this.Controls.Add(this.A_Grade_tb);
             this.Controls.Add(this.Name_tb);
             this.Controls.Add(this.Grade_tb);
             this.Controls.Add(this.ID_tb);
@@ -304,7 +311,7 @@
         private System.Windows.Forms.TextBox ID_tb;
         private System.Windows.Forms.TextBox Grade_tb;
         private System.Windows.Forms.TextBox Name_tb;
-        private System.Windows.Forms.TextBox A_Grade;
+        private System.Windows.Forms.TextBox A_Grade_tb;
         private System.Windows.Forms.Button Generate_report_bn;
         private System.Windows.Forms.RadioButton SB_ID;
         private System.Windows.Forms.RadioButton SB_GRADE;

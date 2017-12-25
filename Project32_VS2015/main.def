@@ -1,7 +1,7 @@
 EXPORTS		
 OpenDatabase @1
 SaveDatabase @2
+DisStudentData @6
 EnrollStudent @3
-SplitBuffer @4
-UpdateGrade @5
-DeleteStudent @7
+UpdateGrade @4
+DeleteStudent @5

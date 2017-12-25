@@ -1,4 +1,4 @@
-Microsoft (R) Macro Assembler Version 11.00.61030.0	    12/21/17 23:47:36
+Microsoft (R) Macro Assembler Version 11.00.61030.0	    12/25/17 04:40:56
 source.asm						     Page 1 - 1
 
 
@@ -22,34 +22,54 @@ source.asm						     Page 1 - 1
 			      C 
  00000000			.data
  = 00001400				BUFSIZE = 5120;//5kb
- = 0000001E				record_size=30
- = 00000003				grade_size=3
- 00000000 00000000			filehandle dword ?
- 00000004  00001400 [			buffer BYTE BUFSIZE DUP(?),0
+ = 00000004				id_element_size = 4
+ = 00000014				name_element_size = 20
+ = 00000003				grade_element_size = 3
+ = 00000032				max_student_count = 50
+
+ 00000000 72 65 70 6F 72		report_file byte "report.txt",0
+	   74 2E 74 78 74
+	   00
+ 0000000B 00000000			report_filehandle dword ?
+ 0000000F 00000000			filehandle dword ?
+ 00000013  00001400 [			buffer BYTE BUFSIZE DUP(?),0
 	    00
 	   ] 00
- 00001405  00001400 [			new_buffer BYTE BUFSIZE DUP(?),0
+ 00001414  00001400 [			report_buffer BYTE BUFSIZE DUP(?),0
 	    00
 	   ] 00
- 00002806 00000000			fileSize dword 0
- 0000280A  00000028 [			idArr byte 40 dup('_'), 0
-	    5F
+ 00002815  00000032 [			idArr byte max_student_count dup(id_element_size dup('+')), 0
+	    00000004 [
+	     2B
+	    ]
 	   ] 00
- 00002833  000000C8 [			nameArr byte 200 dup('_'), 0
-	    5F
+ 000028DE  00000032 [			nameArr byte max_student_count dup(name_element_size dup('+')), 0
+	    00000014 [
+	     2B
+	    ]
 	   ] 00
- 000028FC  0000001E [			gradeArr byte 30 dup('_'), 0
-	    5F
+ 00002CC7  00000032 [			gradeArr byte max_student_count dup(grade_element_size dup('+')), 0
+	    00000003 [
+	     2B
+	    ]
 	   ] 00
- 0000291B  0000000A [			alphaGradeArr byte 10 dup('_'), 0
-	    5F
+ 00002D5E  00000032 [			alphaGradeArr byte max_student_count dup('+'), 0
+	    2B
 	   ] 00
- 00002926 00000000			temp2 dword 0
-					
- 0000292A  00000014 [		temp1 byte 20 dup(0)
-	    00
+ 00002D91  00000004 [			id_temp byte id_element_size dup('+')
+	    2B
+	   ]
+ 00002D95 00000000			grade_index dword 0
+ 00002D99 2B 2B 2B 00			empty_grade byte "+++",0
+ 00002D9D 00000000			fileSize dword 0
+ 00002DA1 00000000			filesize_temp dword 0
+ 00002DA5 00000000			student_count dword 0
+ 00002DA9 00000000			id_index_temp dword 0
+ 00002DAD  00000014 [			temp1 byte 20 dup(' ')
+	    20
 	   ]
  00000000			.code
+
  00000000			Open_Createfile proc,f_Name:ptr byte
  00000000  55		   *	    push   ebp
  00000001  8B EC	   *	    mov    ebp, esp
@@ -67,12 +87,12 @@ source.asm						     Page 1 - 1
 					ret
  0000001D  C9		   *	    leave  
  0000001E  C2 0004	   *	    ret    00004h
- 00000021			Open_Createfile endp
+ 00000021			Open_Createfile endp  
 
  00000021			encrypt_or_decrypt_buffer proc, key:byte
  00000021  55		   *	    push   ebp
  00000022  8B EC	   *	    mov    ebp, esp
- 00000024  BE 00000004 R		mov esi ,offset buffer
+ 00000024  BE 00000013 R		mov esi ,offset buffer
  00000029  8B FE			mov edi ,esi
  0000002B				L:
  0000002B  AC					lodsb
@@ -82,593 +102,748 @@ source.asm						     Page 1 - 1
 					ret
  00000032  C9		   *	    leave  
  00000033  C2 0004	   *	    ret    00004h
- 00000036			encrypt_or_decrypt_buffer endp
+ 00000036			encrypt_or_decrypt_buffer endp  
 
- 00000036			OpenDatabase proc, f_Name:ptr byte, key:byte
-					;//open the file
+ 00000036			initialize proc USES eax ecx edi , dist:ptr byte , value:byte , dist_size: dword
  00000036  55		   *	    push   ebp
  00000037  8B EC	   *	    mov    ebp, esp
+ 00000039  50		   *	    push   eax
+ 0000003A  51		   *	    push   ecx
+ 0000003B  57		   *	    push   edi
+ 0000003C  FC				cld
+ 0000003D  8A 45 0C			mov al, value
+ 00000040  8B 4D 10			mov ecx, dist_size
+ 00000043  8B 7D 08			mov edi, dist
+ 00000046  F3/ AA			rep stosb
+					ret
+ 00000048  5F		   *	    pop    edi
+ 00000049  59		   *	    pop    ecx
+ 0000004A  58		   *	    pop    eax
+ 0000004B  C9		   *	    leave  
+ 0000004C  C2 000C	   *	    ret    0000Ch
+ 0000004F			initialize endp   
+
+ 0000004F			SplitBuffer proc
+					;//file example : "10,Ahmed,100,A," 13 10 "20,Zaki,,," 13 10 
+ 00002DC1				.data
+ 00002DC1 00000000			startF dword ? ;// start of field which is needed to be copied
+ 00002DC5 00000000			endF dword ? ;// end of field which is needed to be copied
+ 00002DC9 00000000			idS dword ?
+ 00002DCD 00000000			namS dword ?
+ 00002DD1 00000000			gradeS dword ?
+ 00002DD5 00000000			alphaGradeS dword ?
+ 0000004F				.code
+ 0000004F  60				pushad
+ 00000050  BF 00000013 R		mov edi, offset buffer
+ 00000055  C7 05 00002DC9 R		mov idS, offset idArr
+	   00002815 R
+ 0000005F  C7 05 00002DCD R		mov namS, offset nameArr
+	   000028DE R
+ 00000069  C7 05 00002DD1 R		mov gradeS, offset gradeArr
+	   00002CC7 R
+ 00000073  C7 05 00002DD5 R		mov alphaGradeS, offset alphaGradeArr
+	   00002D5E R
+ 0000007D  B0 2C			mov al, ','
+ 0000007F  8B 0D 00002D9D R		mov ecx, fileSize
+ 00000085  89 0D 00002DA1 R		mov filesize_temp,ecx
+ 0000008B				outer :  ;//loop until the file end 
+ 0000008B  B9 00000004				mov ecx, 4
+ 00000090					inner:  ;//loop on fields
+ 00000090  51						push ecx
+ 00000091  8B 0D 00002DA1 R				mov ecx, fileSize_temp
+ 00000097  89 3D 00002DC1 R				mov startF, edi
+ 0000009D  FC						cld
+ 0000009E  F2/ AE					repne scasb;// move edi to the offset that have (,)
+ 000000A0  89 3D 00002DC5 R				mov endF, edi
+ 000000A6  FF 0D 00002DC5 R				dec endf
+ 000000AC  59						pop ecx
+ 000000AD  8B 1D 00002DC5 R				mov ebx, endF;// ebx equals the number of bytes read (endF - startF)
+ 000000B3  2B 1D 00002DC1 R				sub ebx, startF
+ 000000B9  29 1D 00002DA1 R				sub filesize_temp,ebx
+ 000000BF  FF 0D 00002DA1 R				dec filesize_temp  ;//for delamter ','
+ 000000C5  57						push edi
+							;// fill arrays with data between startF and endF
+ 000000C6  83 F9 03					cmp ecx, 3
+ 000000C9  74 24					je N
+ 000000CB  83 F9 02					cmp ecx, 2
+ 000000CE  74 34					je G
+ 000000D0  83 F9 01					cmp ecx, 1
+ 000000D3  74 49					je A
+ 000000D5						i:
+ 000000D5  8B 3D 00002DC9 R				mov edi, idS
+ 000000DB  83 C7 03					add edi, id_element_size-1
+ 000000DE  83 05 00002DC9 R				add idS, id_element_size
+	   04
+ 000000E5  8B 35 00002DC5 R				mov esi, endf
+ 000000EB  4E						dec esi    ;//last byte in id
+ 000000EC  FD						std
+ 000000ED  EB 42					jmp next
+ 000000EF						N :
+ 000000EF  8B 3D 00002DCD R				mov edi, namS
+ 000000F5  83 05 00002DCD R				add namS, name_element_size
+	   14
+ 000000FC  8B 35 00002DC1 R				mov esi, startf
+ 00000102  EB 2D					jmp next
+ 00000104						G :
+ 00000104  8B 3D 00002DD1 R				mov edi, gradeS
+ 0000010A  83 C7 02					add edi, grade_element_size-1
+ 0000010D  83 05 00002DD1 R				add gradeS, grade_element_size
+	   03
+ 00000114  8B 35 00002DC5 R				mov esi, endf
+ 0000011A  4E						dec esi
+ 0000011B  FD						std
+ 0000011C  EB 13					jmp next
+ 0000011E						A :
+ 0000011E  8B 3D 00002DD5 R				mov edi, alphaGradeS
+ 00000124  83 05 00002DD5 R				add alphaGradeS, 1
+	   01
+ 0000012B  8B 35 00002DC1 R				mov esi, startF
+ 00000131						next :
+ 00000131  83 FB 00					cmp ebx,0
+ 00000134  74 06					je done
+ 00000136  51						push ecx
+ 00000137  8B CB					mov ecx, ebx
+ 00000139  F3/ A4					rep movsb
+ 0000013B  59						pop ecx	
+ 0000013C						done:
+ 0000013C  5F						pop edi
+							
+ 0000013D  49					dec ecx			;//
+ 0000013E  83 F9 00				cmp ecx,0		;//instade of short loop
+ 00000141  0F 85 FFFFFF49			jne inner		;//
+ 00000147  83 C7 02				add edi, 2
+ 0000014A  83 2D 00002DA1 R			sub filesize_temp,2 ;//for new line
+	   02
+ 00000151  FF 05 00002DA5 R			inc student_count
+ 00000157  83 3D 00002DA1 R		cmp filesize_temp,0		
+	   00
+ 0000015E  0F 87 FFFFFF27		ja outer		        
+ 00000164  61				popad
+ 00000165  C3				ret
+ 00000166			SplitBuffer endp
+
+ 00000166			OpenDatabase proc, f_Name:ptr byte, key:byte
+					;//open the file
+ 00000166  55		   *	    push   ebp
+ 00000167  8B EC	   *	    mov    ebp, esp
 					INVOKE Open_Createfile,f_Name
- 00000039  FF 75 08	   *	    push   dword  ptr ss:[ebp]+000000008h
- 0000003C  E8 FFFFFFBF	   *	    call   Open_Createfile
- 00000041  A3 00000000 R		mov filehandle, eax
+ 00000169  FF 75 08	   *	    push   dword  ptr ss:[ebp]+000000008h
+ 0000016C  E8 FFFFFE8F	   *	    call   Open_Createfile
+ 00000171  A3 0000000F R		mov filehandle, eax
 					;//load the file in buffer
 					INVOKE ReadFile,
 					filehandle,offset buffer,BUFSIZE,offset fileSize,NULL
- 00000046  6A 00	   *	    push   +000000000h
- 00000048  68 00002806 R   *	    push   dword  ptr OFFSET FLAT: fileSize
- 0000004D  68 00001400	   *	    push   +000001400h
- 00000052  68 00000004 R   *	    push   dword  ptr OFFSET FLAT: buffer
- 00000057  FF 35 00000000 R *	    push   filehandle
- 0000005D  E8 00000000 E   *	    call   ReadFile
+ 00000176  6A 00	   *	    push   +000000000h
+ 00000178  68 00002D9D R   *	    push   dword  ptr OFFSET FLAT: fileSize
+ 0000017D  68 00001400	   *	    push   +000001400h
+ 00000182  68 00000013 R   *	    push   dword  ptr OFFSET FLAT: buffer
+ 00000187  FF 35 0000000F R *	    push   filehandle
+ 0000018D  E8 00000000 E   *	    call   ReadFile
 					;//decrypt data 
- 00000062  8B 0D 00002806 R		mov ecx, fileSize
- 00000068  83 F9 00			cmp ecx,0
- 0000006B  74 05			je done
+ 00000192  8B 0D 00002D9D R		mov ecx, fileSize
+ 00000198  83 F9 00			cmp ecx,0
+ 0000019B  74 05			je done
 					;INVOKE encrypt_or_decrypt_buffer,key
 					;// fill the 4 arrays "idArr,nameArr,gradeArr,alphaGradeArr"
- 0000006D  E8 00000308			call SplitBuffer  
- 00000072				done:
+ 0000019D  E8 FFFFFEAD			call SplitBuffer  
+ 000001A2				done:
 					;//close the file
 					INVOKE CloseHandle,filehandle
- 00000072  FF 35 00000000 R *	    push   filehandle
- 00000078  E8 00000000 E   *	    call   CloseHandle
+ 000001A2  FF 35 0000000F R *	    push   filehandle
+ 000001A8  E8 00000000 E   *	    call   CloseHandle
 					ret
- 0000007D  C9		   *	    leave  
- 0000007E  C2 0008	   *	    ret    00008h
- 00000081			OpenDatabase endp
-source.asm(54) : warning A6004:procedure argument or local not referenced : key
+ 000001AD  C9		   *	    leave  
+ 000001AE  C2 0008	   *	    ret    00008h
+ 000001B1			OpenDatabase endp  
+source.asm(162) : warning A6004:procedure argument or local not referenced : key
 
- 00000081			SaveDatabase proc, f_Name:ptr byte, key:byte
-					;// load the 4 arrays "idArr,nameArr,gradeArr,alphaGradeArr" in buffer
- 00000081  55		   *	    push   ebp
- 00000082  8B EC	   *	    mov    ebp, esp
- 00000084  E8 000000D0			call fillBuffer
+ 000001B1			fillBuffer proc
+ 00002DD9				.data
+ 00002DD9 00000000			idPtr dword ?
+ 00002DDD 00000000			namePtr dword ?
+ 00002DE1 00000000			gradePtr dword ?
+ 00002DE5 00000000			alphaGradePtr dword ?
+ 000001B1				.code
+ 000001B1  BF 00000013 R		mov edi,offset buffer
+ 000001B6  C7 05 00002DD9 R		mov idPtr, offset idArr
+	   00002815 R
+ 000001C0  C7 05 00002DDD R		mov namePtr, offset nameArr
+	   000028DE R
+ 000001CA  C7 05 00002DE1 R		mov gradePtr, offset gradeArr
+	   00002CC7 R
+ 000001D4  C7 05 00002DE5 R		mov alphaGradePtr, offset alphaGradeArr 
+	   00002D5E R
+					;//clear the buffer
+					invoke initialize , edi , 0 , fileSize
+ 000001DE  FF 35 00002D9D R *	    push   fileSize
+ 000001E4  6A 00	   *	    push   +000000000h
+ 000001E6  57		   *	    push   edi
+ 000001E7  E8 FFFFFE4A	   *	    call   initialize
+ 000001EC  8B 0D 00002DA5 R		mov ecx , student_count
+ 000001F2				OUTER :
+ 000001F2  51				push ecx
+						;//copy id
+ 000001F3  8B 35 00002DD9 R			mov esi, idPtr
+ 000001F9  B9 00000004				mov ecx, id_element_size
+ 000001FE					L1 :
+ 000001FE  80 3E 2B				cmp byte ptr[esi], '+'
+ 00000201  74 05				je N1      ;//next byte
+ 00000203  8A 06					mov al,[esi]
+ 00000205  88 07					mov [edi],al
+ 00000207  47						inc edi
+ 00000208					N1 :	
+ 00000208  46						inc esi 
+ 00000209  E2 F3				loop L1
+ 0000020B  83 05 00002DD9 R			add idPtr, id_element_size
+	   04
+						;//write (,)
+ 00000212  C6 07 2C				mov byte ptr[edi], ','
+ 00000215  47					inc edi
+						;//copy name
+ 00000216  8B 35 00002DDD R			mov esi, namePtr
+ 0000021C  B9 00000014				mov ecx, name_element_size
+ 00000221					L2 :
+ 00000221  80 3E 2B				cmp byte ptr[esi], '+'
+ 00000224  74 03				je N2    ;// break the loop
+ 00000226  A4						movsb
+ 00000227  E2 F8				loop L2
+ 00000229					N2 :
+ 00000229  83 05 00002DDD R			add namePtr, name_element_size
+	   14
+						;//write (,)
+ 00000230  C6 07 2C				mov byte ptr[edi], ','
+ 00000233  47					inc edi
+						;//copy Grade
+ 00000234  8B 35 00002DE1 R			mov esi, gradePtr
+ 0000023A  B9 00000003				mov ecx, grade_element_size
+ 0000023F					L3 :
+ 0000023F  80 3E 2B				cmp byte ptr[esi], '+'
+ 00000242  74 05				je N3      ;//next byte
+ 00000244  8A 06					mov al,[esi]
+ 00000246  88 07					mov [edi],al
+ 00000248  47						inc edi
+ 00000249					N3 :	
+ 00000249  46						inc esi 
+ 0000024A  E2 F3				loop L3
+ 0000024C  83 05 00002DE1 R			add gradePtr, grade_element_size
+	   03
+						;//write (,)
+ 00000253  C6 07 2C				mov byte ptr[edi], ','
+ 00000256  47					inc edi
+						;//copy alphaGrade
+ 00000257  8B 35 00002DE5 R			mov esi, alphaGradePtr
+ 0000025D  80 3E 2B				cmp byte ptr[esi], '+'
+ 00000260  74 01				je N4
+ 00000262  A4						movsb
+ 00000263					N4:
+ 00000263  FF 05 00002DE5 R			inc alphaGradePtr
+						;//write (,)
+ 00000269  C6 07 2C				mov byte ptr[edi], ','
+ 0000026C  47					inc edi
+						;//add new line
+ 0000026D  C6 07 0D				mov byte ptr[edi], 13
+ 00000270  47					inc edi
+ 00000271  C6 07 0A				mov byte ptr[edi], 10
+ 00000274  47					inc edi
+ 00000275  59				pop ecx
+ 00000276  49				dec ecx			;//
+ 00000277  83 F9 00			cmp ecx,0		;//instade of short loop
+ 0000027A  0F 85 FFFFFF72		jne OUTER		;//
+ 00000280  C3				ret
+ 00000281			fillBuffer endp
+
+ 00000281			SaveDatabase proc, f_Name:ptr byte, key:byte
 					;//open the file
+ 00000281  55		   *	    push   ebp
+ 00000282  8B EC	   *	    mov    ebp, esp
 					INVOKE Open_Createfile,f_Name
- 00000089  FF 75 08	   *	    push   dword  ptr ss:[ebp]+000000008h
- 0000008C  E8 FFFFFF6F	   *	    call   Open_Createfile
- 00000091  A3 00000000 R		mov filehandle,eax
+ 00000284  FF 75 08	   *	    push   dword  ptr ss:[ebp]+000000008h
+ 00000287  E8 FFFFFD74	   *	    call   Open_Createfile
+ 0000028C  A3 0000000F R		mov filehandle,eax
+					;// load the 4 arrays "idArr,nameArr,gradeArr,alphaGradeArr" in buffer
+ 00000291  E8 FFFFFF1B			call fillBuffer
 					;//encrypt data 
- 00000096  8B 0D 00002806 R		mov ecx, fileSize
+ 00000296  8B 0D 00002D9D R		mov ecx, fileSize
 					;INVOKE encrypt_or_decrypt_buffer, key
 					;//write data in the file
 					INVOKE WriteFile,
 					filehandle,offset buffer,fileSize,offset fileSize,null
- 0000009C  6A 00	   *	    push   +000000000h
- 0000009E  68 00002806 R   *	    push   dword  ptr OFFSET FLAT: fileSize
- 000000A3  FF 35 00002806 R *	    push   fileSize
- 000000A9  68 00000004 R   *	    push   dword  ptr OFFSET FLAT: buffer
- 000000AE  FF 35 00000000 R *	    push   filehandle
- 000000B4  E8 00000000 E   *	    call   WriteFile
+ 0000029C  6A 00	   *	    push   +000000000h
+ 0000029E  68 00002D9D R   *	    push   dword  ptr OFFSET FLAT: fileSize
+ 000002A3  FF 35 00002D9D R *	    push   fileSize
+ 000002A9  68 00000013 R   *	    push   dword  ptr OFFSET FLAT: buffer
+ 000002AE  FF 35 0000000F R *	    push   filehandle
+ 000002B4  E8 00000000 E   *	    call   WriteFile
 					;//close the file
 					INVOKE CloseHandle,filehandle
- 000000B9  FF 35 00000000 R *	    push   filehandle
- 000000BF  E8 00000000 E   *	    call   CloseHandle
+ 000002B9  FF 35 0000000F R *	    push   filehandle
+ 000002BF  E8 00000000 E   *	    call   CloseHandle
 					ret
- 000000C4  C9		   *	    leave  
- 000000C5  C2 0008	   *	    ret    00008h
- 000000C8			SaveDatabase endp
-source.asm(71) : warning A6004:procedure argument or local not referenced : key
+ 000002C4  C9		   *	    leave  
+ 000002C5  C2 0008	   *	    ret    00008h
+ 000002C8			SaveDatabase endp  
+source.asm(263) : warning A6004:procedure argument or local not referenced : key
 
- 000000C8			EnrollStudent proc,s_id:ptr byte,s_name:ptr byte, id_size: dword, name_size: dword
-					;//set pointer to the end of the bufferr
- 000000C8  55		   *	    push   ebp
- 000000C9  8B EC	   *	    mov    ebp, esp
- 000000CB  BF 00000004 R		mov edi , offset buffer 
- 000000D0  03 3D 00002806 R		add edi , fileSize			
+ 000002C8			EnrollStudent proc,s_id:ptr byte,s_name:ptr byte, id_size: dword, name_size: dword		
 					;//store id
- 000000D6  8B 75 08			mov esi , s_id
- 000000D9  8B 4D 10			mov ecx ,id_size
- 000000DC  F3/ A4			rep movsb
-					;//write (,)
- 000000DE  C6 07 2C			mov byte ptr [edi], ','
- 000000E1  47				inc edi
+ 000002C8  55		   *	    push   ebp
+ 000002C9  8B EC	   *	    mov    ebp, esp
+ 000002CB  FD				std
+ 000002CC  BF 00002815 R		mov edi , offset idArr
+ 000002D1  BA 00000000			mov edx , 0
+ 000002D6  A1 00002DA5 R		mov eax , student_count
+ 000002DB  BB 00000004			mov ebx , id_element_size
+ 000002E0  F7 E3			mul ebx
+ 000002E2  03 F8			add edi , eax
+ 000002E4  83 C7 03			add edi , id_element_size-1
+ 000002E7  8B 75 08			mov esi , s_id
+ 000002EA  03 75 10			add esi , id_size 
+ 000002ED  4E				dec esi
+ 000002EE  8B 4D 10			mov ecx , id_size
+ 000002F1  F3/ A4			rep movsb
 					;//store name
- 000000E2  8B 75 0C			mov esi , s_name
- 000000E5  8B 4D 14			mov ecx , name_size
- 000000E8  F3/ A4			rep movsb
-					;//write (,)
- 000000EA  C6 07 2C			mov byte ptr[edi], ','
- 000000ED  47				inc edi
-					;//save space to grade and Alpha_gread
- 000000EE  83 C7 03			add edi,grade_size 
-					;//write (,)
- 000000F1  C6 07 2C			mov byte ptr[edi], ','
- 000000F4  83 C7 02			add edi,2
-					;//write (,)
- 000000F7  C6 07 2C			mov byte ptr[edi], ','
- 000000FA  47				inc edi
-					;//carrying_return
- 000000FB  C6 07 0D			mov byte ptr[edi],13		
- 000000FE  47				inc edi
-					;//line_feed
- 000000FF  C6 07 0A			mov byte ptr[edi],10
- 00000102  B8 00000000			mov eax, 0
- 00000107  03 45 10			add eax, id_size
- 0000010A  03 45 14			add eax, name_size
- 0000010D  83 C0 03			add eax, grade_size
- 00000110  83 C0 07			add eax, 7
- 00000113  01 05 00002806 R		add fileSize, eax
-					;//calling SplitBuffer to split the first buffer
- 00000119  E8 0000025C			call SplitBuffer
+ 000002F3  FC				cld
+ 000002F4  BF 000028DE R		mov edi , offset nameArr
+ 000002F9  BA 00000000			mov edx , 0
+ 000002FE  A1 00002DA5 R		mov eax , student_count
+ 00000303  BB 00000014			mov ebx , name_element_size
+ 00000308  F7 E3			mul ebx
+ 0000030A  03 F8			add edi , eax
+ 0000030C  8B 75 0C			mov esi , s_name
+ 0000030F  8B 4D 14			mov ecx , name_size
+ 00000312  F3/ A4			rep movsb
+					;//increment file size
+ 00000314  8B 45 10			mov eax, id_size
+ 00000317  03 45 14			add eax, name_size
+ 0000031A  83 C0 06			add eax, 6 ;//for 4delemter ','and new line 
+ 0000031D  01 05 00002D9D R		add fileSize, eax
+ 00000323  FF 05 00002DA5 R		inc student_count
 					ret
- 0000011E  C9		   *	    leave  
- 0000011F  C2 0010	   *	    ret    00010h
- 00000122			EnrollStudent endp
+ 00000329  C9		   *	    leave  
+ 0000032A  C2 0010	   *	    ret    00010h
+ 0000032D			EnrollStudent endp
 
- 00000122			getIdIndex proc, s_id:ptr byte, s_id_size : dword
-					;// ids should be sortrd to work properly
- 00000122  55		   *	    push   ebp
- 00000123  8B EC	   *	    mov    ebp, esp
- 00000125  BB 0000280A R		mov ebx, offset idArr
- 0000012A  BA 00000000			mov edx, 0
- 0000012F				Outer :
- 0000012F  8B 75 08			mov esi, s_id
- 00000132  8B FB			mov edi, ebx
- 00000134  8B 4D 0C			mov ecx, s_id_size
- 00000137				Inner :
- 00000137  8A 07			mov al, [edi]
- 00000139  38 06			cmp[esi], al
- 0000013B  75 06			jne fail
- 0000013D  46				inc esi
- 0000013E  47				inc edi
- 0000013F  E2 F6			Loop Inner
- 00000141  EB 10			jmp found
- 00000143				fail :
- 00000143  83 C3 04			add ebx, 4
- 00000146  42				inc edx
- 00000147  80 3B 00			cmp byte ptr[ebx], 0
- 0000014A  75 E3			jne Outer
- 0000014C  B8 FFFFFFFF			mov eax, -1
- 00000151  EB 02			jmp done
- 00000153				found :
- 00000153  8B C2			mov eax, edx
- 00000155				done :
+ 0000032D			getIdIndex proc USES edi esi ecx ebx , s_id:ptr byte, s_id_size : dword
+
+ 0000032D  55		   *	    push   ebp
+ 0000032E  8B EC	   *	    mov    ebp, esp
+ 00000330  57		   *	    push   edi
+ 00000331  56		   *	    push   esi
+ 00000332  51		   *	    push   ecx
+ 00000333  53		   *	    push   ebx
+					invoke initialize ,offset id_temp ,'+',id_element_size
+ 00000334  6A 04	   *	    push   +000000004h
+ 00000336  6A 2B	   *	    push   +00000002Bh
+ 00000338  68 00002D91 R   *	    push   dword  ptr OFFSET FLAT: id_temp
+ 0000033D  E8 FFFFFCF4	   *	    call   initialize
+ 00000342  FD				std
+ 00000343  BF 00002D91 R		mov edi , offset id_temp
+ 00000348  83 C7 03			add edi , id_element_size-1
+ 0000034B  8B 75 08			mov esi , s_id
+ 0000034E  03 75 0C			add esi , s_id_size 
+ 00000351  4E				dec esi
+ 00000352  8B 4D 0C			mov ecx , s_id_size
+ 00000355  F3/ A4			rep movsb
+
+ 00000357  BB 00002815 R		mov ebx, offset idArr
+ 0000035C  B8 00000000			mov eax, 0
+ 00000361  FC				cld 
+ 00000362				check :
+ 00000362  3B 05 00002DA5 R		cmp eax , student_count
+ 00000368  74 16				je fail 
+ 0000036A  BE 00002D91 R			mov esi, offset id_temp 
+ 0000036F  8B FB				mov edi, ebx
+ 00000371  B9 00000004				mov ecx, id_element_size
+ 00000376  F3/ A6				repe cmpsb
+ 00000378  74 0B				je found  ;//break
+ 0000037A  83 C3 04				add ebx,id_element_size ;//next element
+ 0000037D  40					inc eax 
+ 0000037E  EB E2				jmp check
+ 00000380				fail :
+ 00000380  B8 FFFFFFFF				mov eax, -1
+ 00000385				found :
 					ret
- 00000155  C9		   *	    leave  
- 00000156  C2 0008	   *	    ret    00008h
- 00000159			getIdIndex endP
+ 00000385  5B		   *	    pop    ebx
+ 00000386  59		   *	    pop    ecx
+ 00000387  5E		   *	    pop    esi
+ 00000388  5F		   *	    pop    edi
+ 00000389  C9		   *	    leave  
+ 0000038A  C2 0008	   *	    ret    00008h
+ 0000038D			getIdIndex endp
 
- 00000159			fillBuffer proc
- 0000293E				.data
- 0000293E 00000000			idPtr dword ?
- 00002942 00000000			namePtr dword ?
- 00002946 00000000			gradePtr dword ?
- 0000294A 00000000			alphaGradePtr dword ?
- 00000159				.code
- 00000159  C7 05 0000293E R		mov idPtr, offset idArr
-	   0000280A R
- 00000163  C7 05 00002942 R		mov namePtr, offset nameArr
-	   00002833 R
- 0000016D  C7 05 00002946 R		mov gradePtr, offset gradeArr
-	   000028FC R
- 00000177  C7 05 0000294A R		mov alphaGradePtr, offset alphaGradeArr 
-	   0000291B R
-					;//clear the buffer
- 00000181  B0 00			mov al, 0
- 00000183  B9 00001400			mov ecx, BUFSIZE
- 00000188  BF 00000004 R		mov edi, offset buffer
- 0000018D  F3/ AA			rep stosb
- 0000018F  BF 00000004 R		mov edi, offset buffer
- 00000194				O :
-					;//copy id
- 00000194  8B 35 0000293E R		mov esi, idPtr
- 0000019A  B9 00000004			mov ecx, 4
- 0000019F				L1 :
- 0000019F  80 3E 5F			cmp byte ptr[esi], '_'
- 000001A2  74 0A			je N1
- 000001A4  83 F9 00			cmp ecx, 0
- 000001A7  74 05			je N1
- 000001A9  49				dec ecx
- 000001AA  A4				movsb
- 000001AB  4A				dec edx
- 000001AC  EB F1			jmp L1
- 000001AE				N1 :
- 000001AE  83 05 0000293E R		add idPtr, 4
-	   04
-					;//write (,)
- 000001B5  C6 07 2C			mov byte ptr[edi], ','
- 000001B8  47				inc edi
-					;//copy name
- 000001B9  8B 35 00002942 R		mov esi, namePtr
- 000001BF  B9 00000014			mov ecx, 20
- 000001C4				L2 :
- 000001C4  80 3E 5F			cmp byte ptr[esi], '_'
- 000001C7  74 0A			je N2
- 000001C9  83 F9 00			cmp ecx, 0
- 000001CC  74 05			je N2
- 000001CE  49				dec ecx
- 000001CF  A4				movsb
- 000001D0  4A				dec edx
- 000001D1  EB F1			jmp L2
- 000001D3				N2 :
- 000001D3  83 05 00002942 R		add namePtr, 20
-	   14
-					;//write (,)
- 000001DA  C6 07 2C			mov byte ptr[edi], ','
- 000001DD  47				inc edi
-					;//copy Grade
- 000001DE  8B 35 00002946 R		mov esi, gradePtr
- 000001E4  B9 00000003			mov ecx, 3
- 000001E9  F3/ A4			rep movsb
- 000001EB  83 05 00002946 R		add gradePtr, 3
-	   03
-					;//write (,)
- 000001F2  C6 07 2C			mov byte ptr[edi], ','
- 000001F5  47				inc edi
-					;//copy alphaGrade
- 000001F6  8B 35 0000294A R		mov esi, alphaGradePtr
- 000001FC  A4				movsb
- 000001FD  FF 05 0000294A R		inc alphaGradePtr
-					;//write (,)
- 00000203  C6 07 2C			mov byte ptr[edi], ','
- 00000206  47				inc edi
-					;//add new line
- 00000207  C6 07 0D			mov byte ptr[edi], 13
- 0000020A  47				inc edi
- 0000020B  C6 07 0A			mov byte ptr[edi], 10
- 0000020E  47				inc edi
-					;//repet to next record if there is any
- 0000020F  8B 1D 0000293E R		mov ebx, idPtr
- 00000215  80 3B 00			cmp byte ptr[ebx], 0
- 00000218  74 09			je done
- 0000021A  80 3B 5F			cmp byte ptr[ebx], '_'
- 0000021D  0F 85 FFFFFF71		jne O
- 00000223				done :
- 00000223  C3				ret
- 00000224			fillBuffer endp
+ 0000038D			AlphaGrade proc USES esi edi ecx , grade: ptr byte
+ 0000038D  55		   *	    push   ebp
+ 0000038E  8B EC	   *	    mov    ebp, esp
+ 00000390  56		   *	    push   esi
+ 00000391  57		   *	    push   edi
+ 00000392  51		   *	    push   ecx
+ 00002DE9				.data
+ 00002DE9 2B 36 30 00			gradeF byte "+60", 0
+ 00002DED 2B 37 30 00			gradeD byte "+70", 0
+ 00002DF1 2B 38 30 00			gradeC byte "+80", 0
+ 00002DF5 2B 39 30 00			gradeB byte "+90", 0
+ 00000393				.code
+ 00000393  FC				cld 
+ 00000394  8B 75 08			mov esi,  grade
+ 00000397  BF 00002DE9 R		mov edi, offset gradeF
+ 0000039C  B9 00000003			mov ecx, 3
+ 000003A1  F3/ A6			repe cmpsb
+ 000003A3  72 43			jb FG
 
- 00000224			AlphaGrade proc USES esi edi ecx,
-				grade: ptr byte
- 00000224  55		   *	    push   ebp
- 00000225  8B EC	   *	    mov    ebp, esp
- 00000227  56		   *	    push   esi
- 00000228  57		   *	    push   edi
- 00000229  51		   *	    push   ecx
- 0000294E				.data
- 0000294E 20 36 30 00			gradeF byte " 60", 0
- 00002952 20 37 30 00			gradeD byte " 70", 0
- 00002956 20 38 30 00			gradeC byte " 80", 0
- 0000295A 20 39 30 00			gradeB byte " 90", 0
- 0000022A				.code
- 0000022A  8B 75 08			mov esi,  grade
- 0000022D  BF 0000294E R		mov edi, offset gradeF
- 00000232  B9 00000003			mov ecx, 3
- 00000237  F3/ A6			repe cmpsb
- 00000239  72 43			jb FG
+ 000003A5  8B 75 08			mov esi,  grade
+ 000003A8  BF 00002DED R		mov edi, offset gradeD
+ 000003AD  B9 00000003			mov ecx, 3
+ 000003B2  F3/ A6			repe cmpsb
+ 000003B4  72 2E			jb DG
 
- 0000023B  8B 75 08			mov esi,  grade
- 0000023E  BF 00002952 R		mov edi, offset gradeD
- 00000243  B9 00000003			mov ecx, 3
- 00000248  F3/ A6			repe cmpsb
- 0000024A  72 2E			jb DG
+ 000003B6  8B 75 08			mov esi,  grade
+ 000003B9  BF 00002DF1 R		mov edi, offset gradeC
+ 000003BE  B9 00000003			mov ecx, 3
+ 000003C3  F3/ A6			repe cmpsb
+ 000003C5  72 19			jb CG
 
- 0000024C  8B 75 08			mov esi,  grade
- 0000024F  BF 00002956 R		mov edi, offset gradeC
- 00000254  B9 00000003			mov ecx, 3
- 00000259  F3/ A6			repe cmpsb
- 0000025B  72 19			jb CG
+ 000003C7  8B 75 08			mov esi,  grade
+ 000003CA  BF 00002DF5 R		mov edi, offset gradeB
+ 000003CF  B9 00000003			mov ecx, 3
+ 000003D4  F3/ A6			repe cmpsb
+ 000003D6  72 04			jb BG
 
- 0000025D  8B 75 08			mov esi,  grade
- 00000260  BF 0000295A R		mov edi, offset gradeB
- 00000265  B9 00000003			mov ecx, 3
- 0000026A  F3/ A6			repe cmpsb
- 0000026C  72 04			jb BG
-
- 0000026E				AG :
- 0000026E  B0 41			mov al, 'A'
- 00000270  EB 0E			jmp done
- 00000272				BG :
- 00000272  B0 42			mov al, 'B'
- 00000274  EB 0A			jmp done
- 00000276				CG :
- 00000276  B0 43			mov al, 'C'
- 00000278  EB 06			jmp done
- 0000027A				DG :
- 0000027A  B0 44			mov al, 'D'
- 0000027C  EB 02			jmp done
- 0000027E				FG :
- 0000027E  B0 46			mov al, 'F'
- 00000280				done :
+ 000003D8				AG :
+ 000003D8  B0 41			mov al, 'A'
+ 000003DA  EB 0E			jmp done
+ 000003DC				BG :
+ 000003DC  B0 42			mov al, 'B'
+ 000003DE  EB 0A			jmp done
+ 000003E0				CG :
+ 000003E0  B0 43			mov al, 'C'
+ 000003E2  EB 06			jmp done
+ 000003E4				DG :
+ 000003E4  B0 44			mov al, 'D'
+ 000003E6  EB 02			jmp done
+ 000003E8				FG :
+ 000003E8  B0 46			mov al, 'F'
+ 000003EA				done :
 					ret
- 00000280  59		   *	    pop    ecx
- 00000281  5F		   *	    pop    edi
- 00000282  5E		   *	    pop    esi
- 00000283  C9		   *	    leave  
- 00000284  C2 0004	   *	    ret    00004h
- 00000287			AlphaGrade endp
+ 000003EA  59		   *	    pop    ecx
+ 000003EB  5F		   *	    pop    edi
+ 000003EC  5E		   *	    pop    esi
+ 000003ED  C9		   *	    leave  
+ 000003EE  C2 0004	   *	    ret    00004h
+ 000003F1			AlphaGrade endp
 
- 00000287			UpdateGrade proc, s_id:ptr byte, s_grade:ptr byte, s_id_size:dword, s_grade_size:dword
- 00000287  55		   *	    push   ebp
- 00000288  8B EC	   *	    mov    ebp, esp
-				invoke getIdIndex,s_id, s_id_size
- 0000028A  FF 75 10	   *	    push   dword  ptr ss:[ebp]+000000010h
- 0000028D  FF 75 08	   *	    push   dword  ptr ss:[ebp]+000000008h
- 00000290  E8 FFFFFE8D	   *	    call   getIdIndex
- 00000295  A3 00002926 R	mov temp2,eax
- 0000029A  BB 00000003		mov ebx,3
- 0000029F  F7 E3		mul ebx
- 000002A1  BF 000028FC R	mov edi,offset gradeArr
- 000002A6  03 F8		add edi,eax
- 000002A8  8B 4D 14		mov ecx,s_grade_size 
- 000002AB  8B 75 0C		mov esi,s_grade
- 000002AE  F3/ A4		rep movsb
- 000002B0  BF 0000291B R	mov edi,offset alphaGradeArr
- 000002B5  A1 00002926 R	mov eax,temp2
- 000002BA  03 F8		add edi,eax
-				INVOKE AlphaGrade,s_grade
- 000002BC  FF 75 0C	   *	    push   dword  ptr ss:[ebp]+00000000Ch
- 000002BF  E8 FFFFFF60	   *	    call   AlphaGrade
- 000002C4  88 07		mov [edi],al
-				ret
- 000002C6  C9		   *	    leave  
- 000002C7  C2 0010	   *	    ret    00010h
- 000002CA			UpdateGrade endp
-
- 000002CA			DeleteStudent proc,s_id:ptr byte, s_id_size:dword
- 000002CA  55		   *	    push   ebp
- 000002CB  8B EC	   *	    mov    ebp, esp
-				invoke getIdIndex,s_id, s_id_size
- 000002CD  FF 75 0C	   *	    push   dword  ptr ss:[ebp]+00000000Ch
- 000002D0  FF 75 08	   *	    push   dword  ptr ss:[ebp]+000000008h
- 000002D3  E8 FFFFFE4A	   *	    call   getIdIndex
-
-				;// moving ids back
- 000002D8  A3 00002926 R	mov temp2,eax
- 000002DD  BB 00000004		mov ebx,4
- 000002E2  F7 E3		mul ebx
- 000002E4  BF 0000280A R	mov edi,offset idArr
- 000002E9  03 F8		add edi,eax
- 000002EB  B9 00000029		mov ecx,lengthof idArr
- 000002F0  2B C8		sub ecx,eax
- 000002F2  83 E9 05		sub ecx,5
- 000002F5  8B F7		mov esi,edi
- 000002F7  83 C6 04		add esi,4
- 000002FA  F3/ A4		rep movsb
-				;// moving name back
- 000002FC  A1 00002926 R	mov eax,temp2
- 00000301  BB 00000014		mov ebx,20
- 00000306  F7 E3		mul ebx
- 00000308  BF 00002833 R	mov edi,offset nameArr
- 0000030D  03 F8		add edi,eax
- 0000030F  B9 000000C9		mov ecx,lengthof nameArr
- 00000314  2B C8		sub ecx,eax
- 00000316  83 E9 15		sub ecx,21
- 00000319  8B F7		mov esi,edi
- 0000031B  83 C6 14		add esi,20
- 0000031E  F3/ A4		rep movsb
-				;// moving grades back
- 00000320  A1 00002926 R	mov eax,temp2
- 00000325  BB 00000003		mov ebx,3
- 0000032A  F7 E3		mul ebx
- 0000032C  BF 000028FC R	mov edi,offset gradeArr
- 00000331  03 F8		add edi,eax
- 00000333  B9 0000001F		mov ecx,lengthof gradeArr
- 00000338  2B C8		sub ecx,eax
- 0000033A  83 E9 04		sub ecx,4
- 0000033D  8B F7		mov esi,edi
- 0000033F  83 C6 03		add esi,3
- 00000342  F3/ A4		rep movsb
-				;// moving alphaGrade
- 00000344  A1 00002926 R	mov eax,temp2
- 00000349  BB 00000003		mov ebx,3
- 0000034E  F7 E3		mul ebx
- 00000350  BF 0000291B R	mov edi,offset AlphagradeArr
- 00000355  03 F8		add edi,eax
- 00000357  B9 0000000B		mov ecx,lengthof alphagradeArr
- 0000035C  2B C8		sub ecx,eax
- 0000035E  83 E9 02		sub ecx,2
- 00000361  8B F7		mov esi,edi
- 00000363  83 C6 01		add esi,1
- 00000366  F3/ A4		rep movsb
-
-				ret
- 00000368  C9		   *	    leave  
- 00000369  C2 0008	   *	    ret    00008h
- 0000036C			DeleteStudent endp
-
- 0000036C			DisStudentData proc,s_id:dword,s_name:ptr byte,s_grade:ptr dword
-					
- 0000036C  55		   *	    push   ebp
- 0000036D  8B EC	   *	    mov    ebp, esp
-					ret
- 0000036F  C9		   *	    leave  
- 00000370  C2 000C	   *	    ret    0000Ch
- 00000373			DisStudentData endp
-source.asm(352) : warning A6004:procedure argument or local not referenced : s_id
-source.asm(352) : warning A6004:procedure argument or local not referenced : s_name
-source.asm(352) : warning A6004:procedure argument or local not referenced : s_grade
-
- 00000373			GenerateReport proc,f_name:ptr byte,sortby:byte
-
- 00000373  55		   *	    push   ebp
- 00000374  8B EC	   *	    mov    ebp, esp
-					ret
- 00000376  C9		   *	    leave  
- 00000377  C2 0008	   *	    ret    00008h
- 0000037A			GenerateReport endp
-source.asm(357) : warning A6004:procedure argument or local not referenced : f_name
-source.asm(357) : warning A6004:procedure argument or local not referenced : sortby
-
- 0000037A			SplitBuffer proc
-					;//file example : "10,Ahmed,100,A,", 13, 10, "20,Zaki, 70,C,", 13, 10, 0
- 0000295E				.data
- 0000295E 00000000			startF dword ? ;// start of field which is needed to be copied
- 00002962 00000000			endF dword ? ;// end of field which is needed to be copied
- 00002966 00000000			idS dword ?
- 0000296A 00000000			namS dword ?
- 0000296E 00000000			gradeS dword ?
- 00002972 00000000			alphaGradeS dword ?
- 0000037A				.code
- 0000037A  60				pushad
- 0000037B  BF 00000004 R		mov edi, offset buffer
- 00000380  C7 05 00002966 R		mov idS, offset idArr
-	   0000280A R
- 0000038A  C7 05 0000296A R		mov namS, offset nameArr
-	   00002833 R
- 00000394  C7 05 0000296E R		mov gradeS, offset gradeArr
-	   000028FC R
- 0000039E  C7 05 00002972 R		mov alphaGradeS, offset alphaGradeArr
-	   0000291B R
- 000003A8  B0 2C			mov al, ','
- 000003AA				outer :;//loop until the file end with 0
- 000003AA  B9 00000004			mov ecx, 4
- 000003AF				inner:;//loop on fieldss
- 000003AF  51				push ecx
- 000003B0  B9 00001401			mov ecx, lengthof buffer
- 000003B5  89 3D 0000295E R		mov startF, edi
- 000003BB  F2/ AE			repne scasb;// move edi to the offset that have (,)
- 000003BD  89 3D 00002962 R		mov endF, edi
- 000003C3  FF 0D 00002962 R		dec endF
- 000003C9  59				pop ecx
- 000003CA  8B 1D 00002962 R		mov ebx, endF;// ebx equals the number of bytes read (endF - startF)
- 000003D0  2B 1D 0000295E R		sub ebx, startF
- 000003D6  57				push edi
-					;// fill arrays with data between startF and endF
- 000003D7  83 F9 03			cmp dword ptr ecx, 3
- 000003DA  74 19			je N
- 000003DC  83 F9 02			cmp dword ptr ecx, 2
- 000003DF  74 23			je G
- 000003E1  83 F9 01			cmp dword ptr ecx, 1
- 000003E4  74 2D			je A
- 000003E6  8B 3D 00002966 R		mov edi, idS
- 000003EC  83 05 00002966 R		add idS, 4
-	   04
- 000003F3  EB 2B			jmp next
- 000003F5				N :
- 000003F5  8B 3D 0000296A R		mov edi, namS
- 000003FB  83 05 0000296A R		add namS, 20
-	   14
- 00000402  EB 1C			jmp next
- 00000404				G :
- 00000404  8B 3D 0000296E R		mov edi, gradeS
- 0000040A  83 05 0000296E R		add gradeS, 3
-	   03
- 00000411  EB 0D			jmp next
- 00000413				A :
- 00000413  8B 3D 00002972 R		mov edi, alphaGradeS
- 00000419  83 05 00002972 R		add alphaGradeS, 1
-	   01
- 00000420				next :
- 00000420  51				push ecx
- 00000421  8B CB			mov ecx, ebx
- 00000423  8B 35 0000295E R		mov esi, startF
- 00000429  F3/ A4			rep movsb
- 0000042B  59				pop ecx
+ 000003F1			DeleteStudent proc,s_id:ptr byte, s_id_size:dword
+ 000003F1  55		   *	    push   ebp
+ 000003F2  8B EC	   *	    mov    ebp, esp
+					invoke getIdIndex,s_id, s_id_size
+ 000003F4  FF 75 0C	   *	    push   dword  ptr ss:[ebp]+00000000Ch
+ 000003F7  FF 75 08	   *	    push   dword  ptr ss:[ebp]+000000008h
+ 000003FA  E8 FFFFFF2E	   *	    call   getIdIndex
+ 000003FF  FC				cld
+					;// moving ids back
+ 00000400  A3 00002DA9 R		mov id_index_temp , eax
+ 00000405  BB 00000004			mov ebx , id_element_size
+ 0000040A  F7 E3			mul ebx
+ 0000040C  BF 00002815 R		mov edi,offset idArr
+ 00000411  03 F8			add edi,eax
+ 00000413  57				push edi
+ 00000414  50				push eax
+ 00000415  B9 00000004			mov ecx, id_element_size
+ 0000041A  B0 2B			mov al,'+'
+ 0000041C  F3/ AE			repe scasb
+ 0000041E  29 0D 00002D9D R		sub fileSize,ecx
+ 00000424  83 2D 00002D9D R		sub fileSize,2
+	   02
+ 0000042B  58				pop eax
  0000042C  5F				pop edi
- 0000042D  E2 80			Loop inner
- 0000042F  83 C7 02			add edi, 2
- 00000432  80 3F 00			cmp byte ptr[edi], 0
- 00000435  0F 85 FFFFFF6F		jne outer
- 0000043B  61				popad
- 0000043C  C3				ret
- 0000043D			SplitBuffer endp
-
- 0000043D			swap Proc sizes:dword,ptr1:ptr byte 
- 0000043D  55		   *	    push   ebp
- 0000043E  8B EC	   *	    mov    ebp, esp
- 00000440  8B 75 0C		mov esi,ptr1
- 00000443  BF 0000292A R	mov edi,offset temp1
- 00000448  8B 4D 08		mov ecx,sizes
- 0000044B  F3/ A4		rep movsb 
- 0000044D  8B 75 0C		mov esi,ptr1
- 00000450  03 75 08		add esi,sizes
- 00000453  8B 7D 0C		mov edi,ptr1
- 00000456  8B 4D 08		mov ecx,sizes
- 00000459  F3/ A4		rep movsb 
- 0000045B  8B 7D 0C		mov edi,ptr1
- 0000045E  03 7D 08		add edi,sizes
- 00000461  BE 0000292A R	mov esi,offset temp1
- 00000466  8B 4D 08		mov ecx,sizes
- 00000469  F3/ A4		rep movsb
-				ret
- 0000046B  C9		   *	    leave  
- 0000046C  C2 0008	   *	    ret    00008h
- 0000046F			swap endP
-
- 0000046F			BubbleSort PROC USES eax ecx esi ebx edx edi,
-				Count:DWORD ; array size
- 0000046F  55		   *	    push   ebp
- 00000470  8B EC	   *	    mov    ebp, esp
- 00000472  50		   *	    push   eax
- 00000473  51		   *	    push   ecx
- 00000474  56		   *	    push   esi
- 00000475  53		   *	    push   ebx
- 00000476  52		   *	    push   edx
- 00000477  57		   *	    push   edi
- 00000478  8B 4D 08		mov ecx,Count
- 0000047B  49			dec ecx; decrement count by 1
- 0000047C  51			L1: push ecx ; save outer loop count
- 0000047D  BE 0000280A R	mov esi,offset idArr ; point to first value
- 00000482  BF 00002833 R	mov edi,offset nameArr
- 00000487  BB 000028FC R	mov ebx,offset gradeArr
- 0000048C  BA 0000291B R	mov edx,offset alphaGradeArr
- 00000491  8B 06		L2: mov eax,[esi] ; get array value
- 00000493  39 46 04		cmp [esi+4],eax ; compare a pair of values
- 00000496  7F 2D		jg L3 ; if [ESI] <= [ESI+4], no exchange
- 00000498  87 46 04		xchg eax,[esi+4] ; exchange the pair
- 0000049B  89 06		mov [esi],eax
- 0000049D  60			pushad
-				invoke swap,4,esi
- 0000049E  56		   *	    push   esi
- 0000049F  6A 04	   *	    push   +000000004h
- 000004A1  E8 FFFFFF97	   *	    call   swap
- 000004A6  61			popad
- 000004A7  60			pushad
-				invoke swap,20,edi
- 000004A8  57		   *	    push   edi
- 000004A9  6A 14	   *	    push   +000000014h
- 000004AB  E8 FFFFFF8D	   *	    call   swap
- 000004B0  61			popad
- 000004B1  60			pushad
-				invoke swap,3,ebx
- 000004B2  53		   *	    push   ebx
- 000004B3  6A 03	   *	    push   +000000003h
- 000004B5  E8 FFFFFF83	   *	    call   swap
- 000004BA  61			popad
- 000004BB  60			pushad
-				invoke swap,1,edx
- 000004BC  52		   *	    push   edx
- 000004BD  6A 01	   *	    push   +000000001h
- 000004BF  E8 FFFFFF79	   *	    call   swap
- 000004C4  61			popad
-
- 000004C5  83 C6 04		L3: add esi,4 ; move both pointers forward
- 000004C8  83 C7 14		add edi,20 ; move both pointers forward
- 000004CB  83 C3 03		add ebx,3 ; move both pointers forward
- 000004CE  83 C2 01		add edx,1 ; move both pointers forward
-
- 000004D1  E2 BE		loop L2 ; inner loop
- 000004D3  59			pop ecx ; retrieve outer loop count
- 000004D4  E2 A6		loop L1 ; else repeat outer loop
- 000004D6			L4: ret
- 000004D6  5F		   *	    pop    edi
- 000004D7  5A		   *	    pop    edx
- 000004D8  5B		   *	    pop    ebx
- 000004D9  5E		   *	    pop    esi
- 000004DA  59		   *	    pop    ecx
- 000004DB  58		   *	    pop    eax
- 000004DC  C9		   *	    leave  
- 000004DD  C2 0004	   *	    ret    00004h
- 000004E0			BubbleSort ENDP
-
- 000004E0			DllMain PROC hInstance:DWORD, fdwReason:DWORD, lpReserved:DWORD 
- 000004E0  55		   *	    push   ebp
- 000004E1  8B EC	   *	    mov    ebp, esp
- 000004E3  B8 00000001			mov eax, 1;//Return true to caller. 
+ 0000042D  B9 000000C9			mov ecx,sizeof idArr
+ 00000432  2B C8			sub ecx,eax
+ 00000434  83 E9 05			sub ecx,5
+ 00000437  8B F7			mov esi,edi
+ 00000439  83 C6 04			add esi,4
+ 0000043C  F3/ A4			rep movsb
+					;// moving name back
+ 0000043E  A1 00002DA9 R		mov eax,id_index_temp
+ 00000443  BB 00000014			mov ebx,20
+ 00000448  F7 E3			mul ebx
+ 0000044A  BF 000028DE R		mov edi,offset nameArr
+ 0000044F  03 F8			add edi,eax
+ 00000451  57				push edi
+ 00000452  50				push eax
+ 00000453  B9 00000014			mov ecx, name_element_size
+ 00000458  B0 2B			mov al,'+'
+ 0000045A  F2/ AE			repne scasb
+ 0000045C  83 2D 00002D9D R		sub fileSize,name_element_size
+	   14
+ 00000463  01 0D 00002D9D R		add fileSize,ecx
+ 00000469  58				pop eax
+ 0000046A  5F				pop edi
+ 0000046B  B9 000003E9			mov ecx,sizeof nameArr
+ 00000470  2B C8			sub ecx,eax
+ 00000472  83 E9 15			sub ecx,21
+ 00000475  8B F7			mov esi,edi
+ 00000477  83 C6 14			add esi,20
+ 0000047A  F3/ A4			rep movsb
+					;// moving grades back
+ 0000047C  A1 00002DA9 R		mov eax,id_index_temp
+ 00000481  BB 00000003			mov ebx,3
+ 00000486  F7 E3			mul ebx
+ 00000488  BF 00002CC7 R		mov edi,offset gradeArr
+ 0000048D  03 F8			add edi,eax
+ 0000048F  57				push edi
+ 00000490  50				push eax
+ 00000491  B9 00000003			mov ecx, grade_element_size
+ 00000496  B0 2B			mov al,'+'
+ 00000498  F3/ AE			repe scasb
+ 0000049A  74 0C			je G_empety
+ 0000049C  29 0D 00002D9D R		sub fileSize,ecx
+ 000004A2  FF 0D 00002D9D R		dec fileSize
+ 000004A8				G_empety:
+ 000004A8  FF 0D 00002D9D R		dec fileSize
+ 000004AE  58				pop eax
+ 000004AF  5F				pop edi
+ 000004B0  B9 00000097			mov ecx,sizeof gradeArr
+ 000004B5  2B C8			sub ecx,eax
+ 000004B7  83 E9 04			sub ecx,4
+ 000004BA  8B F7			mov esi,edi
+ 000004BC  83 C6 03			add esi,3
+ 000004BF  F3/ A4			rep movsb
+					;// moving alphaGrade
+ 000004C1  BF 00002D5E R		mov edi,offset AlphagradeArr
+ 000004C6  03 3D 00002DA9 R		add edi,id_index_temp
+ 000004CC  80 3F 2B			cmp byte ptr[edi],'+'
+ 000004CF  74 06			je A_empety
+ 000004D1  FF 0D 00002D9D R		dec fileSize
+ 000004D7				A_empety:
+ 000004D7  FF 0D 00002D9D R		dec fileSize
+ 000004DD  B9 00000033			mov ecx,sizeof alphagradeArr
+ 000004E2  2B 0D 00002DA9 R		sub ecx,id_index_temp
+ 000004E8  83 E9 02			sub ecx,2
+ 000004EB  8B F7			mov esi,edi
+ 000004ED  83 C6 01			add esi,1
+ 000004F0  F3/ A4			rep movsb
+ 000004F2  83 2D 00002D9D R		sub fileSize,2
+	   02
+ 000004F9  FF 0D 00002DA5 R		dec student_count
 					ret 
- 000004E8  C9		   *	    leave  
- 000004E9  C2 000C	   *	    ret    0000Ch
- 000004EC			DllMain ENDP
-source.asm(484) : warning A6004:procedure argument or local not referenced : hInstance
-source.asm(484) : warning A6004:procedure argument or local not referenced : fdwReason
-source.asm(484) : warning A6004:procedure argument or local not referenced : lpReserved
+ 000004FF  C9		   *	    leave  
+ 00000500  C2 0008	   *	    ret    00008h
+ 00000503			DeleteStudent endp 
+
+ 00000503			UpdateGrade proc, s_id:ptr byte, s_grade:ptr byte, s_id_size:dword, s_grade_size:dword
+ 00000503  55		   *	    push   ebp
+ 00000504  8B EC	   *	    mov    ebp, esp
+					invoke getIdIndex,s_id, s_id_size
+ 00000506  FF 75 10	   *	    push   dword  ptr ss:[ebp]+000000010h
+ 00000509  FF 75 08	   *	    push   dword  ptr ss:[ebp]+000000008h
+ 0000050C  E8 FFFFFE1C	   *	    call   getIdIndex
+ 00000511  A3 00002DA9 R		mov id_index_temp,eax
+ 00000516  BB 00000003			mov ebx,grade_element_size
+ 0000051B  F7 E3			mul ebx
+ 0000051D  BF 00002CC7 R		mov edi,offset gradeArr
+ 00000522  03 F8			add edi,eax
+ 00000524  89 3D 00002D95 R		mov grade_index,edi
+ 0000052A  57				push edi
+ 0000052B  BE 00002D99 R			mov esi , offset empty_grade
+ 00000530  B9 00000003				mov ecx , grade_element_size
+ 00000535  F3/ A6				repe cmpsb
+ 00000537  75 0F				jne full ;//there is a value in it 
+ 00000539  8B 5D 14					mov ebx,s_grade_size 
+ 0000053C  01 1D 00002D9D R				add fileSize ,ebx  ;//increment with grade size
+ 00000542  FF 05 00002D9D R				inc fileSize       ;//increment with alpha grade size
+ 00000548					full :
+ 00000548  5F				pop edi
+ 00000549  83 C7 02			add edi,grade_element_size-1
+ 0000054C  8B 75 0C			mov esi,s_grade
+ 0000054F  03 75 14			add esi,s_grade_size
+ 00000552  4E				dec esi
+ 00000553  8B 4D 14			mov ecx,s_grade_size 
+ 00000556  FD				std 
+ 00000557  F3/ A4			rep movsb
+ 00000559  BF 00002D5E R		mov edi,offset alphaGradeArr
+ 0000055E  03 3D 00002DA9 R		add edi,id_index_temp
+					INVOKE AlphaGrade,grade_index
+ 00000564  FF 35 00002D95 R *	    push   grade_index
+ 0000056A  E8 FFFFFE1E	   *	    call   AlphaGrade
+ 0000056F  88 07			mov [edi],al
+					ret
+ 00000571  C9		   *	    leave  
+ 00000572  C2 0010	   *	    ret    00010h
+ 00000575			UpdateGrade endp  
+
+ 00000575			DisStudentData proc,s_id:ptr byte,s_id_size:dword,s_name:ptr byte,s_grade:ptr byte,s_A_grade:ptr byte
+ 00000575  55		   *	    push   ebp
+ 00000576  8B EC	   *	    mov    ebp, esp
+					invoke getIdIndex,s_id, s_id_size
+ 00000578  FF 75 0C	   *	    push   dword  ptr ss:[ebp]+00000000Ch
+ 0000057B  FF 75 08	   *	    push   dword  ptr ss:[ebp]+000000008h
+ 0000057E  E8 FFFFFDAA	   *	    call   getIdIndex
+ 00000583  A3 00002DA9 R		mov id_index_temp,eax
+ 00000588  BA 00000000			mov edx,0
+ 0000058D  BE 000028DE R		mov esi ,offset nameArr
+ 00000592  BB 00000014			mov ebx , name_element_size
+ 00000597  F7 E3			mul ebx
+ 00000599  03 F0			add esi,eax
+ 0000059B  8B 7D 10			mov edi,s_name
+ 0000059E  B9 00000014			mov ecx, name_element_size
+ 000005A3				n:
+ 000005A3  8A 06				mov al ,[esi]
+ 000005A5  3C 2B				cmp al,'+'
+ 000005A7  74 06				je name_finished
+ 000005A9  88 07				mov [edi],al
+ 000005AB  47					inc edi
+ 000005AC  46					inc esi
+ 000005AD  E2 F4			loop n
+ 000005AF				name_finished:
+
+ 000005AF  A1 00002DA9 R		mov eax , id_index_temp
+ 000005B4  BE 00002CC7 R		mov esi , offset gradeArr
+ 000005B9  BB 00000003			mov ebx , grade_element_size
+ 000005BE  F7 E3			mul ebx
+ 000005C0  03 F0			add esi,eax
+ 000005C2  8B 7D 14			mov edi,s_grade
+ 000005C5  B9 00000003			mov ecx, grade_element_size
+ 000005CA				g:
+ 000005CA  8A 06				mov al ,[esi]
+ 000005CC  3C 2B				cmp al,'+'
+ 000005CE  74 03				je next  ;//next byte 
+ 000005D0  88 07				mov [edi],al
+ 000005D2  47					inc edi
+ 000005D3					next :
+ 000005D3  C6 07 20				mov byte ptr[edi],' '
+ 000005D6  46					inc esi
+ 000005D7  E2 F1			loop g
+
+ 000005D9  BE 00002D5E R		mov esi , offset AlphagradeArr
+ 000005DE  03 35 00002DA9 R		add esi , id_index_temp
+ 000005E4  8B 7D 18			mov edi , s_A_grade
+ 000005E7  8A 06			mov al ,[esi]
+ 000005E9  3C 2B			cmp al,'+'
+ 000005EB  74 03			je done
+ 000005ED  88 07				mov [edi],al
+ 000005EF  47					inc edi
+ 000005F0				done:
+ 000005F0  C6 07 20				mov byte ptr[edi],' '
+					ret
+ 000005F3  C9		   *	    leave  
+ 000005F4  C2 0014	   *	    ret    00014h
+ 000005F7			DisStudentData endp
+
+ 000005F7			Swap proc ,sizes:dword,ptr1:ptr byte 
+ 000005F7  55		   *	    push   ebp
+ 000005F8  8B EC	   *	    mov    ebp, esp
+ 000005FA  8B 75 0C		mov esi,ptr1
+ 000005FD  BF 00002DAD R	mov edi,offset temp1
+ 00000602  8B 4D 08		mov ecx,sizes
+ 00000605  F3/ A4		rep movsb 
+ 00000607  8B 75 0C		mov esi,ptr1
+ 0000060A  03 75 08		add esi,sizes
+ 0000060D  8B 7D 0C		mov edi,ptr1
+ 00000610  8B 4D 08		mov ecx,sizes
+ 00000613  F3/ A4		rep movsb 
+ 00000615  8B 7D 0C		mov edi,ptr1
+ 00000618  03 7D 08		add edi,sizes
+ 0000061B  BE 00002DAD R	mov esi,offset temp1
+ 00000620  8B 4D 08		mov ecx,sizes
+ 00000623  F3/ A4		rep movsb
+				ret
+ 00000625  C9		   *	    leave  
+ 00000626  C2 0008	   *	    ret    00008h
+ 00000629			Swap endp
+
+ 00000629			BubbleSort PROC USES eax ecx esi ebx edx edi,
+				Count:DWORD ;//array size
+ 00000629  55		   *	    push   ebp
+ 0000062A  8B EC	   *	    mov    ebp, esp
+ 0000062C  50		   *	    push   eax
+ 0000062D  51		   *	    push   ecx
+ 0000062E  56		   *	    push   esi
+ 0000062F  53		   *	    push   ebx
+ 00000630  52		   *	    push   edx
+ 00000631  57		   *	    push   edi
+ 00000632  8B 4D 08		mov ecx,Count
+ 00000635  49			dec ecx;//decrement count by 1
+ 00000636  51			L1: push ecx ;//save outer loop count
+ 00000637  BE 00002815 R	mov esi,offset idArr ;//point to first value
+ 0000063C  BF 000028DE R	mov edi,offset nameArr
+ 00000641  BB 00002CC7 R	mov ebx,offset gradeArr
+ 00000646  BA 00002D5E R	mov edx,offset alphaGradeArr
+ 0000064B  8B 06		L2: mov eax,[esi] ;//get array value
+ 0000064D  39 46 04		cmp [esi+4],eax ;//compare a pair of values
+ 00000650  7F 2D		jg L3 ;//if [ESI] <= [ESI+4], no exchange
+ 00000652  87 46 04		xchg eax,[esi+4] ;//exchange the pair
+ 00000655  89 06		mov [esi],eax
+ 00000657  60			pushad
+				invoke swap,4,esi
+ 00000658  56		   *	    push   esi
+ 00000659  6A 04	   *	    push   +000000004h
+ 0000065B  E8 FFFFFF97	   *	    call   Swap
+ 00000660  61			popad
+ 00000661  60			pushad
+				invoke swap,20,edi
+ 00000662  57		   *	    push   edi
+ 00000663  6A 14	   *	    push   +000000014h
+ 00000665  E8 FFFFFF8D	   *	    call   Swap
+ 0000066A  61			popad
+ 0000066B  60			pushad
+				invoke swap,3,ebx
+ 0000066C  53		   *	    push   ebx
+ 0000066D  6A 03	   *	    push   +000000003h
+ 0000066F  E8 FFFFFF83	   *	    call   Swap
+ 00000674  61			popad
+ 00000675  60			pushad
+				invoke swap,1,edx
+ 00000676  52		   *	    push   edx
+ 00000677  6A 01	   *	    push   +000000001h
+ 00000679  E8 FFFFFF79	   *	    call   Swap
+ 0000067E  61			popad
+
+ 0000067F  83 C6 04		L3: add esi,4 ;//move both pointers forward
+ 00000682  83 C7 14		add edi,20 ;//move both pointers forward
+ 00000685  83 C3 03		add ebx,3 ;//move both pointers forward
+ 00000688  83 C2 01		add edx,1 ;//move both pointers forward
+
+ 0000068B  E2 BE		loop L2 ;//inner loop
+ 0000068D  59			pop ecx ;//retrieve outer loop count
+ 0000068E  E2 A6		loop L1 ;//else repeat outer loop
+ 00000690			L4: ret
+ 00000690  5F		   *	    pop    edi
+ 00000691  5A		   *	    pop    edx
+ 00000692  5B		   *	    pop    ebx
+ 00000693  5E		   *	    pop    esi
+ 00000694  59		   *	    pop    ecx
+ 00000695  58		   *	    pop    eax
+ 00000696  C9		   *	    leave  
+ 00000697  C2 0004	   *	    ret    00004h
+ 0000069A			BubbleSort ENDP
+
+ 0000069A			GenerateReport proc,f_name:ptr byte,sortby:byte
+					
+ 0000069A  55		   *	    push   ebp
+ 0000069B  8B EC	   *	    mov    ebp, esp
+					ret
+ 0000069D  C9		   *	    leave  
+ 0000069E  C2 0008	   *	    ret    00008h
+ 000006A1			GenerateReport endp
+source.asm(612) : warning A6004:procedure argument or local not referenced : f_name
+source.asm(612) : warning A6004:procedure argument or local not referenced : sortby
+
+
+ 000006A1			DllMain PROC hInstance:DWORD, fdwReason:DWORD, lpReserved:DWORD 
+ 000006A1  55		   *	    push   ebp
+ 000006A2  8B EC	   *	    mov    ebp, esp
+ 000006A4  B8 00000001			mov eax, 1;//Return true to caller. 
+	ret 
+ 000006A9  C9		   *	    leave  
+ 000006AA  C2 000C	   *	    ret    0000Ch
+ 000006AD			DllMain ENDP
+source.asm(618) : warning A6004:procedure argument or local not referenced : hInstance
+source.asm(618) : warning A6004:procedure argument or local not referenced : fdwReason
+source.asm(618) : warning A6004:procedure argument or local not referenced : lpReserved
 
 
 				END DllMain
 
-Microsoft (R) Macro Assembler Version 11.00.61030.0	    12/21/17 23:47:36
+Microsoft (R) Macro Assembler Version 11.00.61030.0	    12/25/17 04:40:56
 source.asm						     Symbols 2 - 1
 
 
@@ -762,28 +937,28 @@ Segments and Groups:
 
 FLAT . . . . . . . . . . . . . .	GROUP
 STACK  . . . . . . . . . . . . .	32 Bit	 00001000 Para	  Stack	  'STACK'	 
-_DATA  . . . . . . . . . . . . .	32 Bit	 00002976 Para	  Public  'DATA'	
-_TEXT  . . . . . . . . . . . . .	32 Bit	 000004EC Para	  Public  'CODE'	
+_DATA  . . . . . . . . . . . . .	32 Bit	 00002DF9 Para	  Public  'DATA'	
+_TEXT  . . . . . . . . . . . . .	32 Bit	 000006AD Para	  Public  'CODE'	
 
 
 Procedures, parameters, and locals:
 
                 N a m e                 Type     Value    Attr
 
-AlphaGrade . . . . . . . . . . .	P Near	 00000224 _TEXT	Length= 00000063 Public STDCALL
+AlphaGrade . . . . . . . . . . .	P Near	 0000038D _TEXT	Length= 00000064 Public STDCALL
   grade  . . . . . . . . . . . .	DWord	 bp + 00000008
-  AG . . . . . . . . . . . . . .	L Near	 0000026E _TEXT	
-  BG . . . . . . . . . . . . . .	L Near	 00000272 _TEXT	
-  CG . . . . . . . . . . . . . .	L Near	 00000276 _TEXT	
-  DG . . . . . . . . . . . . . .	L Near	 0000027A _TEXT	
-  FG . . . . . . . . . . . . . .	L Near	 0000027E _TEXT	
-  done . . . . . . . . . . . . .	L Near	 00000280 _TEXT	
-BubbleSort . . . . . . . . . . .	P Near	 0000046F _TEXT	Length= 00000071 Public STDCALL
+  AG . . . . . . . . . . . . . .	L Near	 000003D8 _TEXT	
+  BG . . . . . . . . . . . . . .	L Near	 000003DC _TEXT	
+  CG . . . . . . . . . . . . . .	L Near	 000003E0 _TEXT	
+  DG . . . . . . . . . . . . . .	L Near	 000003E4 _TEXT	
+  FG . . . . . . . . . . . . . .	L Near	 000003E8 _TEXT	
+  done . . . . . . . . . . . . .	L Near	 000003EA _TEXT	
+BubbleSort . . . . . . . . . . .	P Near	 00000629 _TEXT	Length= 00000071 Public STDCALL
   Count  . . . . . . . . . . . .	DWord	 bp + 00000008
-  L1 . . . . . . . . . . . . . .	L Near	 0000047C _TEXT	
-  L2 . . . . . . . . . . . . . .	L Near	 00000491 _TEXT	
-  L3 . . . . . . . . . . . . . .	L Near	 000004C5 _TEXT	
-  L4 . . . . . . . . . . . . . .	L Near	 000004D6 _TEXT	
+  L1 . . . . . . . . . . . . . .	L Near	 00000636 _TEXT	
+  L2 . . . . . . . . . . . . . .	L Near	 0000064B _TEXT	
+  L3 . . . . . . . . . . . . . .	L Near	 0000067F _TEXT	
+  L4 . . . . . . . . . . . . . .	L Near	 00000690 _TEXT	
 CloseFile  . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 CloseHandle  . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 Clrscr . . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
@@ -791,20 +966,29 @@ CreateFileA  . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External
 CreateOutputFile . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 Crlf . . . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 Delay  . . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-DeleteStudent  . . . . . . . . .	P Near	 000002CA _TEXT	Length= 000000A2 Public STDCALL
+DeleteStudent  . . . . . . . . .	P Near	 000003F1 _TEXT	Length= 00000112 Public STDCALL
   s_id . . . . . . . . . . . . .	DWord	 bp + 00000008
   s_id_size  . . . . . . . . . .	DWord	 bp + 0000000C
-DisStudentData . . . . . . . . .	P Near	 0000036C _TEXT	Length= 00000007 Public STDCALL
+  G_empety . . . . . . . . . . .	L Near	 000004A8 _TEXT	
+  A_empety . . . . . . . . . . .	L Near	 000004D7 _TEXT	
+DisStudentData . . . . . . . . .	P Near	 00000575 _TEXT	Length= 00000082 Public STDCALL
   s_id . . . . . . . . . . . . .	DWord	 bp + 00000008
-  s_name . . . . . . . . . . . .	DWord	 bp + 0000000C
-  s_grade  . . . . . . . . . . .	DWord	 bp + 00000010
-DllMain  . . . . . . . . . . . .	P Near	 000004E0 _TEXT	Length= 0000000C Public STDCALL
+  s_id_size  . . . . . . . . . .	DWord	 bp + 0000000C
+  s_name . . . . . . . . . . . .	DWord	 bp + 00000010
+  s_grade  . . . . . . . . . . .	DWord	 bp + 00000014
+  s_A_grade  . . . . . . . . . .	DWord	 bp + 00000018
+  n  . . . . . . . . . . . . . .	L Near	 000005A3 _TEXT	
+  name_finished  . . . . . . . .	L Near	 000005AF _TEXT	
+  g  . . . . . . . . . . . . . .	L Near	 000005CA _TEXT	
+  next . . . . . . . . . . . . .	L Near	 000005D3 _TEXT	
+  done . . . . . . . . . . . . .	L Near	 000005F0 _TEXT	
+DllMain  . . . . . . . . . . . .	P Near	 000006A1 _TEXT	Length= 0000000C Public STDCALL
   hInstance  . . . . . . . . . .	DWord	 bp + 00000008
   fdwReason  . . . . . . . . . .	DWord	 bp + 0000000C
   lpReserved . . . . . . . . . .	DWord	 bp + 00000010
 DumpMem  . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 DumpRegs . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-EnrollStudent  . . . . . . . . .	P Near	 000000C8 _TEXT	Length= 0000005A Public STDCALL
+EnrollStudent  . . . . . . . . .	P Near	 000002C8 _TEXT	Length= 00000065 Public STDCALL
   s_id . . . . . . . . . . . . .	DWord	 bp + 00000008
   s_name . . . . . . . . . . . .	DWord	 bp + 0000000C
   id_size  . . . . . . . . . . .	DWord	 bp + 00000010
@@ -814,7 +998,7 @@ FileTimeToDosDateTime  . . . . .	P Near	 00000000 FLAT	Length= 00000000 External
 FileTimeToSystemTime . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 FlushConsoleInputBuffer  . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 FormatMessageA . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-GenerateReport . . . . . . . . .	P Near	 00000373 _TEXT	Length= 00000007 Public STDCALL
+GenerateReport . . . . . . . . .	P Near	 0000069A _TEXT	Length= 00000007 Public STDCALL
   f_name . . . . . . . . . . . .	DWord	 bp + 00000008
   sortby . . . . . . . . . . . .	Byte	 bp + 0000000C
 GetCommandLineA  . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
@@ -847,10 +1031,10 @@ LocalFree  . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External
 MessageBoxA  . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 MsgBoxAsk  . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 MsgBox . . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-OpenDatabase . . . . . . . . . .	P Near	 00000036 _TEXT	Length= 0000004B Public STDCALL
+OpenDatabase . . . . . . . . . .	P Near	 00000166 _TEXT	Length= 0000004B Public STDCALL
   f_Name . . . . . . . . . . . .	DWord	 bp + 00000008
   key  . . . . . . . . . . . . .	Byte	 bp + 0000000C
-  done . . . . . . . . . . . . .	L Near	 00000072 _TEXT	
+  done . . . . . . . . . . . . .	L Near	 000001A2 _TEXT	
 OpenInputFile  . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 Open_Createfile  . . . . . . . .	P Near	 00000000 _TEXT	Length= 00000021 Public STDCALL
   f_Name . . . . . . . . . . . .	DWord	 bp + 00000008
@@ -872,7 +1056,7 @@ ReadInt  . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External
 ReadKeyFlush . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 ReadKey  . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 ReadString . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-SaveDatabase . . . . . . . . . .	P Near	 00000081 _TEXT	Length= 00000047 Public STDCALL
+SaveDatabase . . . . . . . . . .	P Near	 00000281 _TEXT	Length= 00000047 Public STDCALL
   f_Name . . . . . . . . . . . .	DWord	 bp + 00000008
   key  . . . . . . . . . . . . .	Byte	 bp + 0000000C
 SetConsoleCursorInfo . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
@@ -887,25 +1071,31 @@ SetLocalTime . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External
 SetTextColor . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 ShowFPUStack . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 Sleep  . . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-SplitBuffer  . . . . . . . . . .	P Near	 0000037A _TEXT	Length= 000000C3 Public STDCALL
-  outer  . . . . . . . . . . . .	L Near	 000003AA _TEXT	
-  inner  . . . . . . . . . . . .	L Near	 000003AF _TEXT	
-  N  . . . . . . . . . . . . . .	L Near	 000003F5 _TEXT	
-  G  . . . . . . . . . . . . . .	L Near	 00000404 _TEXT	
-  A  . . . . . . . . . . . . . .	L Near	 00000413 _TEXT	
-  next . . . . . . . . . . . . .	L Near	 00000420 _TEXT	
+SplitBuffer  . . . . . . . . . .	P Near	 0000004F _TEXT	Length= 00000117 Public STDCALL
+  outer  . . . . . . . . . . . .	L Near	 0000008B _TEXT	
+  inner  . . . . . . . . . . . .	L Near	 00000090 _TEXT	
+  i  . . . . . . . . . . . . . .	L Near	 000000D5 _TEXT	
+  N  . . . . . . . . . . . . . .	L Near	 000000EF _TEXT	
+  G  . . . . . . . . . . . . . .	L Near	 00000104 _TEXT	
+  A  . . . . . . . . . . . . . .	L Near	 0000011E _TEXT	
+  next . . . . . . . . . . . . .	L Near	 00000131 _TEXT	
+  done . . . . . . . . . . . . .	L Near	 0000013C _TEXT	
 StrLength  . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 Str_compare  . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 Str_copy . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 Str_length . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 Str_trim . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 Str_ucase  . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
+Swap . . . . . . . . . . . . . .	P Near	 000005F7 _TEXT	Length= 00000032 Public STDCALL
+  sizes  . . . . . . . . . . . .	DWord	 bp + 00000008
+  ptr1 . . . . . . . . . . . . .	DWord	 bp + 0000000C
 SystemTimeToFileTime . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-UpdateGrade  . . . . . . . . . .	P Near	 00000287 _TEXT	Length= 00000043 Public STDCALL
+UpdateGrade  . . . . . . . . . .	P Near	 00000503 _TEXT	Length= 00000072 Public STDCALL
   s_id . . . . . . . . . . . . .	DWord	 bp + 00000008
   s_grade  . . . . . . . . . . .	DWord	 bp + 0000000C
   s_id_size  . . . . . . . . . .	DWord	 bp + 00000010
   s_grade_size . . . . . . . . .	DWord	 bp + 00000014
+  full . . . . . . . . . . . . .	L Near	 00000548 _TEXT	
 WaitMsg  . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 WriteBinB  . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 WriteBin . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
@@ -927,26 +1117,27 @@ WriteWindowsMsg  . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External
 encrypt_or_decrypt_buffer  . . .	P Near	 00000021 _TEXT	Length= 00000015 Public STDCALL
   key  . . . . . . . . . . . . .	Byte	 bp + 00000008
   L  . . . . . . . . . . . . . .	L Near	 0000002B _TEXT	
-fillBuffer . . . . . . . . . . .	P Near	 00000159 _TEXT	Length= 000000CB Public STDCALL
-  O  . . . . . . . . . . . . . .	L Near	 00000194 _TEXT	
-  L1 . . . . . . . . . . . . . .	L Near	 0000019F _TEXT	
-  N1 . . . . . . . . . . . . . .	L Near	 000001AE _TEXT	
-  L2 . . . . . . . . . . . . . .	L Near	 000001C4 _TEXT	
-  N2 . . . . . . . . . . . . . .	L Near	 000001D3 _TEXT	
-  done . . . . . . . . . . . . .	L Near	 00000223 _TEXT	
-getIdIndex . . . . . . . . . . .	P Near	 00000122 _TEXT	Length= 00000037 Public STDCALL
+fillBuffer . . . . . . . . . . .	P Near	 000001B1 _TEXT	Length= 000000D0 Public STDCALL
+  OUTER  . . . . . . . . . . . .	L Near	 000001F2 _TEXT	
+  L1 . . . . . . . . . . . . . .	L Near	 000001FE _TEXT	
+  N1 . . . . . . . . . . . . . .	L Near	 00000208 _TEXT	
+  L2 . . . . . . . . . . . . . .	L Near	 00000221 _TEXT	
+  N2 . . . . . . . . . . . . . .	L Near	 00000229 _TEXT	
+  L3 . . . . . . . . . . . . . .	L Near	 0000023F _TEXT	
+  N3 . . . . . . . . . . . . . .	L Near	 00000249 _TEXT	
+  N4 . . . . . . . . . . . . . .	L Near	 00000263 _TEXT	
+getIdIndex . . . . . . . . . . .	P Near	 0000032D _TEXT	Length= 00000060 Public STDCALL
   s_id . . . . . . . . . . . . .	DWord	 bp + 00000008
   s_id_size  . . . . . . . . . .	DWord	 bp + 0000000C
-  Outer  . . . . . . . . . . . .	L Near	 0000012F _TEXT	
-  Inner  . . . . . . . . . . . .	L Near	 00000137 _TEXT	
-  fail . . . . . . . . . . . . .	L Near	 00000143 _TEXT	
-  found  . . . . . . . . . . . .	L Near	 00000153 _TEXT	
-  done . . . . . . . . . . . . .	L Near	 00000155 _TEXT	
+  check  . . . . . . . . . . . .	L Near	 00000362 _TEXT	
+  fail . . . . . . . . . . . . .	L Near	 00000380 _TEXT	
+  found  . . . . . . . . . . . .	L Near	 00000385 _TEXT	
+initialize . . . . . . . . . . .	P Near	 00000036 _TEXT	Length= 00000019 Public STDCALL
+  dist . . . . . . . . . . . . .	DWord	 bp + 00000008
+  value  . . . . . . . . . . . .	Byte	 bp + 0000000C
+  dist_size  . . . . . . . . . .	DWord	 bp + 00000010
 printf . . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External C
 scanf  . . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External C
-swap . . . . . . . . . . . . . .	P Near	 0000043D _TEXT	Length= 00000032 Public STDCALL
-  sizes  . . . . . . . . . . . .	DWord	 bp + 00000008
-  ptr1 . . . . . . . . . . . . .	DWord	 bp + 0000000C
 wsprintfA  . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External C
 
 
@@ -1164,31 +1355,37 @@ VK_UP  . . . . . . . . . . . . .	Number	 00000026h
 WINDOW_BUFFER_SIZE_EVENT . . . .	Number	 00000004h   
 WriteConsoleOutputCharacter  . .	Text   	 WriteConsoleOutputCharacterA
 WriteConsole . . . . . . . . . .	Text   	 WriteConsoleA
-alphaGradeArr  . . . . . . . . .	Byte	 0000291B _DATA	
-alphaGradePtr  . . . . . . . . .	DWord	 0000294A _DATA	
-alphaGradeS  . . . . . . . . . .	DWord	 00002972 _DATA	
+alphaGradeArr  . . . . . . . . .	Byte	 00002D5E _DATA	
+alphaGradePtr  . . . . . . . . .	DWord	 00002DE5 _DATA	
+alphaGradeS  . . . . . . . . . .	DWord	 00002DD5 _DATA	
 black  . . . . . . . . . . . . .	Number	 00000000h   
 blue . . . . . . . . . . . . . .	Number	 00000001h   
 brown  . . . . . . . . . . . . .	Number	 00000006h   
-buffer . . . . . . . . . . . . .	Byte	 00000004 _DATA	
+buffer . . . . . . . . . . . . .	Byte	 00000013 _DATA	
 cyan . . . . . . . . . . . . . .	Number	 00000003h   
-endF . . . . . . . . . . . . . .	DWord	 00002962 _DATA	
+empty_grade  . . . . . . . . . .	Byte	 00002D99 _DATA	
+endF . . . . . . . . . . . . . .	DWord	 00002DC5 _DATA	
 exit . . . . . . . . . . . . . .	Text   	 INVOKE ExitProcess,0
-fileSize . . . . . . . . . . . .	DWord	 00002806 _DATA	
-filehandle . . . . . . . . . . .	DWord	 00000000 _DATA	
-gradeArr . . . . . . . . . . . .	Byte	 000028FC _DATA	
-gradeB . . . . . . . . . . . . .	Byte	 0000295A _DATA	
-gradeC . . . . . . . . . . . . .	Byte	 00002956 _DATA	
-gradeD . . . . . . . . . . . . .	Byte	 00002952 _DATA	
-gradeF . . . . . . . . . . . . .	Byte	 0000294E _DATA	
-gradePtr . . . . . . . . . . . .	DWord	 00002946 _DATA	
-gradeS . . . . . . . . . . . . .	DWord	 0000296E _DATA	
-grade_size . . . . . . . . . . .	Number	 00000003h   
+fileSize . . . . . . . . . . . .	DWord	 00002D9D _DATA	
+filehandle . . . . . . . . . . .	DWord	 0000000F _DATA	
+filesize_temp  . . . . . . . . .	DWord	 00002DA1 _DATA	
+gradeArr . . . . . . . . . . . .	Byte	 00002CC7 _DATA	
+gradeB . . . . . . . . . . . . .	Byte	 00002DF5 _DATA	
+gradeC . . . . . . . . . . . . .	Byte	 00002DF1 _DATA	
+gradeD . . . . . . . . . . . . .	Byte	 00002DED _DATA	
+gradeF . . . . . . . . . . . . .	Byte	 00002DE9 _DATA	
+gradePtr . . . . . . . . . . . .	DWord	 00002DE1 _DATA	
+gradeS . . . . . . . . . . . . .	DWord	 00002DD1 _DATA	
+grade_element_size . . . . . . .	Number	 00000003h   
+grade_index  . . . . . . . . . .	DWord	 00002D95 _DATA	
 gray . . . . . . . . . . . . . .	Number	 00000008h   
 green  . . . . . . . . . . . . .	Number	 00000002h   
-idArr  . . . . . . . . . . . . .	Byte	 0000280A _DATA	
-idPtr  . . . . . . . . . . . . .	DWord	 0000293E _DATA	
-idS  . . . . . . . . . . . . . .	DWord	 00002966 _DATA	
+idArr  . . . . . . . . . . . . .	Byte	 00002815 _DATA	
+idPtr  . . . . . . . . . . . . .	DWord	 00002DD9 _DATA	
+idS  . . . . . . . . . . . . . .	DWord	 00002DC9 _DATA	
+id_element_size  . . . . . . . .	Number	 00000004h   
+id_index_temp  . . . . . . . . .	DWord	 00002DA9 _DATA	
+id_temp  . . . . . . . . . . . .	Byte	 00002D91 _DATA	
 lightBlue  . . . . . . . . . . .	Number	 00000009h   
 lightCyan  . . . . . . . . . . .	Number	 0000000Bh   
 lightGray  . . . . . . . . . . .	Number	 00000007h   
@@ -1196,18 +1393,21 @@ lightGreen . . . . . . . . . . .	Number	 0000000Ah
 lightMagenta . . . . . . . . . .	Number	 0000000Dh   
 lightRed . . . . . . . . . . . .	Number	 0000000Ch   
 magenta  . . . . . . . . . . . .	Number	 00000005h   
-namS . . . . . . . . . . . . . .	DWord	 0000296A _DATA	
-nameArr  . . . . . . . . . . . .	Byte	 00002833 _DATA	
-namePtr  . . . . . . . . . . . .	DWord	 00002942 _DATA	
-new_buffer . . . . . . . . . . .	Byte	 00001405 _DATA	
-record_size  . . . . . . . . . .	Number	 0000001Eh   
+max_student_count  . . . . . . .	Number	 00000032h   
+namS . . . . . . . . . . . . . .	DWord	 00002DCD _DATA	
+nameArr  . . . . . . . . . . . .	Byte	 000028DE _DATA	
+namePtr  . . . . . . . . . . . .	DWord	 00002DDD _DATA	
+name_element_size  . . . . . . .	Number	 00000014h   
 red  . . . . . . . . . . . . . .	Number	 00000004h   
-startF . . . . . . . . . . . . .	DWord	 0000295E _DATA	
-temp1  . . . . . . . . . . . . .	Byte	 0000292A _DATA	
-temp2  . . . . . . . . . . . . .	DWord	 00002926 _DATA	
+report_buffer  . . . . . . . . .	Byte	 00001414 _DATA	
+report_filehandle  . . . . . . .	DWord	 0000000B _DATA	
+report_file  . . . . . . . . . .	Byte	 00000000 _DATA	
+startF . . . . . . . . . . . . .	DWord	 00002DC1 _DATA	
+student_count  . . . . . . . . .	DWord	 00002DA5 _DATA	
+temp1  . . . . . . . . . . . . .	Byte	 00002DAD _DATA	
 white  . . . . . . . . . . . . .	Number	 0000000Fh   
 wsprintf . . . . . . . . . . . .	Text   	 wsprintfA
 yellow . . . . . . . . . . . . .	Number	 0000000Eh   
 
-	   10 Warnings
+	   7 Warnings
 	   0 Errors

@@ -27,7 +27,12 @@ namespace MiniDatabaseGui
 
         [DllImport("MiniDatabase.dll")]
         private static extern void UpdateGrade([In]char[] id, [In]char[] grade, int id_size, [In] int size);
-    
+
+        [DllImport("MiniDatabase.dll")]
+        private static extern void DisStudentData([In, Out]char[] id, int id_size, [In, Out]char[] name, [In, Out]char[] grade, [In, Out]char[] Alpha_grade);
+
+        [DllImport("MiniDatabase.dll")]
+        private static extern void GenerateReport();
 
         public Form1()
         {
@@ -35,14 +40,14 @@ namespace MiniDatabaseGui
         }
 
         char[] filename;
-        byte filekey ;
+        byte filekey;
         private void Form1_Load(object sender, EventArgs e)
         {
             OpenDataBase OPEN_FORM = new OpenDataBase();
             OPEN_FORM.ShowDialog();
             filekey = OpenDataBase.file_key;
-            filename = OpenDataBase.file_name; 
-            OpenDatabase(filename,filekey);
+            filename = OpenDataBase.file_name;
+            OpenDatabase(filename, filekey);
 
         }
 
@@ -55,18 +60,26 @@ namespace MiniDatabaseGui
             }
             else if (Delete_rb.Checked)
             {
-                char[] d = ID_tb.Text.ToCharArray();
-                DeleteStudent(d, ID_tb.Text.Length);
+                DeleteStudent(ID_tb.Text.ToCharArray(), ID_tb.Text.Length);
             }
             else if (Update_rb.Checked)
             {
-                string s = Grade_tb.Text.PadLeft(3, ' ');
-                UpdateGrade(ID_tb.Text.ToCharArray(), s.ToCharArray(), ID_tb.Text.Length, s.Length);
+                UpdateGrade(ID_tb.Text.ToCharArray(), Grade_tb.Text.ToCharArray(), ID_tb.Text.Length, Grade_tb.Text.Length);
             }
             else if (Display_rb.Checked)
-            { }
+            {
+                char[] name = new char[20];
+                char[] grade = new char[3];
+                char[] A_grade = new char[1];
+                DisStudentData(ID_tb.Text.ToCharArray(), ID_tb.Text.Length, name, grade, A_grade);
+                string s_name = new string(name);
+                string s_grade = new string(grade);
+                string s_Agrade = new string(A_grade);
+                Name_tb.Text = s_name;
+                Grade_tb.Text = s_grade;
+                A_Grade_tb.Text = s_Agrade;
+            }
         }
-
 
         private void Save_changes_bn_Click(object sender, EventArgs e)
         {
@@ -80,6 +93,30 @@ namespace MiniDatabaseGui
             else
             { }
             System.Diagnostics.Process.Start("Mini_DataBase.txt");
+        }
+
+        private void when_rb_checked(object sender, EventArgs e)
+        {
+            RadioButton RB = (RadioButton)sender;
+            if (RB.Name == Enroll_rb.Name)
+            {
+                Name_tb.Enabled = true;
+                Grade_tb.Enabled = A_Grade_tb.Enabled = false;
+            }
+            else if (RB.Name == Update_rb.Name)
+            {
+                Grade_tb.Enabled = true;
+                Name_tb.Enabled = A_Grade_tb.Enabled = false;
+            }
+            else if (RB.Name == Display_rb.Name)
+            { Grade_tb.Enabled = Name_tb.Enabled = A_Grade_tb.Enabled = true; }
+            else
+            { Grade_tb.Enabled = Name_tb.Enabled = A_Grade_tb.Enabled = false; }
+        }
+
+        private void when_Click(object sender, EventArgs e)
+        {
+            ID_tb.Text = Name_tb.Text = Grade_tb.Text = A_Grade_tb.Text = "";
         }
     }
 }
