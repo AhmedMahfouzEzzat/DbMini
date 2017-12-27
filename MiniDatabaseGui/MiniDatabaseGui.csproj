@@ -56,6 +56,12 @@
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
+    <Compile Include="Generate report.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Generate report.Designer.cs">
+      <DependentUpon>Generate report.cs</DependentUpon>
+    </Compile>
     <Compile Include="OpenDataBase.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -66,6 +72,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Generate report.resx">
+      <DependentUpon>Generate report.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="OpenDataBase.resx">
       <DependentUpon>OpenDataBase.cs</DependentUpon>

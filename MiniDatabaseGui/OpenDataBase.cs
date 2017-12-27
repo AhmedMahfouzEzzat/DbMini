@@ -28,9 +28,10 @@ namespace MiniDatabaseGui
             this.Close();
         }
 
-        private void OpenDataBase_FormClosed(object sender, FormClosedEventArgs e)
+        private void OpenDataBase_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if(flag) Application.Exit();
+            if (flag) Application.Exit();
         }
+
     }
 }

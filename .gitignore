@@ -247,3 +247,6 @@ Project32_VS2015/MiniDatabase.lst
 *.lst
 Project32_VS2015/MiniDatabase.lst
 Project32_VS2015/Project.vcxproj
+*.lst
+Project32_VS2015/Project.vcxproj
+Project32_VS2015/MiniDatabase.lst

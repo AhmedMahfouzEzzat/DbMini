@@ -39,23 +39,19 @@
             this.Name_tb = new System.Windows.Forms.TextBox();
             this.A_Grade_tb = new System.Windows.Forms.TextBox();
             this.Generate_report_bn = new System.Windows.Forms.Button();
-            this.SB_A = new System.Windows.Forms.RadioButton();
-            this.SB_D = new System.Windows.Forms.RadioButton();
             this.Save_changes_bn = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.groupBox1.SuspendLayout();
-            this.groupBox2.SuspendLayout();
             this.SuspendLayout();
             // 
             // OK_button
             // 
             this.OK_button.BackColor = System.Drawing.Color.MintCream;
             this.OK_button.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.OK_button.Location = new System.Drawing.Point(221, 161);
+            this.OK_button.Location = new System.Drawing.Point(227, 161);
             this.OK_button.Name = "OK_button";
             this.OK_button.Size = new System.Drawing.Size(122, 29);
             this.OK_button.TabIndex = 0;
@@ -153,39 +149,13 @@
             // Generate_report_bn
             // 
             this.Generate_report_bn.BackColor = System.Drawing.Color.MintCream;
-            this.Generate_report_bn.Location = new System.Drawing.Point(286, 216);
+            this.Generate_report_bn.Location = new System.Drawing.Point(363, 216);
             this.Generate_report_bn.Name = "Generate_report_bn";
             this.Generate_report_bn.Size = new System.Drawing.Size(162, 58);
             this.Generate_report_bn.TabIndex = 10;
             this.Generate_report_bn.Text = "Generate\r\n Full Report";
             this.Generate_report_bn.UseVisualStyleBackColor = false;
             this.Generate_report_bn.Click += new System.EventHandler(this.Generate_report_bn_Click);
-            // 
-            // SB_A
-            // 
-            this.SB_A.AutoSize = true;
-            this.SB_A.Checked = true;
-            this.SB_A.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.SB_A.ForeColor = System.Drawing.Color.Black;
-            this.SB_A.Location = new System.Drawing.Point(13, 16);
-            this.SB_A.Name = "SB_A";
-            this.SB_A.Size = new System.Drawing.Size(80, 17);
-            this.SB_A.TabIndex = 11;
-            this.SB_A.TabStop = true;
-            this.SB_A.Text = "Aescending";
-            this.SB_A.UseVisualStyleBackColor = true;
-            // 
-            // SB_D
-            // 
-            this.SB_D.AutoSize = true;
-            this.SB_D.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.SB_D.ForeColor = System.Drawing.Color.Black;
-            this.SB_D.Location = new System.Drawing.Point(13, 35);
-            this.SB_D.Name = "SB_D";
-            this.SB_D.Size = new System.Drawing.Size(80, 17);
-            this.SB_D.TabIndex = 12;
-            this.SB_D.Text = "Descending";
-            this.SB_D.UseVisualStyleBackColor = true;
             // 
             // Save_changes_bn
             // 
@@ -250,27 +220,12 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Select your procces";
             // 
-            // groupBox2
-            // 
-            this.groupBox2.BackColor = System.Drawing.Color.Transparent;
-            this.groupBox2.Controls.Add(this.SB_D);
-            this.groupBox2.Controls.Add(this.SB_A);
-            this.groupBox2.Font = new System.Drawing.Font("Tahoma", 9.75F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))), System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.groupBox2.ForeColor = System.Drawing.Color.Blue;
-            this.groupBox2.Location = new System.Drawing.Point(462, 216);
-            this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(108, 58);
-            this.groupBox2.TabIndex = 20;
-            this.groupBox2.TabStop = false;
-            this.groupBox2.Text = "Sorted Type";
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackgroundImage = global::MiniDatabaseGui.Properties.Resources.abstract_blue_abstract_wallpaper_background_for_smart_phones_apple_download_wallpaper_amazing_cool_wallpaper_of_abstract_drawing_2560x1600_736x459;
             this.ClientSize = new System.Drawing.Size(584, 312);
-            this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.label2);
@@ -291,11 +246,10 @@
             this.Name = "Form1";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = " ";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
             this.Load += new System.EventHandler(this.Form1_Load);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
-            this.groupBox2.ResumeLayout(false);
-            this.groupBox2.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -313,14 +267,11 @@
         private System.Windows.Forms.TextBox Name_tb;
         private System.Windows.Forms.TextBox A_Grade_tb;
         private System.Windows.Forms.Button Generate_report_bn;
-        private System.Windows.Forms.RadioButton SB_A;
-        private System.Windows.Forms.RadioButton SB_D;
         private System.Windows.Forms.Button Save_changes_bn;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.GroupBox groupBox1;
-        private System.Windows.Forms.GroupBox groupBox2;
 
     }
 }
